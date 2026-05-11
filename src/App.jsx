@@ -35,6 +35,47 @@ import TestimonialsPage from '@/pages/admin/TestimonialsPage';
 import CategoriesPage from '@/pages/admin/CategoriesPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
 
+
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('APP_RENDER_ERROR', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen min-h-[100svh] bg-[#0f172a] text-white">
+          <header className="fixed left-0 right-0 top-0 z-50 bg-[#0f172a]/95 shadow-lg">
+            <nav className="container mx-auto flex items-center justify-between px-4 py-4">
+              <a href="/" className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-2xl font-bold text-transparent">Vos Web Designs</a>
+              <a href="/contact" className="hidden rounded-md bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-4 py-2 font-medium text-black sm:inline-flex">Plan een Gesprek</a>
+            </nav>
+          </header>
+          <main className="flex min-h-screen min-h-[100svh] items-center justify-center px-4 pt-24">
+            <section className="mx-auto max-w-4xl text-center">
+              <p className="mb-6 inline-block rounded-full border border-[#38bdf8]/30 bg-[#38bdf8]/10 px-4 py-2 text-sm font-medium text-[#38bdf8]">Professioneel Webdesign Bureau</p>
+              <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">Websites Die Uw <span className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">Bedrijf Laten Groeien</span></h1>
+              <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-gray-300 sm:text-xl">Wij ontwikkelen luxe, conversie-gerichte websites voor ambitieuze bedrijven in Nederland.</p>
+              <a href="/contact" className="inline-flex rounded-md bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-8 py-4 text-lg font-medium text-black">Plan een Gesprek</a>
+            </section>
+          </main>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Component to handle global SEO based on settings
 const GlobalSEO = () => {
   const { settings } = useSettings();
@@ -63,7 +104,9 @@ const GlobalSEO = () => {
 
 function App() {
   return (
-    <RouterProvider router={router} />
+    <AppErrorBoundary>
+      <RouterProvider router={router} />
+    </AppErrorBoundary>
   );
 }
 

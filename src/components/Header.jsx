@@ -35,12 +35,13 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-[#0f172a]/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        isScrolled ? 'bg-[#0f172a]/95 shadow-lg supports-[backdrop-filter]:backdrop-blur-md' : 'bg-[#0f172a]/80 supports-[backdrop-filter]:bg-transparent'
       }`}
     >
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <motion.div
+            initial={false}
             whileHover={{ scale: 1.05 }}
             className="text-2xl font-bold bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent"
           >
@@ -86,10 +87,10 @@ const Header = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={false}
             animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-[#0f172a] border-t border-gray-800"
+            exit={{ opacity: 1, height: 0 }}
+            className="lg:hidden max-h-[calc(100svh-4rem)] overflow-y-auto bg-[#0f172a] border-t border-gray-800"
           >
             <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
