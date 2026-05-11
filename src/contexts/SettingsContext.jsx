@@ -11,7 +11,7 @@ export const useSettings = () => {
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState({
     site_name: 'Vos Web Designs',
-    site_description: 'Premium webdesign & ontwikkeling voor ambitieuze bedrijven.',
+    site_description: 'Professioneel webdesign & ontwikkeling voor ambitieuze bedrijven.',
     contact_email: 'info@voswebdesigns.nl',
     contact_phone: '+31 20 123 4567',
     address_street: '',
@@ -39,14 +39,14 @@ export const SettingsProvider = ({ children }) => {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching site settings:', error);
+        console.error('SITE_SETTINGS_FETCH_ERROR', { message: error.message, details: error.details, hint: error.hint, code: error.code });
       }
 
       if (data) {
         setSettings(prev => ({ ...prev, ...data }));
       }
     } catch (error) {
-      console.error('Unexpected error fetching settings:', error);
+      console.error('SITE_SETTINGS_UNEXPECTED_ERROR', error);
     } finally {
       setLoading(false);
     }

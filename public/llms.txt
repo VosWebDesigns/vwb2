@@ -1,11 +1,15 @@
 ## Pages
-- [- Portfolio | Vos Web Designs](/projectdetail): No description available
+- [– Portfolio | Vos Web Designs](/projectdetail): No description available
+- [404 - Pagina Niet Gevonden | Vos Web Designs](/404): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/notfound): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
+- [Admin Login - Vos Web Designs](/login): No description available
 - [Algemene Voorwaarden - Vos Web Designs](/terms): Algemene Voorwaarden van Vos Web Designs. Lees hier onze leveringsvoorwaarden en condities.
 - [Contact - Vos Web Designs | Neem Contact Op](/contact): Klaar om uw project te starten? Neem contact op met Vos Web Designs. We beantwoorden al uw vragen en plannen graag een vrijblijvend gesprek.
-- [Diensten - Vos Web Designs | Premium Webdesign & Ontwikkeling](/services): Ontdek onze diensten: van webdesign en ontwikkeling tot e-commerce en SEO. Wij bieden complete digitale oplossingen voor ambitieuze bedrijven.
-- [Over Ons - Vos Web Designs | Ons Verhaal & Team](/about): Leer het team achter Vos Web Designs kennen. Gepassioneerd door design en development, gedreven door resultaten voor onze klanten.
-- [Portfolio - Vos Web Designs](/portfolio): Ons werk en recente projecten.
+- [Diensten – Vos Web Designs](/services): No description available
+- [Geen toegang - Vos Web Designs](/forbidden): No description available
+- [Instellingen - Vos Admin](/settings): No description available
+- [Over Ons - Vos Web Designs](/about): Leer Vos Web Designs kennen. Persoonlijk, resultaatgericht en gebouwd op moderne technologie.
+- [Portfolio - Vos Web Designs](/portfolio): Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten.
 - [Privacybeleid - Vos Web Designs](/privacypolicy): Privacybeleid van Vos Web Designs. Lees hoe wij omgaan met uw gegevens volgens de AVG/GDPR richtlijnen.
-- [Vos Web Designs - Premium Webdesign & Ontwikkeling in Nederland](/home): Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien.
+- [Vos Web Designs - Professioneel Webdesign & Ontwikkeling in Nederland](/home): Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien.
 - [Werkwijze - Vos Web Designs | Ons Development Process](/process): Ontdek hoe we te werk gaan bij Vos Web Designs. Van strategie tot lancering - een transparant proces met gegarandeerde resultaten.

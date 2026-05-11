@@ -24,6 +24,7 @@ import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsPage from '@/pages/TermsPage';
+import ForbiddenPage from '@/pages/ForbiddenPage';
 
 // Admin Imports
 import LoginPage from '@/pages/admin/LoginPage';
@@ -37,12 +38,25 @@ import SettingsPage from '@/pages/admin/SettingsPage';
 // Component to handle global SEO based on settings
 const GlobalSEO = () => {
   const { settings } = useSettings();
-  
+  const siteName = settings.site_name || 'Vos Web Designs';
+  const description = settings.seo_meta_description || settings.site_description || 'Professioneel webdesign';
+  const siteUrl = 'https://voswebdesigns.nl';
+  const ogImage = `${siteUrl}/logo.jpeg`;
+
   return (
     <Helmet>
-      <title>{settings.site_name || 'Vos Web Designs'}</title>
-      <meta name="description" content={settings.seo_meta_description || settings.site_description || 'Premium webdesign'} />
+      <title>{siteName}</title>
+      <meta name="description" content={description} />
       {settings.seo_keywords && <meta name="keywords" content={settings.seo_keywords} />}
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content={siteName} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={siteUrl} />
+      <meta property="og:image" content={ogImage} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={siteName} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
     </Helmet>
   );
 };
@@ -85,6 +99,7 @@ const routes = createRoutesFromElements(
     <Route path="privacy" element={<PublicPageLayout><PrivacyPolicyPage /></PublicPageLayout>} />
     <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></PublicPageLayout>} />
     <Route path="login" element={<LoginPage />} />
+    <Route path="forbidden" element={<PublicPageLayout><ForbiddenPage /></PublicPageLayout>} />
 
     <Route path="admin" element={<AdminLayout />}>
       <Route index element={<DashboardPage />} />

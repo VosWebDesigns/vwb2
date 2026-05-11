@@ -47,7 +47,7 @@ const AboutPage = () => {
       name: 'Melvin Vos',
       role: 'Founder & Lead Developer',
       image: '/logo.jpeg',
-      bio: 'Met een sterke focus op performance, schaalbaarheid en design bouw ik premium websites en webapplicaties die bedrijven écht verder helpen.',
+      bio: 'Met een sterke focus op performance, schaalbaarheid en design bouw ik professionele websites en webapplicaties die bedrijven écht verder helpen.',
     },
   ];
 

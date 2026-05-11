@@ -6,6 +6,17 @@ import { toast } from '@/components/ui/use-toast';
 
 const BUCKET_NAME = 'portfolio-media';
 
+const logSupabaseError = (label, error, context = {}) => {
+  if (!error) return;
+  console.error(label, {
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code,
+    ...context,
+  });
+};
+
 const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
   const fileInputRef = useRef(null);
   const [images, setImages] = useState([]);
@@ -28,6 +39,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
       .order('sort_order', { ascending: true });
 
     if (error) {
+      logSupabaseError('PORTFOLIO_IMAGES_FETCH_ERROR', error, { projectId });
       toast({ variant: 'destructive', title: 'Fout', description: error.message });
       setImages([]);
     } else {
@@ -59,7 +71,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
           .upload(path, file, { cacheControl: '3600', upsert: false, contentType });
 
         if (uploadError) {
-          console.error('UPLOAD_ERROR', uploadError, { path, contentType, fileName: file.name, size: file.size });
+          logSupabaseError('UPLOAD_ERROR', uploadError, { path, contentType, fileName: file.name, size: file.size });
           throw uploadError;
         }
 
@@ -77,14 +89,10 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
 
       const { error: insertError } = await supabase
         .from('portfolio_images')
-        .insert(records);
+        .insert(records)
+        .select('*');
       if (insertError) {
-        console.error('PORTFOLIO_IMAGES_ERROR', {
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code,
-        });
+        logSupabaseError('PORTFOLIO_IMAGES_ERROR', insertError, { projectId });
         throw insertError;
       }
 
@@ -106,12 +114,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
         .eq('portfolio_id', image.portfolio_id);
 
       if (unsetError) {
-        console.error('PORTFOLIO_IMAGES_ERROR', {
-          message: unsetError.message,
-          details: unsetError.details,
-          hint: unsetError.hint,
-          code: unsetError.code,
-        });
+        logSupabaseError('PORTFOLIO_IMAGES_ERROR', unsetError, { projectId });
         throw unsetError;
       }
 
@@ -121,12 +124,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
         .eq('id', image.id);
 
       if (setError) {
-        console.error('PORTFOLIO_IMAGES_ERROR', {
-          message: setError.message,
-          details: setError.details,
-          hint: setError.hint,
-          code: setError.code,
-        });
+        logSupabaseError('PORTFOLIO_IMAGES_ERROR', setError, { projectId });
         throw setError;
       }
 
@@ -136,16 +134,11 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
         .eq('id', image.portfolio_id);
 
       if (heroError) {
-        console.error('PROJECTS_ERROR', {
-          message: heroError.message,
-          details: heroError.details,
-          hint: heroError.hint,
-          code: heroError.code,
-        });
+        logSupabaseError('PROJECTS_ERROR', heroError, { projectId });
         throw heroError;
       }
 
-      onCoverChange(image.url);
+      onCoverChange?.(image.url);
       toast({ title: 'Cover bijgewerkt' });
       await fetchImages();
     } catch (error) {
@@ -160,17 +153,15 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
     try {
       if (image.path) {
         const { error: storageError } = await supabase.storage.from(BUCKET_NAME).remove([image.path]);
-        if (storageError) throw storageError;
+        if (storageError) {
+          logSupabaseError('PORTFOLIO_IMAGE_STORAGE_REMOVE_WARNING', storageError, { path: image.path });
+          toast({ title: 'Storage waarschuwing', description: 'Bestand niet gevonden of al verwijderd; database wordt opgeschoond.' });
+        }
       }
 
       const { error } = await supabase.from('portfolio_images').delete().eq('id', image.id);
       if (error) {
-        console.error('PORTFOLIO_IMAGES_ERROR', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
+        logSupabaseError('PORTFOLIO_IMAGES_ERROR', error, { projectId });
         throw error;
       }
 
@@ -184,6 +175,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
   };
 
   const reorderImages = async (ordered) => {
+    if (!ordered.length) return;
     setBusy(true);
     try {
       const updates = ordered.map((item, index) => ({
@@ -198,15 +190,11 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
 
       const { error } = await supabase
         .from('portfolio_images')
-        .upsert(updates, { onConflict: 'id' });
+        .upsert(updates, { onConflict: 'id' })
+        .select('*');
 
       if (error) {
-        console.error('PORTFOLIO_IMAGES_ERROR', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
+        logSupabaseError('PORTFOLIO_IMAGES_ERROR', error, { projectId });
         throw error;
       }
       setImages(ordered);

@@ -48,7 +48,7 @@ const HomePage = () => {
 
   const usps = [
     { icon: <Zap size={32} />, title: 'Razendsnelle Websites', description: 'Geoptimaliseerd voor snelheid en prestaties. Onze websites laden in minder dan 2 seconden.' },
-    { icon: <Award size={32} />, title: 'Premium Design', description: 'Luxe, moderne designs die uw merk naar een hoger niveau tillen en conversies verhogen.' },
+    { icon: <Award size={32} />, title: 'Professioneel Design', description: 'Luxe, moderne designs die uw merk naar een hoger niveau tillen en conversies verhogen.' },
     { icon: <Users size={32} />, title: 'Persoonlijke Service', description: 'Directe communicatie met uw dedicated designer. Geen tussenpersonen, alleen resultaten.' },
     { icon: <TrendingUp size={32} />, title: 'Bewezen ROI', description: 'Onze websites genereren gemiddeld 3x meer conversies dan standaard websites.' },
   ];
@@ -56,7 +56,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Vos Web Designs - Premium Webdesign & Ontwikkeling in Nederland</title>
+        <title>Vos Web Designs - Professioneel Webdesign & Ontwikkeling in Nederland</title>
         <meta name="description" content="Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien." />
       </Helmet>
 
@@ -73,7 +73,7 @@ const HomePage = () => {
             <div className="max-w-4xl mx-auto text-center">
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <span className="inline-block px-4 py-2 bg-[#38bdf8]/10 border border-[#38bdf8]/30 rounded-full text-[#38bdf8] text-sm font-medium mb-6">
-                  Premium Webdesign Bureau
+                  Professioneel Webdesign Bureau
                 </span>
               </motion.div>
               <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
