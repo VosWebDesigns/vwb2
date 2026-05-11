@@ -7,6 +7,17 @@ import DeleteConfirmDialog from '@/components/DeleteConfirmDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 
+const logSupabaseError = (label, error) => {
+  if (!error) return;
+
+  console.error(label, {
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code,
+  });
+};
+
 const TestimonialsPage = () => {
   const { user } = useAuth();
 
@@ -30,10 +41,12 @@ const TestimonialsPage = () => {
   /* ================= FETCH ================= */
   const fetchTestimonials = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('testimonials')
       .select('*')
       .order('created_at', { ascending: false });
+
+    logSupabaseError('ADMIN_TESTIMONIALS_FETCH_ERROR', error);
 
     if (data) setTestimonials(data);
     setLoading(false);
@@ -54,15 +67,19 @@ const TestimonialsPage = () => {
         ? await supabase.from('testimonials').update(formData).eq('id', isEditing)
         : await supabase.from('testimonials').insert([formData]);
 
+      logSupabaseError('ADMIN_TESTIMONIAL_SAVE_ERROR', error);
+
       if (error) throw error;
 
       // 🟡 ACTIVITY LOG
-      await supabase.from('activity_log').insert([{
+      const { error: activityLogError } = await supabase.from('activity_log').insert([{
         type: 'testimonial',
         action: isUpdate ? 'updated' : 'created',
         title: formData.name,
         user_id: user?.id
       }]);
+
+      logSupabaseError('ADMIN_TESTIMONIAL_ACTIVITY_LOG_ERROR', activityLogError);
 
       toast({ title: 'Succes', description: 'Review opgeslagen' });
 
@@ -77,7 +94,11 @@ const TestimonialsPage = () => {
 
   /* ================= EDIT ================= */
   const handleEdit = (item) => {
-    setFormData(item);
+    setFormData({
+      ...initialForm,
+      ...item,
+      is_visible: item.is_visible ?? true,
+    });
     setIsEditing(item.id);
     setShowForm(true);
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
@@ -88,15 +109,21 @@ const TestimonialsPage = () => {
     try {
       const item = testimonials.find(t => t.id === deleteId);
 
-      await supabase.from('testimonials').delete().eq('id', deleteId);
+      const { error: deleteError } = await supabase.from('testimonials').delete().eq('id', deleteId);
+
+      logSupabaseError('ADMIN_TESTIMONIAL_DELETE_ERROR', deleteError);
+
+      if (deleteError) throw deleteError;
 
       // 🟡 ACTIVITY LOG
-      await supabase.from('activity_log').insert([{
+      const { error: activityLogError } = await supabase.from('activity_log').insert([{
         type: 'testimonial',
         action: 'deleted',
         title: item?.name,
         user_id: user?.id
       }]);
+
+      logSupabaseError('ADMIN_TESTIMONIAL_ACTIVITY_LOG_ERROR', activityLogError);
 
       setTestimonials(prev => prev.filter(t => t.id !== deleteId));
       toast({ title: 'Verwijderd', description: 'Review verwijderd' });
@@ -189,6 +216,16 @@ const TestimonialsPage = () => {
                       value={formData.rating}
                       onChange={e => setFormData({ ...formData, rating: Number(e.target.value) })}
                     />
+
+                    <label className="flex items-center gap-3 rounded border border-gray-700 bg-black px-3 py-2 text-sm text-white">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(formData.is_visible)}
+                        onChange={e => setFormData({ ...formData, is_visible: e.target.checked })}
+                        className="h-4 w-4 accent-[#38bdf8]"
+                      />
+                      Zichtbaar op website
+                    </label>
 
                     <Button type="submit" className="w-full bg-[#38bdf8] text-black">
                       Opslaan

@@ -11,6 +11,17 @@ const safeReveal = {
   visible: { opacity: 1, y: 0 },
 };
 
+const logSupabaseError = (label, error) => {
+  if (!error) return;
+
+  console.error(label, {
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code,
+  });
+};
+
 const HomePage = () => {
   const [projects, setProjects] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
@@ -20,25 +31,49 @@ const HomePage = () => {
 
     const fetchHomeData = async () => {
       try {
-        const { data: projData } = await supabase
+        const { data: featuredProjects, error: featuredProjectsError } = await supabase
           .from('projects')
           .select('*, categories(name)')
-          .eq('is_published', true)
+          .or('is_published.is.null,is_published.eq.true')
           .eq('is_featured', true)
+          .order('created_at', { ascending: false })
           .limit(3);
 
-        if (isMounted && projData) setProjects(projData);
+        logSupabaseError('HOME_FEATURED_PROJECTS_FETCH_ERROR', featuredProjectsError);
 
-        const { data: testData } = await supabase
+        let projectsData = featuredProjects || [];
+
+        if (projectsData.length === 0) {
+          const { data: fallbackProjects, error: fallbackProjectsError } = await supabase
+            .from('projects')
+            .select('*, categories(name)')
+            .or('is_published.is.null,is_published.eq.true')
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+          logSupabaseError('HOME_PROJECTS_FALLBACK_FETCH_ERROR', fallbackProjectsError);
+          projectsData = fallbackProjects || [];
+        }
+
+        if (isMounted) setProjects(projectsData);
+
+        const { data: testData, error: testimonialsError } = await supabase
           .from('testimonials')
           .select('*')
-          .eq('is_visible', true)
+          .or('is_visible.is.null,is_visible.eq.true')
           .order('sort_order', { ascending: true })
           .limit(3);
 
-        if (isMounted && testData) setTestimonials(testData);
+        logSupabaseError('HOME_TESTIMONIALS_FETCH_ERROR', testimonialsError);
+
+        if (isMounted) setTestimonials(testData || []);
       } catch (error) {
-        console.error('HOME_DATA_FETCH_ERROR', error);
+        console.error('HOME_DATA_FETCH_ERROR', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
       }
     };
 

@@ -6,6 +6,17 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 
+const logSupabaseError = (label, error) => {
+  if (!error) return;
+
+  console.error(label, {
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code,
+  });
+};
+
 const PortfolioPage = () => {
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [projects, setProjects] = useState([]);
@@ -22,7 +33,7 @@ const PortfolioPage = () => {
       try {
         setLoading(true);
 
-        const [{ data: projectsData }, { data: categoriesData }] =
+        const [{ data: projectsData, error: projectsError }, { data: categoriesData, error: categoriesError }] =
           await Promise.all([
             supabase
               .from('projects')
@@ -36,7 +47,7 @@ const PortfolioPage = () => {
                   name
                 )
               `)
-              .eq('is_published', true)
+              .or('is_published.is.null,is_published.eq.true')
               .order('created_at', { ascending: false }),
 
             supabase
@@ -45,10 +56,18 @@ const PortfolioPage = () => {
               .order('name', { ascending: true }),
           ]);
 
+        logSupabaseError('PORTFOLIO_FETCH_ERROR', projectsError);
+        logSupabaseError('PORTFOLIO_CATEGORIES_FETCH_ERROR', categoriesError);
+
         setProjects(projectsData || []);
         setCategories(categoriesData || []);
       } catch (error) {
-        console.error('Portfolio fetch error:', error);
+        console.error('PORTFOLIO_FETCH_ERROR', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
       } finally {
         setLoading(false);
       }

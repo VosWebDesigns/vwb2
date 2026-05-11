@@ -1,70 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl =
+  import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
+  import.meta.env.VITE_SUPABASE_URL;
 
-const missingEnv = [
-  !supabaseUrl && 'VITE_SUPABASE_URL',
-  !supabaseAnonKey && 'VITE_SUPABASE_ANON_KEY',
-].filter(Boolean);
+const supabaseAnonKey =
+  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const missingEnvMessage = missingEnv.length > 0
-  ? `Supabase configuratie ontbreekt: ${missingEnv.join(', ')}. Voeg deze variabelen toe aan Vercel en lokaal aan .env.`
-  : '';
-
-const createUnavailableQuery = () => {
-  const result = Promise.resolve({ data: null, error: { message: missingEnvMessage, code: 'SUPABASE_CONFIG_MISSING' } });
-
-  return new Proxy(result, {
-    get(target, prop) {
-      if (prop === 'then' || prop === 'catch' || prop === 'finally') {
-        return target[prop].bind(target);
-      }
-
-      if (prop === Symbol.toStringTag) {
-        return 'Promise';
-      }
-
-      return () => createUnavailableQuery();
-    },
-  });
-};
-
-const createUnavailableSupabaseClient = () => ({
-  from: () => createUnavailableQuery(),
-  removeChannel: () => undefined,
-  channel: () => ({
-    on: () => ({ subscribe: () => ({ unsubscribe: () => undefined }) }),
-    subscribe: () => ({ unsubscribe: () => undefined }),
-  }),
-  auth: {
-    getSession: async () => ({ data: { session: null }, error: null }),
-    getUser: async () => ({ data: { user: null }, error: null }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => undefined } } }),
-    signUp: async () => ({ data: null, error: { message: missingEnvMessage, code: 'SUPABASE_CONFIG_MISSING' } }),
-    signInWithPassword: async () => ({ data: null, error: { message: missingEnvMessage, code: 'SUPABASE_CONFIG_MISSING' } }),
-    signOut: async () => ({ error: null }),
-  },
-  storage: {
-    from: () => ({
-      upload: async () => ({ data: null, error: { message: missingEnvMessage, code: 'SUPABASE_CONFIG_MISSING' } }),
-      remove: async () => ({ data: null, error: { message: missingEnvMessage, code: 'SUPABASE_CONFIG_MISSING' } }),
-      getPublicUrl: () => ({ data: { publicUrl: '' } }),
-    }),
-  },
-});
-
-if (missingEnv.length > 0) {
-  console.error(missingEnvMessage);
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing Supabase env vars. Set NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY (or VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY).'
+  );
 }
 
-const customSupabaseClient = missingEnv.length === 0
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : createUnavailableSupabaseClient();
+const customSupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 export default customSupabaseClient;
-
-export {
-  customSupabaseClient,
-  customSupabaseClient as supabase,
-};
+export { customSupabaseClient, customSupabaseClient as supabase };
