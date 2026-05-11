@@ -13,7 +13,8 @@ const ContactPage = () => {
     company: '',
     service: '',
     package: '',
-    message: ''
+    message: '',
+    company_website: ''
   });
 
   const handleChange = e => {
@@ -34,7 +35,11 @@ const ContactPage = () => {
       body: JSON.stringify(formData)
     });
 
-    if (!res.ok) throw new Error("Mail failed");
+    if (!res.ok) {
+      const errorBody = await res.text();
+      console.error('CONTACT_FORM_ERROR', { status: res.status, body: errorBody });
+      throw new Error("Mail failed");
+    }
 
     toast({
       title: "Bericht Verzonden! ✉️",
@@ -49,10 +54,12 @@ const ContactPage = () => {
       company: '',
       service: '',
       package: '',
-      message: ''
+      message: '',
+      company_website: ''
     });
 
-  } catch {
+  } catch (error) {
+    console.error('CONTACT_FORM_SUBMIT_ERROR', error);
     toast({
       title: "Fout",
       description: "Er ging iets mis bij het verzenden.",
@@ -157,6 +164,19 @@ const ContactPage = () => {
                   <h2 className="text-3xl font-bold mb-6">Stuur Een Bericht</h2>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
+
+                    <div className="hidden" aria-hidden="true">
+                      <label htmlFor="company_website">Website</label>
+                      <input
+                        id="company_website"
+                        name="company_website"
+                        value={formData.company_website}
+                        onChange={handleChange}
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+                    </div>
+
                     {/* Naam + Email */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>

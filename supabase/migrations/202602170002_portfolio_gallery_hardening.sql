@@ -18,47 +18,20 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Replace helper to support either profiles.user_id or profiles.id layouts
+-- Replace helper to support profiles.user_id layouts
 create or replace function public.is_admin(uid uuid)
 returns boolean
-language plpgsql
+language sql
 stable
 security definer
 set search_path = public
 as $$
-declare
-  has_profiles boolean;
-  has_user_id boolean;
-  has_id boolean;
-  res boolean := false;
-begin
-  has_profiles := to_regclass('public.profiles') is not null;
-  if not has_profiles or uid is null then
-    return false;
-  end if;
-
-  select exists (
-    select 1 from information_schema.columns
-    where table_schema = 'public' and table_name = 'profiles' and column_name = 'user_id'
-  ) into has_user_id;
-
-  select exists (
-    select 1 from information_schema.columns
-    where table_schema = 'public' and table_name = 'profiles' and column_name = 'id'
-  ) into has_id;
-
-  if has_user_id then
-    execute 'select exists(select 1 from public.profiles p where p.user_id = $1 and p.role = ''admin'')'
-      into res using uid;
-    return coalesce(res, false);
-  elsif has_id then
-    execute 'select exists(select 1 from public.profiles p where p.id = $1 and p.role = ''admin'')'
-      into res using uid;
-    return coalesce(res, false);
-  else
-    return false;
-  end if;
-end;
+  select coalesce(exists (
+    select 1
+    from public.profiles p
+    where p.user_id = uid
+      and p.role::text = 'admin'
+  ), false);
 $$;
 
 -- Ensure table + bucket exist when this migration is run independently

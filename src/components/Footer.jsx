@@ -24,7 +24,7 @@ const Footer = () => {
               {settings?.site_name || 'Vos Web Designs'}
             </span>
             <p className="mt-4 text-gray-400 text-sm leading-relaxed">
-              {settings?.site_description || 'Premium webdesign & ontwikkeling voor ambitieuze bedrijven.'}
+              {settings?.site_description || 'Professioneel webdesign & ontwikkeling voor ambitieuze bedrijven.'}
             </p>
           </div>
 

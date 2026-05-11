@@ -78,19 +78,19 @@ begin
   end if;
 end $$;
 
-create or replace function public.is_admin(user_id uuid)
+create or replace function public.is_admin(uid uuid)
 returns boolean
 language sql
 stable
 security definer
 set search_path = public
 as $$
-  select exists (
+  select coalesce(exists (
     select 1
-    from public.profiles
-    where id = user_id
-      and role = 'admin'
-  );
+    from public.profiles p
+    where p.user_id = uid
+      and p.role::text = 'admin'
+  ), false);
 $$;
 
 alter table public.portfolio_images enable row level security;
