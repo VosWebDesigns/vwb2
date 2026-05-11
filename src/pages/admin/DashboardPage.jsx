@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
+import { formatDateTimeNL } from '@/lib/formatDateTime';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -42,13 +43,6 @@ const getTargetRoute = (activity) => {
     default:
       return null;
   }
-};
-
-const formatTimeAgo = (date) => {
-  const diff = Math.floor((Date.now() - new Date(date)) / 60000);
-  if (diff < 1) return 'zojuist';
-  if (diff < 60) return `${diff}m geleden`;
-  return `${Math.floor(diff / 60)}u geleden`;
 };
 
 const formatActivityText = (a) => {
@@ -237,7 +231,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                     <span className="text-gray-500 text-xs">
-                      {formatTimeAgo(a.created_at)}
+                      {formatDateTimeNL(a.created_at)}
                     </span>
                   </div>
                 );
