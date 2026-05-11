@@ -6,7 +6,7 @@ Launch-ready Vite + React 18 + React Router + Supabase + Vercel website for Vos 
 
 ```bash
 npm i
-cp .env.example .env
+cp .env.example .env.local
 npm run dev
 ```
 
@@ -20,19 +20,23 @@ De build draait eerst `tools/generate-llms.js` en bouwt daarna de Vite SPA.
 
 ## Environment variables
 
-Zet deze variabelen lokaal in `.env` en in Vercel bij Project Settings → Environment Variables:
+Zet op Vercel bij Project Settings → Environment Variables minimaal deze variabelen:
 
 ```bash
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 RESEND_API_KEY=
-RESEND_FROM_EMAIL=Vos Web Designs <contact@voswebdesigns.nl>
-CONTACT_ADMIN_EMAIL=info@voswebdesigns.nl
-SITE_URL=https://voswebdesigns.nl
+SITE_URL=
 ```
 
-- `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` worden gebruikt door de frontend en serverless sitemap.
-- `RESEND_API_KEY`, `RESEND_FROM_EMAIL` en `CONTACT_ADMIN_EMAIL` worden gebruikt door `/api/contact`.
+Gebruik lokaal een `.env.local` bestand met dezelfde keys. Je kunt starten vanaf `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+- `NEXT_PUBLIC_SUPABASE_URL` en `NEXT_PUBLIC_SUPABASE_ANON_KEY` worden door de Vite client bundle gebruikt voor Supabase. `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` blijven als fallback ondersteund.
+- `RESEND_API_KEY` wordt gebruikt door `/api/contact`.
 - `SITE_URL` wordt gebruikt voor absolute URLs in `/sitemap.xml`.
 
 ## Supabase setup
