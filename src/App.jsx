@@ -12,8 +12,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
 import PortfolioPage from '@/pages/PortfolioPage';
 import ProjectDetailPage from '@/pages/ProjectDetailPage';
@@ -53,7 +52,7 @@ class AppErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen min-h-[100svh] bg-[#0f172a] text-white">
+        <div className="min-h-screen min-h-[100svh] bg-[color:var(--bg)] text-[color:var(--ink)]">
           <header className="fixed left-0 right-0 top-0 z-50 bg-[#0f172a]/95 shadow-lg">
             <nav className="container mx-auto flex items-center justify-between px-4 py-4">
               <a href="/" className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-2xl font-bold text-transparent">Vos Web Designs</a>
@@ -111,17 +110,13 @@ function App() {
 }
 
 const PublicPageLayout = ({ children }) => (
-  <>
-    <Header />
-    {children}
-    <Footer />
-  </>
+  <PublicShell>{children}</PublicShell>
 );
 
 const RootLayout = () => (
   <AuthProvider>
     <SettingsProvider>
-      <div className="min-h-screen bg-[#0f172a] text-white flex flex-col">
+      <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
         <GlobalSEO />
         <Outlet />
         <Toaster />
