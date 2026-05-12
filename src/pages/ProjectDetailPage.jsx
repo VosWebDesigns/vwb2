@@ -1,165 +1,94 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
-import PortfolioGallery from '@/components/portfolio/PortfolioGallery';
-import { getPortfolioByIdWithImages } from '@/lib/portfolio';
+import { Link, useParams } from 'react-router-dom';
+import { X } from 'lucide-react';
+import { getProjectWithImages } from '@/lib/api/publicContent';
+import { formatYear } from '@/lib/format';
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
-    const fetchProject = async () => {
-      setLoading(true);
-
-      try {
-        const { portfolio, images: galleryImages } = await getPortfolioByIdWithImages(projectId);
-        setProject(portfolio);
-        setImages(galleryImages);
-      } catch {
-        setNotFound(true);
-      } finally {
+    let mounted = true;
+    setLoading(true);
+    getProjectWithImages(projectId).then(({ project: item, images: gallery }) => {
+      if (mounted) {
+        setProject(item);
+        setImages(gallery);
         setLoading(false);
       }
-    };
-
-    fetchProject();
+    });
+    return () => { mounted = false; };
   }, [projectId]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-gray-300">
-        Laden...
-      </div>
-    );
-  }
+  const gallery = useMemo(() => {
+    const cover = project?.hero_image ? [{ id: 'hero', url: project.hero_image, alt: project.title, is_cover: true }] : [];
+    const rest = images.filter(image => image.url !== project?.hero_image);
+    return [...cover, ...rest];
+  }, [images, project]);
 
-  if (notFound || !project) {
-    return null;
-  }
-
-  const coverImage = images.find((image) => image.is_cover)?.url || images[0]?.url || project.hero_image;
+  if (loading) return <main className="px-5 py-32 lg:pl-28"><div className="empty-state">Case file laden…</div></main>;
+  if (!project) return <main className="px-5 py-32 lg:pl-28"><div className="empty-state">Case file niet gevonden. <Link to="/portfolio" className="blueprint-link">Terug naar library</Link></div></main>;
 
   return (
     <>
-      <Helmet>
-        <title>{project.title} – Portfolio | Vos Web Designs</title>
-        <meta
-          name="description"
-          content={
-            project.short_description ||
-            project.description?.slice(0, 160) ||
-            'Project uitgevoerd door Vos Web Designs'
-          }
-        />
-        {coverImage ? <meta property="og:image" content={coverImage} /> : null}
-      </Helmet>
-
-      <main className="pt-20">
-        <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0">
-            {coverImage ? (
-              <img
-                className="w-full h-full object-cover"
-                alt={project.title}
-                src={coverImage}
-              />
-            ) : null}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a]/60 via-[#0f172a]/80 to-[#0f172a]" />
-          </div>
-
-          <div className="container mx-auto px-4 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-4xl mx-auto text-center"
-            >
-              {project.categories?.name && (
-                <span className="inline-block px-4 py-2 bg-[#38bdf8]/20 border border-[#38bdf8]/40 rounded-full text-[#38bdf8] text-sm font-medium mb-4">
-                  {project.categories.name}
-                </span>
-              )}
-
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                {project.title}
-              </h1>
-              {project.client && (
-                <p className="text-xl text-gray-300">{project.client}</p>
-              )}
-            </motion.div>
-          </div>
-        </section>
-
-        <section className="py-16 bg-[#0f172a]">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <PortfolioGallery
-                title={project.title}
-                images={images}
-                fallbackImage={project.hero_image}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                <InfoBlock label="Client" value={project.client || 'Niet opgegeven'} />
-                <InfoBlock label="Jaar" value={project.year || '—'} />
-                <InfoBlock
-                  label="Projectduur"
-                  value={project.duration || 'Niet gespecificeerd'}
-                />
-              </div>
-
-              <div className="mb-12">
-                <h2 className="text-3xl font-bold mb-6">Projectbeschrijving</h2>
-
-                {project.description ? (
-                  <div className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                    {project.description}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic">
-                    Er is geen projectbeschrijving toegevoegd.
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
-                <Link to="/portfolio">
-                  <Button
-                    variant="outline"
-                    className="border-gray-700 text-gray-300 hover:border-[#38bdf8] hover:text-[#38bdf8]"
-                  >
-                    <ArrowLeft className="mr-2" size={20} />
-                    Terug naar portfolio
-                  </Button>
-                </Link>
-
-                <Link to="/contact">
-                  <Button className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] text-black hover:opacity-90">
-                    Start uw project
-                    <ArrowRight className="ml-2" size={20} />
-                  </Button>
-                </Link>
-              </div>
+      <Helmet><title>{project.title} — Case File</title><meta name="description" content={project.short_description || project.description || project.title} /></Helmet>
+      <main className="px-5 pb-24 pt-28 md:px-10 lg:pl-28">
+        <article className="mx-auto max-w-[1500px]">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
+            <div>
+              <span className="blueprint-label relative left-0 top-0">case file / {project.categories?.name || 'digital'}</span>
+              <h1 className="mt-8 text-[clamp(4rem,11vw,12rem)] font-black uppercase leading-[.76] tracking-[-.09em]">{project.title}</h1>
+            </div>
+            <div className="border border-[color:var(--grid)] bg-[color:var(--panel)] p-6">
+              <dl className="grid grid-cols-2 gap-5 mono text-xs uppercase tracking-[.22em] text-slate-300">
+                <div><dt className="text-[color:var(--accent)]">year</dt><dd>{formatYear(project.created_at)}</dd></div>
+                <div><dt className="text-[color:var(--accent)]">category</dt><dd>{project.categories?.name || 'maatwerk'}</dd></div>
+                <div><dt className="text-[color:var(--accent)]">status</dt><dd>published</dd></div>
+                <div><dt className="text-[color:var(--accent)]">layer</dt><dd>UI / CMS</dd></div>
+              </dl>
             </div>
           </div>
-        </section>
+
+          <div className="mt-10 overflow-hidden border border-[color:var(--grid)] bg-slate-900">
+            {project.hero_image ? <img src={project.hero_image} alt="" className="max-h-[72svh] w-full object-cover" /> : <div className="blueprint-grid h-[52svh]" />}
+          </div>
+
+          <div className="mt-12 grid gap-10 lg:grid-cols-[360px_1fr]">
+            <aside className="lg:sticky lg:top-24 lg:h-80 border-l border-[color:var(--accent)] pl-6">
+              <p className="mono text-xs uppercase tracking-[.3em] text-[color:var(--accent)]">brief</p>
+              <p className="mt-4 text-2xl font-bold leading-tight">{project.short_description || 'Een maatwerk case uit de Vos Web Designs database.'}</p>
+            </aside>
+            <div className="prose-blueprint text-lg leading-9 text-slate-300 whitespace-pre-line">{project.description || project.short_description}</div>
+          </div>
+
+          <section className="mt-16">
+            <h2 className="mb-6 text-4xl font-black uppercase tracking-[-.05em]">Gallery layers</h2>
+            {!gallery.length ? <div className="empty-state">Nog geen afbeeldingen gekoppeld.</div> : (
+              <div className="gallery-mosaic">
+                {gallery.map((image, index) => (
+                  <button type="button" key={image.id || image.url} onClick={() => setLightbox(image)} className={index % 3 === 0 ? 'wide' : ''}>
+                    <img src={image.url} alt={image.alt || project.title} loading="lazy" />
+                    <span>{image.is_cover ? 'cover' : `layer ${index}`}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        </article>
       </main>
+      {lightbox && (
+        <div className="lightbox" onClick={() => setLightbox(null)} role="presentation">
+          <button type="button" aria-label="Sluit lightbox" onClick={() => setLightbox(null)}><X /></button>
+          <img src={lightbox.url} alt={lightbox.alt || project.title} />
+        </div>
+      )}
     </>
   );
 };
-
-const InfoBlock = ({ label, value }) => (
-  <div className="bg-[#111827] border border-gray-800 rounded-xl p-6">
-    <span className="text-gray-400 text-sm">{label}</span>
-    <p className="text-white font-semibold mt-1">{value}</p>
-  </div>
-);
 
 export default ProjectDetailPage;

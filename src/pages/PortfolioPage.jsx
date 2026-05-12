@@ -1,214 +1,68 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/customSupabaseClient';
-
-const logSupabaseError = (label, error) => {
-  if (!error) return;
-
-  console.error(label, {
-    message: error.message,
-    details: error.details,
-    hint: error.hint,
-    code: error.code,
-  });
-};
+import { getCategories, getPublishedProjects } from '@/lib/api/publicContent';
+import { formatYear, truncate } from '@/lib/format';
 
 const PortfolioPage = () => {
-  const [activeFilter, setActiveFilter] = useState('Alle');
   const [projects, setProjects] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const projectsRef = useRef(null);
-  const projectsInView = useInView(projectsRef, { once: true, margin: '-100px' });
-
-  /* ================= FETCH DATA ================= */
+  const [category, setCategory] = useState('all');
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        setLoading(true);
-
-        const [{ data: projectsData, error: projectsError }, { data: categoriesData, error: categoriesError }] =
-          await Promise.all([
-            supabase
-              .from('projects')
-              .select(`
-                id,
-                title,
-                short_description,
-                hero_image,
-                created_at,
-                categories (
-                  name
-                )
-              `)
-              .or('is_published.is.null,is_published.eq.true')
-              .order('created_at', { ascending: false }),
-
-            supabase
-              .from('categories')
-              .select('id, name')
-              .order('name', { ascending: true }),
-          ]);
-
-        logSupabaseError('PORTFOLIO_FETCH_ERROR', projectsError);
-        logSupabaseError('PORTFOLIO_CATEGORIES_FETCH_ERROR', categoriesError);
-
-        setProjects(projectsData || []);
-        setCategories(categoriesData || []);
-      } catch (error) {
-        console.error('PORTFOLIO_FETCH_ERROR', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
-      } finally {
-        setLoading(false);
+    let mounted = true;
+    Promise.all([getPublishedProjects(), getCategories()]).then(([projectData, categoryData]) => {
+      if (mounted) {
+        setProjects(projectData);
+        setCategories(categoryData);
+        setActiveId(projectData[0]?.id || null);
       }
-    };
-
-    fetchPortfolio();
+    });
+    return () => { mounted = false; };
   }, []);
 
-  /* ================= FILTER ================= */
-
-  const filteredProjects =
-    activeFilter === 'Alle'
-      ? projects
-      : projects.filter(
-          (project) => project.categories?.name === activeFilter
-        );
-
-  /* ================= UI ================= */
+  const filtered = useMemo(() => category === 'all' ? projects : projects.filter(project => project.category_id === category), [category, projects]);
+  const active = filtered.find(project => project.id === activeId) || filtered[0];
 
   return (
     <>
-      <Helmet>
-        <title>Portfolio - Vos Web Designs</title>
-        <meta
-          name="description"
-          content="Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten."
-        />
-      </Helmet>
-
-      <main className="pt-24 pb-16 bg-[#0f172a]">
-        {/* HERO */}
-        <section className="py-16 bg-gradient-to-b from-[#0f172a] to-[#0b1120]">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Ons{' '}
-              <span className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">
-                Portfolio
-              </span>
-            </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Een selectie van projecten waar we trots op zijn.
-            </p>
-          </div>
-        </section>
-
-        {/* FILTERS */}
-        <section className="py-8 bg-[#0b1120] sticky top-20 z-40 border-b border-gray-800">
-          <div className="container mx-auto px-4 flex flex-wrap justify-center gap-3">
-            <Button
-              onClick={() => setActiveFilter('Alle')}
-              className={
-                activeFilter === 'Alle'
-                  ? 'bg-[#38bdf8] text-black'
-                  : 'border border-gray-700 text-gray-300 bg-transparent'
-              }
-            >
-              Alle
-            </Button>
-
-            {categories.map((cat) => (
-              <Button
-                key={cat.id}
-                onClick={() => setActiveFilter(cat.name)}
-                className={
-                  activeFilter === cat.name
-                    ? 'bg-[#38bdf8] text-black'
-                    : 'border border-gray-700 text-gray-300 bg-transparent'
-                }
-              >
-                {cat.name}
-              </Button>
-            ))}
-          </div>
-        </section>
-
-        {/* PROJECT GRID */}
-        <section ref={projectsRef} className="py-16 bg-[#0f172a]">
-          <div className="container mx-auto px-4">
-            {loading ? (
-              <p className="text-center text-gray-400">Projecten laden…</p>
-            ) : filteredProjects.length === 0 ? (
-              <p className="text-center text-gray-500">
-                Geen projecten gevonden.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project, index) => (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={
-                      projectsInView ? { opacity: 1, y: 0 } : {}
-                    }
-                    transition={{
-                      duration: 0.6,
-                      delay: index * 0.1,
-                    }}
-                  >
-                    <Link to={`/portfolio/${project.id}`}>
-                      <div className="group relative overflow-hidden rounded-2xl bg-[#111827] border border-gray-800 hover:border-[#38bdf8] transition-all duration-300">
-                        {/* IMAGE */}
-                        <div className="aspect-[4/3] overflow-hidden">
-                          <img
-                            src={
-                              project.hero_image ||
-                              '/placeholder-project.jpg'
-                            }
-                            alt={project.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-
-                        {/* CONTENT */}
-                        <div className="p-6">
-                          {project.categories?.name && (
-                            <span className="inline-block px-3 py-1 bg-[#38bdf8]/10 text-[#38bdf8] text-xs font-medium rounded-full mb-3">
-                              {project.categories.name}
-                            </span>
-                          )}
-
-                          <h3 className="text-xl font-bold mb-2 group-hover:text-[#38bdf8] transition-colors">
-                            {project.title}
-                          </h3>
-
-                          <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
-                            {project.short_description}
-                          </p>
-
-                          <div className="flex items-center text-[#38bdf8] text-sm font-medium">
-                            Bekijk project
-                            <ArrowRight
-                              className="ml-2 group-hover:translate-x-2 transition-transform"
-                              size={16}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
+      <Helmet><title>Portfolio — Case Library</title><meta name="description" content="Case library met gepubliceerde projecten uit de Vos Web Designs database." /></Helmet>
+      <main className="px-5 pb-24 pt-28 md:px-10 lg:pl-28">
+        <section className="mx-auto max-w-[1500px]">
+          <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
+            <aside className="lg:sticky lg:top-24 lg:h-[calc(100svh-7rem)]">
+              <span className="blueprint-label relative left-0 top-0">library view</span>
+              <h1 className="mt-8 text-6xl font-black uppercase leading-[.8] tracking-[-.07em] md:text-8xl">Case library</h1>
+              <div className="mt-8 flex flex-wrap gap-2">
+                <button type="button" onClick={() => setCategory('all')} className={`stamp ${category === 'all' ? 'active' : ''}`}>alles</button>
+                {categories.map(item => <button type="button" key={item.id} onClick={() => setCategory(item.id)} className={`stamp ${category === item.id ? 'active' : ''}`}>{item.name}</button>)}
+              </div>
+              <div className="mt-8 max-h-[42svh] overflow-y-auto border-l border-[color:var(--grid)]">
+                {filtered.map((project, index) => (
+                  <button type="button" key={project.id} onClick={() => setActiveId(project.id)} className={`library-row ${active?.id === project.id ? 'active' : ''}`}>
+                    <span>0{index + 1}</span>{project.title}
+                  </button>
                 ))}
               </div>
+            </aside>
+
+            {!filtered.length ? <div className="empty-state">Nog geen projecten gevonden voor deze stempel.</div> : (
+              <article className="case-preview">
+                <div className="aspect-[16/10] overflow-hidden border border-[color:var(--grid)] bg-slate-900">
+                  {active?.hero_image ? <img src={active.hero_image} alt="" loading="lazy" className="h-full w-full object-cover" /> : <div className="blueprint-grid h-full" />}
+                </div>
+                <div className="grid gap-8 border-x border-b border-[color:var(--grid)] p-6 md:grid-cols-[1fr_280px] md:p-10">
+                  <div>
+                    <p className="mono text-xs uppercase tracking-[.3em] text-[color:var(--accent)]">{active?.categories?.name || 'case'} / {formatYear(active?.created_at)}</p>
+                    <h2 className="mt-4 text-5xl font-black uppercase tracking-[-.06em] md:text-8xl">{active?.title}</h2>
+                    <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{truncate(active?.description || active?.short_description, 320)}</p>
+                  </div>
+                  <div className="self-end">
+                    <Link to={`/portfolio/${active?.id}`} className="blueprint-button w-full justify-center">Open case file</Link>
+                  </div>
+                </div>
+              </article>
             )}
           </div>
         </section>

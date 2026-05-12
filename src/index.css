@@ -1,78 +1,99 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Space+Mono:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-* {
-  scroll-behavior: smooth;
+:root {
+  --bg: #07111f;
+  --panel: #0d1d31;
+  --ink: #e8f7ff;
+  --muted: #8ba5b8;
+  --accent: #57c4ff;
+  --accent-2: #9ee8ff;
+  --grid: rgba(87, 196, 255, .22);
+  --radius: 28px;
+  --shadow-blueprint: 0 24px 90px rgba(0, 153, 255, .16);
+  --background: 222 47% 11%;
+  --foreground: 210 40% 96%;
+  --card: 222 47% 13%;
+  --card-foreground: 210 40% 96%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 199 89% 48%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 215 28% 17%;
+  --secondary-foreground: 210 40% 96%;
+  --muted-shadcn: 215 28% 17%;
+  --muted-foreground: 214 20% 69%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 96%;
+  --border: 215 28% 22%;
+  --input: 215 28% 22%;
+  --ring: 199 89% 48%;
 }
 
-body {
-  @apply bg-[#0f172a] text-white;
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+::selection { background: var(--accent); color: #00101d; }
 
-@layer base {
-  :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 96%;
-    --card: 222 47% 13%;
-    --card-foreground: 210 40% 96%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 40% 96%;
-    --muted: 215 28% 17%;
-    --muted-foreground: 214 20% 69%;
-    --accent: 199 89% 48%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 96%;
-    --border: 215 28% 22%;
-    --input: 215 28% 22%;
-    --ring: 199 89% 48%;
-    --radius: 0.5rem;
-  }
-}
+.mono { font-family: 'Space Mono', ui-monospace, monospace; }
+.blueprint-grid { background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(rgba(87,196,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(87,196,255,.08) 1px, transparent 1px); background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px; }
+.sheet { border-top: 1px solid var(--grid); border-bottom: 1px solid var(--grid); background: linear-gradient(135deg, rgba(87,196,255,.05), transparent 42%); }
+.shadow-blueprint { box-shadow: var(--shadow-blueprint); }
+.blueprint-label { position: absolute; display: inline-flex; border: 1px solid var(--accent); background: var(--bg); padding: .35rem .6rem; font-family: 'Space Mono', monospace; font-size: .68rem; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); }
+.blueprint-tag { border: 1px solid var(--grid); background: rgba(7,17,31,.82); padding: .5rem .75rem; font-family: 'Space Mono', monospace; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-2); }
+.blueprint-button { display: inline-flex; align-items: center; gap: .7rem; border: 1px solid var(--accent); background: var(--accent); color: #02111f; padding: 1rem 1.25rem; font-family: 'Space Mono', monospace; font-size: .78rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; transition: transform .2s ease, box-shadow .2s ease; }
+.blueprint-button:hover { transform: translateY(-2px); box-shadow: 8px 8px 0 rgba(87,196,255,.18); }
+.blueprint-link { font-family: 'Space Mono', monospace; font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.blueprint-icon { display: inline-grid; place-items: center; border: 1px solid var(--grid); width: 44px; height: 44px; color: var(--accent); }
+.empty-state { border: 1px dashed var(--grid); background: rgba(13,29,49,.6); padding: 2rem; color: var(--muted); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: .14em; }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+.index-rail { position: fixed; inset: 0 auto 0 0; z-index: 60; width: 5rem; flex-direction: column; align-items: center; gap: 3rem; border-right: 1px solid var(--grid); background: rgba(7,17,31,.9); padding: 1.2rem .6rem; backdrop-filter: blur(16px); }
+.rail-brand { color: var(--accent); font-weight: 900; letter-spacing: -.08em; }
+.index-rail nav { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+.index-rail nav a { writing-mode: vertical-rl; transform: rotate(180deg); font-family: 'Space Mono', monospace; font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.index-rail nav a span { color: var(--accent); margin-block-end: .4rem; }
+.index-rail nav a.active, .index-rail nav a:hover { color: var(--ink); }
+.mobile-sheet-link { display: flex; justify-content: space-between; border-bottom: 1px solid var(--grid); padding: 1.1rem 0; font-size: 3rem; font-weight: 900; letter-spacing: -.07em; text-transform: uppercase; }
+.mobile-sheet-link span { font-family: 'Space Mono', monospace; font-size: .8rem; color: var(--accent); letter-spacing: .2em; }
 
-::selection {
-  background-color: rgba(56, 189, 248, 0.3);
-  color: #f8fafc;
-}
+.case-slab { border: 1px solid var(--grid); background: rgba(13,29,49,.55); padding: 1.25rem; transition: border .2s, transform .2s, background .2s; }
+.case-slab.is-active { border-color: var(--accent); background: rgba(87,196,255,.09); transform: translateY(-8px); }
+.schematic-step { position: relative; border: 1px solid var(--grid); background: rgba(7,17,31,.82); padding: 1.5rem; box-shadow: 12px 12px 0 rgba(87,196,255,.05); }
+.schematic-step h3 { margin-top: .7rem; font-size: clamp(2.5rem, 6vw, 6rem); font-weight: 900; letter-spacing: -.07em; line-height: .85; text-transform: uppercase; }
+.schematic-step p { margin-top: 1rem; max-width: 42rem; color: rgb(203 213 225); font-size: 1.05rem; line-height: 1.8; }
+.measure-line { position: absolute; left: -4rem; top: 2rem; width: 4rem; border-top: 1px solid var(--accent); }
+.voice-strip { display: grid; gap: 1rem; border: 1px solid var(--grid); background: rgba(13,29,49,.45); padding: 1.25rem; }
+.voice-strip blockquote { font-size: clamp(1.3rem, 3vw, 3.2rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.05; }
+.voice-strip figcaption { font-family: 'Space Mono', monospace; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+.stamp { border: 1px solid var(--grid); padding: .65rem .85rem; font-family: 'Space Mono', monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
+.stamp.active, .stamp:hover { border-color: var(--accent); color: var(--accent); transform: rotate(-2deg); }
+.library-row { display: flex; width: 100%; gap: .8rem; border-bottom: 1px solid var(--grid); padding: 1rem; text-align: left; color: var(--muted); text-transform: uppercase; }
+.library-row span { color: var(--accent); font-family: 'Space Mono', monospace; }
+.library-row.active { background: rgba(87,196,255,.08); color: var(--ink); }
+.case-preview { min-width: 0; }
+.gallery-mosaic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.gallery-mosaic button { position: relative; min-height: 240px; overflow: hidden; border: 1px solid var(--grid); background: #06101c; }
+.gallery-mosaic button.wide { grid-column: span 2; }
+.gallery-mosaic img { height: 100%; width: 100%; object-fit: cover; transition: transform .35s ease; }
+.gallery-mosaic button:hover img { transform: scale(1.04); }
+.gallery-mosaic span { position: absolute; left: 1rem; top: 1rem; background: var(--bg); border: 1px solid var(--accent); padding: .35rem .6rem; font-family: 'Space Mono', monospace; font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+.lightbox { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgba(1,8,15,.92); padding: 2rem; }
+.lightbox button { position: fixed; right: 1rem; top: 1rem; border: 1px solid var(--grid); padding: .8rem; color: var(--accent); }
+.lightbox img { max-height: 88vh; max-width: 92vw; object-fit: contain; }
+.service-plate { border: 1px solid var(--grid); background: rgba(13,29,49,.55); padding: 1.5rem; }
+.service-plate span { font-family: 'Space Mono', monospace; color: var(--accent); }
+.service-plate h2 { margin-top: 1rem; font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; letter-spacing: -.06em; text-transform: uppercase; line-height: .9; }
+.service-plate p { margin-top: 1rem; color: rgb(203 213 225); font-size: 1.05rem; line-height: 1.8; }
+.diagonal-note { transform: skew(-5deg); border: 1px solid var(--accent); padding: 2rem; color: var(--accent-2); font-size: clamp(1.4rem, 4vw, 4rem); font-weight: 900; line-height: 1; letter-spacing: -.05em; text-transform: uppercase; }
+.contact-sheet { display: grid; gap: 1.25rem; border: 1px solid var(--grid); background: rgba(13,29,49,.62); padding: 1.25rem; }
+.contact-sheet label { display: grid; gap: .55rem; font-family: 'Space Mono', monospace; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.prose-blueprint p + p { margin-top: 1.2rem; }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus,
-select:-webkit-autofill,
-select:-webkit-autofill:hover,
-select:-webkit-autofill:focus {
-  -webkit-text-fill-color: white;
-  -webkit-box-shadow: 0 0 0px 1000px #111827 inset;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-.bg-clip-text.text-transparent {
-  color: #38bdf8;
-}
-
-@supports (-webkit-background-clip: text) or (background-clip: text) {
-  .bg-clip-text.text-transparent {
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
+@media (max-width: 767px) {
+  .gallery-mosaic, .gallery-mosaic button.wide { grid-template-columns: 1fr; grid-column: span 1; }
+  .measure-line { display: none; }
+  .mobile-sheet-link { font-size: 2.35rem; }
 }
