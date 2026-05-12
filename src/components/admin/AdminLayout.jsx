@@ -18,7 +18,7 @@ const AdminLayout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center">
+      <div className="min-h-screen cinema-bg text-white flex items-center justify-center">
         <div className="animate-pulse text-[#38bdf8]">Laden...</div>
       </div>
     );
@@ -36,7 +36,7 @@ const AdminLayout = () => {
   ];
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-[#111827] border-r border-gray-800">
+    <div className="flex flex-col h-full bg-[#07111f]/95 backdrop-blur-xl border-r border-[color:var(--stroke)]">
       <div className="h-16 flex items-center px-6 border-b border-gray-800 shrink-0">
         <span className="text-xl font-bold bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">
           Vos Admin
@@ -74,10 +74,10 @@ const AdminLayout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col lg:flex-row relative">
+    <div className="min-h-screen cinema-bg text-white flex flex-col lg:flex-row relative">
       
       {/* Mobile Header - Fixed at Top */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#111827] border-b border-gray-800 z-50 flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#07111f]/95 backdrop-blur-xl border-b border-[color:var(--stroke)] z-50 flex items-center justify-between px-4">
         <span className="text-lg font-bold bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">
           Vos Admin
         </span>
@@ -113,7 +113,7 @@ const AdminLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="fixed inset-y-0 left-0 w-72 bg-[#111827] z-50 shadow-2xl lg:hidden flex flex-col"
+              className="fixed inset-y-0 left-0 w-72 bg-[#07111f] z-50 shadow-2xl lg:hidden flex flex-col"
             >
               <div className="absolute top-4 right-4 z-10">
                 <button 

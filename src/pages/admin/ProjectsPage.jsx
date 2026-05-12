@@ -24,6 +24,8 @@ const INITIAL_FORM_STATE = {
   short_description: '',
   description: '',
   hero_image: '',
+  live_url: '',
+  featured_preview_image: '',
   client: '',
   year: '2026',
   duration: '',
@@ -110,6 +112,16 @@ const ProjectsPage = () => {
       }
 
       const isUpdate = Boolean(isEditing);
+      const currentId = isEditing || '00000000-0000-0000-0000-000000000000';
+
+      if (cleanData.home_featured) {
+        const { error: resetError } = await supabase
+          .from('projects')
+          .update({ home_featured: false })
+          .neq('id', currentId);
+
+        if (resetError) throw resetError;
+      }
 
       const projectQuery = isUpdate
         ? supabase.from('projects').update(cleanData).eq('id', isEditing).select('id').single()
@@ -220,10 +232,29 @@ const ProjectsPage = () => {
               className="lg:col-span-5"
             >
               <form onSubmit={handleSubmit} className="bg-[#111827] rounded-xl border border-gray-800 p-5 space-y-4">
-                <ImageUpload
-                  value={formData.hero_image || ''}
-                  onChange={url => setFormData({ ...formData, hero_image: url })}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">Hero afbeelding</label>
+                  <ImageUpload
+                    value={formData.hero_image || ''}
+                    onChange={url => setFormData({ ...formData, hero_image: url })}
+                  />
+                </div>
+
+                <input
+                  className={INPUT}
+                  type="url"
+                  placeholder="Live website URL (https://...)"
+                  value={formData.live_url || ''}
+                  onChange={e => setFormData({ ...formData, live_url: e.target.value })}
                 />
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">Featured preview afbeelding</label>
+                  <ImageUpload
+                    value={formData.featured_preview_image || ''}
+                    onChange={url => setFormData({ ...formData, featured_preview_image: url })}
+                  />
+                </div>
 
                 {activeProjectId ? (
                   <ProjectGalleryManager
@@ -249,7 +280,7 @@ const ProjectsPage = () => {
                 <textarea className={`${INPUT} h-24`} placeholder="Korte beschrijving" value={formData.short_description || ''} onChange={e => setFormData({ ...formData, short_description: e.target.value })} />
                 <textarea className={`${INPUT} h-36`} placeholder="Uitgebreide projectbeschrijving" value={formData.description || ''} onChange={e => setFormData({ ...formData, description: e.target.value })} />
 
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-wrap gap-4 text-sm">
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={formData.is_published} onChange={e => setFormData({ ...formData, is_published: e.target.checked })} />
                     Online
@@ -257,6 +288,10 @@ const ProjectsPage = () => {
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={formData.is_featured} onChange={e => setFormData({ ...formData, is_featured: e.target.checked })} />
                     Uitgelicht
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={formData.home_featured} onChange={e => setFormData({ ...formData, home_featured: e.target.checked })} />
+                    Featured preview op homepage
                   </label>
                 </div>
 
@@ -286,7 +321,12 @@ const ProjectsPage = () => {
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="font-bold text-white">{p.title}</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-bold text-white">{p.title}</h3>
+                    {p.home_featured && (
+                      <span className="rounded-full border border-[#38bdf8]/40 bg-[#38bdf8]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#38bdf8]">Home preview</span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-400 line-clamp-3">{p.short_description || '—'}</p>
                   {p.category?.name && (
                     <span className="text-xs text-[#38bdf8]">{p.category.name}</span>
