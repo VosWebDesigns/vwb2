@@ -23,12 +23,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4">
+    <div className="min-h-screen cinema-bg flex items-center justify-center px-4 text-white">
       <Helmet>
         <title>Admin Login - Vos Web Designs</title>
       </Helmet>
-      <div className="bg-[#111827] p-8 rounded-xl border border-gray-800 w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Admin Portal</h1>
+      <div className="panel cut p-8 w-full max-w-md">
+        <h1 className="font-heading text-3xl font-black tracking-[-.05em] mb-6 text-center">Admin Portal</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-400">Email</label>
@@ -52,7 +52,7 @@ const LoginPage = () => {
           </div>
           <Button 
             type="submit" 
-            className="w-full bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"
+            className="w-full bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] font-bold text-black hover:opacity-90"
             disabled={loading}
           >
             {loading ? 'Inloggen...' : 'Inloggen'}

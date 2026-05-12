@@ -16,6 +16,7 @@ const logSupabaseError = (label, error) => {
 };
 
 const TESTIMONIAL_PREVIEW_LENGTH = 260;
+const HOME_PROJECT_SELECT = 'id,title,short_description,description,hero_image,live_url,featured_preview_image,home_featured,is_featured,created_at,categories(name)';
 
 const getTestimonialText = testimonial => {
   const text = testimonial?.text?.trim();
@@ -66,6 +67,7 @@ const HomePage = () => {
   const testimonialsInView = useInView(testimonialsRef, { once: true, margin: '-100px' });
 
   const [projects, setProjects] = useState([]);
+  const [previewProject, setPreviewProject] = useState(null);
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,9 +77,19 @@ const HomePage = () => {
     const fetchHomeData = async () => {
       setLoading(true);
 
+      const { data: homeFeaturedData, error: homeFeaturedError } = await supabase
+        .from('projects')
+        .select(HOME_PROJECT_SELECT)
+        .or('is_published.is.null,is_published.eq.true')
+        .eq('home_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      logSupabaseError('HOME_FEATURED_PREVIEW_ERROR', homeFeaturedError);
+
       const { data: featuredData, error: featuredError } = await supabase
         .from('projects')
-        .select('*, categories(name)')
+        .select(HOME_PROJECT_SELECT)
         .or('is_published.is.null,is_published.eq.true')
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
@@ -89,7 +101,7 @@ const HomePage = () => {
       if (!featuredError && projectData.length === 0) {
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('projects')
-          .select('*, categories(name)')
+          .select(HOME_PROJECT_SELECT)
           .or('is_published.is.null,is_published.eq.true')
           .order('created_at', { ascending: false })
           .limit(3);
@@ -97,6 +109,8 @@ const HomePage = () => {
         logSupabaseError('HOME_PROJECTS_FALLBACK_ERROR', fallbackError);
         projectData = fallbackData || [];
       }
+
+      const selectedPreviewProject = homeFeaturedData?.[0] || projectData.find(project => project.is_featured) || null;
 
       const { data: testimonialData, error: testimonialError } = await supabase
         .from('testimonials')
@@ -109,6 +123,7 @@ const HomePage = () => {
 
       if (mounted) {
         setProjects(projectData);
+        setPreviewProject(selectedPreviewProject);
         setTestimonials(testimonialData || []);
         setLoading(false);
       }
@@ -118,7 +133,7 @@ const HomePage = () => {
     return () => { mounted = false; };
   }, []);
 
-  const previewProject = projects[0];
+  const previewImage = previewProject?.featured_preview_image || previewProject?.hero_image;
   const smallTestimonials = useMemo(() => testimonials.slice(1, 3), [testimonials]);
 
   const usps = [
@@ -154,7 +169,7 @@ const HomePage = () => {
                 <span>Featured preview</span><span className="text-[color:var(--accent2)]">Live uit Supabase</span>
               </div>
               <div className="overflow-hidden rounded-[1.4rem] border border-[color:var(--stroke)] bg-slate-950">
-                {previewProject?.hero_image ? <img src={previewProject.hero_image} alt={previewProject.title} className="h-[300px] w-full object-cover md:h-[430px]" /> : <div className="grid h-[300px] place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(140,214,255,.22),transparent_35%),#07111f] p-8 text-center text-slate-400 md:h-[430px]">{loading ? 'Project laden…' : 'Nog geen uitgelicht project. Voeg er één toe in de admin.'}</div>}
+                {previewImage ? <img src={previewImage} alt={previewProject.title} className="h-[300px] w-full object-cover md:h-[430px]" /> : <div className="grid h-[300px] place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(140,214,255,.22),transparent_35%),#07111f] p-8 text-center text-slate-400 md:h-[430px]">{loading ? 'Project laden…' : 'Nog geen uitgelicht project. Voeg er één toe in de admin.'}</div>}
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
                 <div>
@@ -162,7 +177,14 @@ const HomePage = () => {
                   <h2 className="mt-2 font-heading text-3xl font-black tracking-[-.05em]">{previewProject?.title || 'Klaar voor de eerste case'}</h2>
                   <p className="mt-2 line-clamp-2 text-sm text-slate-300">{previewProject?.short_description || 'Projecten uit Supabase verschijnen hier automatisch zodra ze gepubliceerd zijn.'}</p>
                 </div>
-                {previewProject ? <Link to={`/portfolio/${previewProject.id}`} className="ghost-link whitespace-nowrap">Open case</Link> : <Link to="/contact" className="ghost-link whitespace-nowrap">Start project</Link>}
+                {previewProject ? (
+                  <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+                    {previewProject.live_url && (
+                      <a href={previewProject.live_url} target="_blank" rel="noopener noreferrer" className="cta-link whitespace-nowrap">Bekijk live website</a>
+                    )}
+                    <Link to={`/portfolio/${previewProject.id}`} className="ghost-link whitespace-nowrap">Open case</Link>
+                  </div>
+                ) : <Link to="/contact" className="ghost-link whitespace-nowrap">Start project</Link>}
               </div>
             </motion.aside>
           </div>
