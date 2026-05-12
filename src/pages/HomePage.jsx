@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Award, CheckCircle, Star, TrendingUp, Users, Zap } from 'lucide-react';
+import { ArrowRight, Award, CheckCircle, Quote, TrendingUp, Users, Zap } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 
 const logSupabaseError = (label, error) => {
@@ -13,6 +13,48 @@ const logSupabaseError = (label, error) => {
     hint: error.hint,
     code: error.code,
   });
+};
+
+const TESTIMONIAL_PREVIEW_LENGTH = 260;
+
+const getTestimonialText = testimonial => {
+  const text = testimonial?.text?.trim();
+  return text || 'Reviewtekst ontbreekt';
+};
+
+const TestimonialCard = ({ testimonial, featured = false, animate }) => {
+  const [expanded, setExpanded] = useState(false);
+  const text = getTestimonialText(testimonial);
+  const isMissingText = !testimonial?.text?.trim();
+  const shouldClamp = text.length > TESTIMONIAL_PREVIEW_LENGTH;
+
+  return (
+    <motion.figure
+      initial={{ opacity: 0, y: 24 }}
+      animate={animate ? { opacity: 1, y: 0 } : {}}
+      className={`panel cut ${featured ? 'p-7 md:p-10' : 'p-6'}`}
+    >
+      <Quote className={`${featured ? 'mb-5 h-9 w-9' : 'mb-4 h-7 w-7'} text-[color:var(--accent2)]`} aria-hidden="true" />
+      <p
+        className={`whitespace-pre-line text-slate-200 ${featured ? 'text-lg leading-8 md:text-xl' : 'text-[15px] leading-relaxed'} ${isMissingText ? 'text-slate-500' : ''} ${shouldClamp && !expanded ? 'line-clamp-6' : ''}`}
+      >
+        {text}
+      </p>
+      {shouldClamp && (
+        <button
+          type="button"
+          onClick={() => setExpanded(current => !current)}
+          className="mt-4 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)] transition hover:text-white"
+          aria-expanded={expanded}
+        >
+          {expanded ? 'Minder tonen' : 'Lees meer'}
+        </button>
+      )}
+      <figcaption className={`${featured ? 'mt-6 text-sm' : 'mt-5 text-xs'} uppercase tracking-[.18em] text-[color:var(--accent)]`}>
+        {testimonial?.name || 'Anonieme klant'}{testimonial?.company ? ` — ${testimonial.company}` : ''}
+      </figcaption>
+    </motion.figure>
+  );
 };
 
 const HomePage = () => {
@@ -58,12 +100,12 @@ const HomePage = () => {
 
       const { data: testimonialData, error: testimonialError } = await supabase
         .from('testimonials')
-        .select('*')
+        .select('id,name,company,text,rating,is_visible,sort_order,created_at')
         .or('is_visible.is.null,is_visible.eq.true')
         .order('sort_order', { ascending: true })
         .limit(3);
 
-      logSupabaseError('HOME_TESTIMONIALS_ERROR', testimonialError);
+      logSupabaseError('TESTIMONIALS_FETCH_ERROR', testimonialError);
 
       if (mounted) {
         setProjects(projectData);
@@ -180,16 +222,9 @@ const HomePage = () => {
               <div className="panel cut mt-10 p-8 text-slate-300">Nog geen testimonials zichtbaar. Zodra reviews in Supabase gepubliceerd zijn, verschijnen ze hier compact.</div>
             ) : (
               <div className="quote-wall mt-10">
-                <motion.figure initial={{ opacity: 0, y: 24 }} animate={testimonialsInView ? { opacity: 1, y: 0 } : {}} className="panel cut p-7 md:p-10">
-                  <Star className="mb-6 text-[color:var(--accent2)]" />
-                  <blockquote className="text-3xl md:text-5xl">“{testimonials[0].content}”</blockquote>
-                  <figcaption className="mt-6 text-sm uppercase tracking-[.18em] text-[color:var(--accent)]">{testimonials[0].name}{testimonials[0].company ? ` — ${testimonials[0].company}` : ''}</figcaption>
-                </motion.figure>
+                <TestimonialCard testimonial={testimonials[0]} featured animate={testimonialsInView} />
                 {smallTestimonials.map((item) => (
-                  <motion.figure key={item.id || item.name} initial={{ opacity: 0, y: 24 }} animate={testimonialsInView ? { opacity: 1, y: 0 } : {}} className="panel cut p-6">
-                    <blockquote className="text-2xl">“{item.content}”</blockquote>
-                    <figcaption className="mt-5 text-xs uppercase tracking-[.18em] text-[color:var(--accent)]">{item.name}{item.company ? ` — ${item.company}` : ''}</figcaption>
-                  </motion.figure>
+                  <TestimonialCard key={item.id || item.name} testimonial={item} animate={testimonialsInView} />
                 ))}
               </div>
             )}

@@ -29,7 +29,7 @@ export const getCategories = async () => safe(
 export const getVisibleTestimonials = async ({ limit } = {}) => {
   let query = supabase
     .from('testimonials')
-    .select('*')
+    .select('id,name,company,text,rating,is_visible,sort_order,created_at')
     .or('is_visible.is.null,is_visible.eq.true')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
