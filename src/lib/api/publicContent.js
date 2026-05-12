@@ -3,7 +3,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 const safe = async (query, fallback = []) => {
   const { data, error } = await query;
   if (error) {
-    console.error('PUBLIC_CONTENT_QUERY_ERROR', { message: error.message, code: error.code, details: error.details });
+    console.error('PUBLIC_CONTENT_QUERY_ERROR', { message: error.message, details: error.details, hint: error.hint, code: error.code });
     return fallback;
   }
   return data || fallback;
@@ -16,7 +16,7 @@ export const getPublishedProjects = async ({ featuredOnly = false, limit } = {})
     .or('is_published.is.null,is_published.eq.true')
     .order('created_at', { ascending: false });
 
-  if (featuredOnly) query = query.or('is_featured.is.null,is_featured.eq.true');
+  if (featuredOnly) query = query.eq('is_featured', true);
   if (limit) query = query.limit(limit);
 
   return safe(query);
@@ -47,7 +47,7 @@ export const getProjectWithImages = async id => {
 
   if (error) {
     if (error.code !== 'PGRST116') {
-      console.error('PUBLIC_PROJECT_QUERY_ERROR', { message: error.message, code: error.code, details: error.details });
+      console.error('PUBLIC_PROJECT_QUERY_ERROR', { message: error.message, details: error.details, hint: error.hint, code: error.code });
     }
     return { project: null, images: [] };
   }

@@ -1,68 +1,99 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { getCategories, getPublishedProjects } from '@/lib/api/publicContent';
-import { formatYear, truncate } from '@/lib/format';
+import { motion, useInView } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { supabase } from '@/lib/customSupabaseClient';
+
+const logError = (label, error) => {
+  if (error) console.error(label, { message: error.message, details: error.details, hint: error.hint, code: error.code });
+};
 
 const PortfolioPage = () => {
+  const projectsRef = useRef(null);
+  const projectsInView = useInView(projectsRef, { once: true, margin: '-100px' });
   const [projects, setProjects] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState('all');
-  const [activeId, setActiveId] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('Alle');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([getPublishedProjects(), getCategories()]).then(([projectData, categoryData]) => {
+    const fetchPortfolio = async () => {
+      setLoading(true);
+      const [projectsResponse, categoriesResponse] = await Promise.all([
+        supabase
+          .from('projects')
+          .select('id, title, short_description, description, hero_image, created_at, categories(name)')
+          .or('is_published.is.null,is_published.eq.true')
+          .order('created_at', { ascending: false }),
+        supabase.from('categories').select('id, name').order('name', { ascending: true }),
+      ]);
+
+      logError('PORTFOLIO_PROJECTS_ERROR', projectsResponse.error);
+      logError('PORTFOLIO_CATEGORIES_ERROR', categoriesResponse.error);
+
       if (mounted) {
-        setProjects(projectData);
-        setCategories(categoryData);
-        setActiveId(projectData[0]?.id || null);
+        setProjects(projectsResponse.data || []);
+        setCategories(categoriesResponse.data || []);
+        setLoading(false);
       }
-    });
+    };
+    fetchPortfolio();
     return () => { mounted = false; };
   }, []);
 
-  const filtered = useMemo(() => category === 'all' ? projects : projects.filter(project => project.category_id === category), [category, projects]);
-  const active = filtered.find(project => project.id === activeId) || filtered[0];
+  const filteredProjects = useMemo(() => activeFilter === 'Alle' ? projects : projects.filter(project => project.categories?.name === activeFilter), [activeFilter, projects]);
 
   return (
     <>
-      <Helmet><title>Portfolio — Case Library</title><meta name="description" content="Case library met gepubliceerde projecten uit de Vos Web Designs database." /></Helmet>
-      <main className="px-5 pb-24 pt-28 md:px-10 lg:pl-28">
-        <section className="mx-auto max-w-[1500px]">
-          <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
-            <aside className="lg:sticky lg:top-24 lg:h-[calc(100svh-7rem)]">
-              <span className="blueprint-label relative left-0 top-0">library view</span>
-              <h1 className="mt-8 text-6xl font-black uppercase leading-[.8] tracking-[-.07em] md:text-8xl">Case library</h1>
-              <div className="mt-8 flex flex-wrap gap-2">
-                <button type="button" onClick={() => setCategory('all')} className={`stamp ${category === 'all' ? 'active' : ''}`}>alles</button>
-                {categories.map(item => <button type="button" key={item.id} onClick={() => setCategory(item.id)} className={`stamp ${category === item.id ? 'active' : ''}`}>{item.name}</button>)}
+      <Helmet>
+        <title>Portfolio - Vos Web Designs</title>
+        <meta name="description" content="Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten." />
+      </Helmet>
+
+      <main className="cinema-bg min-h-screen pt-24">
+        <section className="cinematic-section">
+          <div className="cinematic-container relative z-10">
+            <div className="grid gap-8 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
+              <div>
+                <p className="eyebrow">Portfolio</p>
+                <h1 className="display-title mt-4 text-[clamp(3.6rem,10vw,8rem)]">Case library met live projecten.</h1>
               </div>
-              <div className="mt-8 max-h-[42svh] overflow-y-auto border-l border-[color:var(--grid)]">
-                {filtered.map((project, index) => (
-                  <button type="button" key={project.id} onClick={() => setActiveId(project.id)} className={`library-row ${active?.id === project.id ? 'active' : ''}`}>
-                    <span>0{index + 1}</span>{project.title}
-                  </button>
+              <p className="max-w-xl text-lg leading-8 text-slate-300 lg:justify-self-end">Een selectie van projecten waar we trots op zijn. Alles komt rechtstreeks uit Supabase en blijft publicatie-vriendelijk.</p>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-3 border-y border-[color:var(--stroke)] py-5">
+              <button type="button" onClick={() => setActiveFilter('Alle')} className={activeFilter === 'Alle' ? 'cta-link !py-3' : 'ghost-link !py-3'}>Alle</button>
+              {categories.map(cat => <button type="button" key={cat.id} onClick={() => setActiveFilter(cat.name)} className={activeFilter === cat.name ? 'cta-link !py-3' : 'ghost-link !py-3'}>{cat.name}</button>)}
+            </div>
+          </div>
+        </section>
+
+        <section ref={projectsRef} className="cinematic-section pt-0">
+          <div className="cinematic-container relative z-10">
+            {loading ? (
+              <div className="panel cut p-8 text-center text-slate-300">Projecten laden…</div>
+            ) : filteredProjects.length === 0 ? (
+              <div className="panel cut p-8 text-center text-slate-300">Geen projecten gevonden voor deze filter. <Link to="/contact" className="text-[color:var(--accent)]">Start een nieuw project</Link>.</div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredProjects.map((project, index) => (
+                  <motion.article key={project.id} initial={{ opacity: 0, y: 30 }} animate={projectsInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: index * 0.06 }} className="panel cut group overflow-hidden">
+                    <Link to={`/portfolio/${project.id}`}>
+                      <div className="aspect-[4/3] overflow-hidden bg-slate-950">
+                        {project.hero_image ? <img src={project.hero_image} alt={project.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center text-slate-500">Geen afbeelding</div>}
+                      </div>
+                      <div className="p-6">
+                        <p className="eyebrow">{project.categories?.name || 'Project'}</p>
+                        <h2 className="mt-3 font-heading text-3xl font-black tracking-[-.05em] transition group-hover:text-[color:var(--accent)]">{project.title}</h2>
+                        <p className="mt-3 line-clamp-3 text-slate-300">{project.short_description || project.description || 'Bekijk de projectdetails.'}</p>
+                        <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.16em] text-[color:var(--accent2)]">Bekijk project <ArrowRight size={16} /></span>
+                      </div>
+                    </Link>
+                  </motion.article>
                 ))}
               </div>
-            </aside>
-
-            {!filtered.length ? <div className="empty-state">Nog geen projecten gevonden voor deze stempel.</div> : (
-              <article className="case-preview">
-                <div className="aspect-[16/10] overflow-hidden border border-[color:var(--grid)] bg-slate-900">
-                  {active?.hero_image ? <img src={active.hero_image} alt="" loading="lazy" className="h-full w-full object-cover" /> : <div className="blueprint-grid h-full" />}
-                </div>
-                <div className="grid gap-8 border-x border-b border-[color:var(--grid)] p-6 md:grid-cols-[1fr_280px] md:p-10">
-                  <div>
-                    <p className="mono text-xs uppercase tracking-[.3em] text-[color:var(--accent)]">{active?.categories?.name || 'case'} / {formatYear(active?.created_at)}</p>
-                    <h2 className="mt-4 text-5xl font-black uppercase tracking-[-.06em] md:text-8xl">{active?.title}</h2>
-                    <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{truncate(active?.description || active?.short_description, 320)}</p>
-                  </div>
-                  <div className="self-end">
-                    <Link to={`/portfolio/${active?.id}`} className="blueprint-button w-full justify-center">Open case file</Link>
-                  </div>
-                </div>
-              </article>
             )}
           </div>
         </section>
