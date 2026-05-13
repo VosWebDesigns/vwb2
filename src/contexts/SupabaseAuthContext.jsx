@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   }, [toast]);
 
   const signIn = useCallback(async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -118,8 +118,33 @@ export const AuthProvider = ({ children }) => {
       });
     }
 
-    return { error };
-  }, [toast]);
+    let nextProfile = null;
+    if (!error && data?.user) {
+      nextProfile = await fetchProfile(data.user);
+
+      if (nextProfile?.role === 'admin') {
+        try {
+          const response = await fetch('/api/admin/request-mfa', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${data.session?.access_token || ''}` },
+          });
+
+          if (!response.ok) {
+            console.error('AUTH_MFA_REQUEST_ERROR', { status: response.status, body: await response.text() });
+            toast({
+              variant: 'destructive',
+              title: 'Verificatiecode niet verstuurd',
+              description: 'Vraag opnieuw een code aan op de verificatiepagina.',
+            });
+          }
+        } catch (mfaError) {
+          console.error('AUTH_MFA_REQUEST_UNEXPECTED_ERROR', mfaError);
+        }
+      }
+    }
+
+    return { error, data, profile: nextProfile };
+  }, [toast, fetchProfile]);
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();

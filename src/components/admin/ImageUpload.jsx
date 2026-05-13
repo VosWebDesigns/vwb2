@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { supabase } from '@/lib/customSupabaseClient';
+import SmartImage from '@/components/SmartImage';
 import { Button } from '@/components/ui/button';
 import { Upload, X, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -52,9 +53,9 @@ const ImageUpload = ({ value, onChange, className }) => {
     <div className={`space-y-4 ${className}`}>
       {value ? (
         <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-gray-700 bg-black">
-          <img 
-            src={value} 
-            alt="Upload preview" 
+          <SmartImage
+            src={value}
+            alt="Upload preview"
             className="w-full h-full object-cover"
           />
           <button

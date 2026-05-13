@@ -3,7 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const LOGO_URL = 'https://voswebdesigns.nl/logo.jpeg';
 const DEFAULT_FROM_EMAIL = 'Vos Web Designs <contact@voswebdesigns.nl>';
 const DEFAULT_ADMIN_EMAIL = 'info@voswebdesigns.nl';
-const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
@@ -144,7 +144,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(429).json({ error: 'Too many requests' });
     }
 
-    if (data?.company_website) {
+    if (data?.website || data?.company_website) {
       console.warn('CONTACT_HONEYPOT_BLOCKED', { clientIp });
       return res.status(200).json({ success: true });
     }

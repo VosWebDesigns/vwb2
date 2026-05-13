@@ -9,7 +9,7 @@ import {
   MapPin,
   MessageCircle,
   Phone,
-  Twitter,
+  Youtube,
 } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -20,11 +20,8 @@ const quickNav = [
   ['/over-ons', 'Over ons'],
   ['/werkwijze', 'Werkwijze'],
   ['/contact', 'Contact'],
-];
-
-const legalLinks = [
-  ['/privacy', 'Privacybeleid'],
-  ['/voorwaarden', 'Algemene voorwaarden'],
+  ['/privacy', 'Privacy'],
+  ['/voorwaarden', 'Voorwaarden'],
 ];
 
 const cleanPhoneHref = (phone = '') => phone.replace(/[^+\d]/g, '');
@@ -56,8 +53,8 @@ const Footer = () => {
     { label: 'Instagram', href: settings?.social_instagram, icon: Instagram },
     { label: 'LinkedIn', href: settings?.social_linkedin, icon: Linkedin },
     { label: 'Facebook', href: settings?.social_facebook, icon: Facebook },
-    { label: 'X / Twitter', href: settings?.social_twitter, icon: Twitter },
     { label: 'TikTok', href: settings?.social_tiktok, icon: null },
+    { label: 'YouTube', href: settings?.social_youtube, icon: Youtube },
   ].filter(({ href }) => href?.trim());
 
   return (
@@ -77,8 +74,8 @@ const Footer = () => {
             )}
           </div>
 
-          <nav className="grid content-start gap-3" aria-label="Snel navigeren">
-            <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Snel navigeren</span>
+          <nav className="grid content-start gap-3" aria-label="Navigatie">
+            <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Navigatie</span>
             {quickNav.map(([href, label]) => (
               <Link key={href} to={href} className="group flex items-center justify-between border-b border-white/10 py-2 text-slate-300 transition hover:text-white">
                 {label}
@@ -142,15 +139,7 @@ const Footer = () => {
               )}
             </div>
 
-            <nav className="grid gap-3" aria-label="Juridisch">
-              <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Juridisch</span>
-              {legalLinks.map(([href, label]) => (
-                <Link key={href} to={href} className="group flex items-center justify-between border-b border-white/10 py-2 text-slate-300 transition hover:text-white">
-                  {label}
-                  <ArrowUpRight size={16} className="opacity-30 transition group-hover:opacity-100" />
-                </Link>
-              ))}
-            </nav>
+
           </div>
         </div>
 

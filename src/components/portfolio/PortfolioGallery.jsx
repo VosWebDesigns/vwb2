@@ -24,7 +24,7 @@ const PortfolioGallery = ({ title, images = [], fallbackImage }) => {
   return (
     <section className="mb-12 space-y-4">
       <div className="panel cut overflow-hidden p-3">
-        <img src={activeImage.url} alt={activeImage.alt || title} className="h-[260px] w-full rounded-[1.3rem] object-cover sm:h-[420px] lg:h-[620px]" loading="eager" />
+        <SmartImage src={activeImage.url} alt={activeImage.alt || title} className="h-[260px] w-full rounded-[1.3rem] object-cover sm:h-[420px] lg:h-[620px]" loading="eager" fetchPriority="high" />
       </div>
       {preparedImages.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2">
@@ -32,7 +32,7 @@ const PortfolioGallery = ({ title, images = [], fallbackImage }) => {
             const isActive = item.id === activeImage.id;
             return (
               <button key={item.id || item.url} type="button" onClick={() => setActiveId(item.id)} className={`relative h-24 w-28 shrink-0 overflow-hidden rounded-2xl border transition ${isActive ? 'border-[color:var(--accent2)]' : 'border-[color:var(--stroke)] opacity-70 hover:opacity-100'}`} aria-label={`Bekijk afbeelding ${index + 1}`}>
-                <img src={item.url} alt={item.alt || title} className="h-full w-full object-cover" loading="lazy" />
+                <SmartImage src={item.url} alt={item.alt || title} className="h-full w-full object-cover" />
                 {item.is_cover && <span className="absolute left-2 top-2 rounded-full bg-[color:var(--accent2)] px-2 py-1 text-[10px] font-black uppercase text-[#06101c]">cover</span>}
               </button>
             );

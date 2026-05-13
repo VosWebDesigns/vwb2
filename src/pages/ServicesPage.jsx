@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap } from 'lucide-react';
+import SmartImage from '@/components/SmartImage';
 
 const services = [
   { icon: <Palette size={32} />, title: 'Webdesign', shortDescription: 'Professioneel design voor starters & kleine bedrijven', description: 'Perfect voor ondernemers die nét beginnen en een sterke, betrouwbare online uitstraling willen zonder hoge instapkosten.', image: '/webde.png', highlightedPackage: 'Groei', highlightLabel: 'Meest gekozen', packages: [{ name: 'Starter', price: '€349', features: ['1–2 pagina’s', 'Modern & responsive design', 'Contactformulier', 'Basis SEO'] }, { name: 'Groei', price: '€649', features: ['Tot 5 pagina’s', 'Conversiegericht ontwerp', 'Subtiele animaties', 'SEO & performance basis'] }, { name: 'Pro', price: '€995', features: ['Volledig maatwerk design', 'Unieke branding look', 'Uitbreidbaar voor groei', 'Persoonlijke begeleiding'] }] },
@@ -50,7 +51,7 @@ const ServicesPage = () => (
                   <h2 className="mt-4 font-heading text-5xl font-black tracking-[-.06em]">{service.title}</h2>
                   <p className="mt-5 text-xl text-white">{service.shortDescription}</p>
                   <p className="mt-4 leading-8 text-slate-300">{service.description}</p>
-                  <div className="mt-8 overflow-hidden rounded-3xl border border-[color:var(--stroke)] bg-slate-950"> <img src={service.image} alt={service.title} className="h-64 w-full object-cover" /></div>
+                  <div className="mt-8 overflow-hidden rounded-3xl border border-[color:var(--stroke)] bg-slate-950"> <SmartImage src={service.image} alt={service.title} className="h-64 w-full object-cover" /></div>
                 </div>
                 <div className="grid gap-4 border-t border-[color:var(--stroke)] p-5 md:p-7 lg:border-l lg:border-t-0">
                   {service.packages.map(pkg => {

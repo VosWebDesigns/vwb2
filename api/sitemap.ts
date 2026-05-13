@@ -22,7 +22,7 @@ const normalizeSiteUrl = () => (process.env.SITE_URL || 'https://voswebdesigns.n
 
 const fetchPublishedProjectUrls = async () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.warn('SITEMAP_SUPABASE_ENV_MISSING', {
@@ -32,7 +32,7 @@ const fetchPublishedProjectUrls = async () => {
     return [];
   }
 
-  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/projects?select=id,updated_at,created_at,is_published&is_published=eq.true`;
+  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/projects?select=id,updated_at,created_at,is_published&or=(is_published.is.null,is_published.eq.true)`;
   const response = await fetch(endpoint, {
     headers: {
       apikey: supabaseAnonKey,

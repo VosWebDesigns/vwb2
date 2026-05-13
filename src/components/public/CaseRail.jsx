@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SmartImage from '@/components/SmartImage';
 import { motion } from 'framer-motion';
 import { formatYear, truncate } from '@/lib/format';
 
@@ -40,7 +41,7 @@ const CaseRail = ({ projects = [] }) => {
             >
               <span className="mono text-xs uppercase tracking-[.25em] text-slate-400">0{index + 1} / {project.categories?.name || 'case'}</span>
               <div className="mt-5 aspect-[4/3] overflow-hidden border border-[color:var(--grid)] bg-slate-900">
-                {project.hero_image ? <img src={project.hero_image} alt="" loading="lazy" className="h-full w-full object-cover grayscale transition duration-500 hover:grayscale-0" /> : <div className="blueprint-grid h-full" />}
+                {project.hero_image ? <SmartImage src={project.hero_image} alt="" className="h-full w-full object-cover grayscale transition duration-500 hover:grayscale-0" /> : <div className="blueprint-grid h-full" />}
               </div>
               <h3 className="mt-5 text-2xl font-black uppercase tracking-[-.04em]">{project.title}</h3>
             </button>

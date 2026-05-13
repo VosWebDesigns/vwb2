@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, Star, Trash2, Upload } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
+import SmartImage from '@/components/SmartImage';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 
@@ -261,7 +262,7 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
           {images.map((image, index) => (
             <article key={image.id} className="rounded-lg border border-gray-800 bg-[#111827] p-2">
               <div className="relative overflow-hidden rounded-md">
-                <img src={image.url} alt={image.alt || 'Portfolio afbeelding'} className="h-28 w-full object-cover" />
+                <SmartImage src={image.url} alt={image.alt || 'Portfolio afbeelding'} className="h-28 w-full object-cover" />
                 {image.is_cover && (
                   <span className="absolute left-2 top-2 rounded bg-[#38bdf8] px-2 py-1 text-[11px] font-semibold text-black">
                     Cover
