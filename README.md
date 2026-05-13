@@ -39,7 +39,7 @@ cp .env.example .env.local
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL` en `NEXT_PUBLIC_SUPABASE_ANON_KEY` worden door de Vite client bundle gebruikt voor Supabase. `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` blijven als fallback ondersteund.
-- `SUPABASE_SERVICE_ROLE_KEY` is server-only en wordt gebruikt door Vercel API routes voor admin MFA en nieuwsbriefacties.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-only en wordt gebruikt door Vercel API routes voor admin MFA, contactformulier-lead logging, exports en nieuwsbriefacties.
 - `RESEND_API_KEY` en `RESEND_FROM_EMAIL` worden gebruikt door `/api/contact`, admin MFA en nieuwsbriefmails. Gebruik tijdelijk `onboarding@resend.dev` of verifieer het domein voordat `contact@voswebdesigns.nl` als afzender wordt gebruikt.
 - `ADMIN_MFA_MODE` ondersteunt `off`, `optional` en `required`; start veilig met `optional` en zet op `required` zodra Resend betrouwbaar mailt.
 - `VITE_SENTRY_DSN` is optioneel voor browser monitoring. `VITE_PLAUSIBLE_DOMAIN` of `VITE_GA_ID` schakelt analytics in na cookie consent.
@@ -47,7 +47,7 @@ cp .env.example .env.local
 
 ## Supabase setup
 
-1. Run de SQL migraties in `supabase/migrations/` op de Supabase database. Voor deze finish-touch pack zijn vooral `202605120001_projects_featured_preview.sql`, `202605120002_admin_mfa_and_settings.sql` en `202605130001_newsletter.sql` belangrijk.
+1. Run de SQL migraties in `supabase/migrations/` op de Supabase database. Voor deze audit pack zijn vooral `202605120001_projects_featured_preview.sql`, `202605120002_admin_mfa_and_settings.sql`, `202605130001_newsletter.sql`, `202605130003_project_meta.sql` en `202605130004_leads.sql` belangrijk.
 2. De migratie maakt of verhardt:
    - `public.profiles` met `user_id` en `role`.
    - `public.is_admin(uid uuid)`.

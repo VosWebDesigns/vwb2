@@ -1,8 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getBearerToken, getSupabaseConfig, getUserFromToken, isAdminUser, supabaseHeaders } from './mfa-utils.js';
 
-const EXPORT_TABLES = ['projects', 'testimonials', 'newsletter_subscribers', 'leads'] as const;
+const EXPORT_TABLES = ['projects', 'testimonials', 'site_settings', 'leads', 'newsletter_subscribers'] as const;
 type ExportTable = typeof EXPORT_TABLES[number];
+
+const OPTIONAL_TABLES = new Set<ExportTable>(['newsletter_subscribers']);
 
 const isExportTable = (table: string): table is ExportTable => EXPORT_TABLES.includes(table as ExportTable);
 
@@ -19,6 +21,18 @@ const getRows = async (supabaseUrl: string, serviceRoleKey: string, table: Expor
   }
 
   return response.json();
+};
+
+const getRowsForBackup = async (supabaseUrl: string, serviceRoleKey: string, table: ExportTable) => {
+  try {
+    return await getRows(supabaseUrl, serviceRoleKey, table);
+  } catch (error) {
+    if (OPTIONAL_TABLES.has(table)) {
+      console.warn('ADMIN_EXPORT_OPTIONAL_TABLE_SKIPPED', { table, error: error instanceof Error ? error.message : error });
+      return [];
+    }
+    throw error;
+  }
 };
 
 const csvEscape = (value: unknown) => {
@@ -63,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).send(toCsv(rows));
     }
 
-    const entries = await Promise.all(EXPORT_TABLES.map(async table => [table, await getRows(supabaseUrl, serviceRoleKey, table)]));
+    const entries = await Promise.all(EXPORT_TABLES.map(async table => [table, await getRowsForBackup(supabaseUrl, serviceRoleKey, table)]));
     const payload = {
       exported_at: new Date().toISOString(),
       site: 'Vos Web Designs',
@@ -71,7 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="vwb2-export-${today()}.json"`);
+    res.setHeader('Content-Disposition', `attachment; filename="vwb2-backup-${today()}.json"`);
     return res.status(200).send(JSON.stringify(payload, null, 2));
   } catch (error) {
     console.error('ADMIN_EXPORT_ERROR', error);

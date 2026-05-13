@@ -135,7 +135,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const leadResult = await logLead(lead);
     if (leadResult.error) {
-      return res.status(500).json({ error: 'Lead logging failed' });
+      console.error('CONTACT_LEAD_LOG_NON_BLOCKING_ERROR', leadResult.error);
     }
 
     if (!process.env.RESEND_API_KEY) {
