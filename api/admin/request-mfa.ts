@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { buildAdminMfaEmail } from './mfa-email.js';
 import { generateCode, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, newId, supabaseHeaders } from './mfa-utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -30,14 +31,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const resendKey = process.env.RESEND_API_KEY;
     if (!resendKey) return res.status(500).json({ error: 'Mail configuration missing' });
 
+    const { subject, html, text } = buildAdminMfaEmail({ code, email: user.email, expiresMinutes: 10 });
+
     const mailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: fromEmail,
         to: [user.email],
-        subject: 'Vos Admin verificatiecode',
-        html: `<p>Uw Vos Admin verificatiecode is:</p><h1 style="letter-spacing:6px;">${code}</h1><p>Deze code verloopt over 10 minuten.</p>`,
+        subject,
+        html,
+        text,
       }),
     });
 
