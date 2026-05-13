@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/customSupabaseClient';
+import { isSupabaseConfigured, supabase } from '@/lib/customSupabaseClient';
 import { formatDateTimeNL } from '@/lib/formatDateTime';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -167,48 +167,88 @@ const DashboardPage = () => {
     fetchInitialData();
   }, []);
 
-  /* ================= REALTIME ================= */
+  /* ================= REALTIME (ADMIN ONLY, SAFE) ================= */
 
   useEffect(() => {
-    channelRef.current = supabase
-      .channel('activity-log-realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'activity_log' },
-        (payload) => {
-          const activity = payload.new;
+    if (typeof window === 'undefined' || !isSupabaseConfigured || channelRef.current) {
+      return undefined;
+    }
 
-          // prepend activity
-          setActivities(prev => [activity, ...prev].slice(0, 8));
+    let mounted = true;
+    let channel = null;
 
-          // toast
-          toast({
-            title: 'Nieuwe activiteit',
-            description: `${formatActivityText(activity)} ${
-              activity.user_id === user?.id ? '(door jou)' : '(door andere gebruiker)'
-            }`,
-            action: getTargetRoute(activity)
-              ? (
-                <Button
-                  variant="link"
-                  className="text-[#38bdf8]"
-                  onClick={() => navigate(getTargetRoute(activity))}
-                >
-                  Bekijk
-                </Button>
-              )
-              : null,
-          });
+    try {
+      channel = supabase
+        .channel('activity-log-realtime')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'activity_log' },
+          (payload) => {
+            if (!mounted) return;
+
+            try {
+              const activity = payload?.new;
+              if (!activity) return;
+
+              setActivities(prev => [activity, ...prev].slice(0, 8));
+
+              toast({
+                title: 'Nieuwe activiteit',
+                description: `${formatActivityText(activity)} ${
+                  activity.user_id === user?.id ? '(door jou)' : '(door andere gebruiker)'
+                }`,
+                action: getTargetRoute(activity)
+                  ? (
+                    <Button
+                      variant="link"
+                      className="text-[#38bdf8]"
+                      onClick={() => navigate(getTargetRoute(activity))}
+                    >
+                      Bekijk
+                    </Button>
+                  )
+                  : null,
+              });
+            } catch (callbackError) {
+              if (import.meta.env.DEV) {
+                console.warn('Activity realtime update overgeslagen.', callbackError);
+              }
+            }
+          }
+        );
+
+      channelRef.current = channel;
+
+      channel.subscribe((status, error) => {
+        if (!mounted) return;
+        if ((status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') && import.meta.env.DEV) {
+          console.warn('Activity realtime niet beschikbaar; dashboard blijft werken.', { status, error });
         }
-      )
-      .subscribe();
+      });
+    } catch (subscriptionError) {
+      channelRef.current = null;
+      if (import.meta.env.DEV) {
+        console.warn('Activity realtime subscription kon niet starten.', subscriptionError);
+      }
+    }
 
     return () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+      mounted = false;
+      const activeChannel = channelRef.current || channel;
+      channelRef.current = null;
+
+      if (activeChannel) {
+        try {
+          activeChannel.unsubscribe?.();
+          supabase.removeChannel?.(activeChannel);
+        } catch (cleanupError) {
+          if (import.meta.env.DEV) {
+            console.warn('Activity realtime cleanup overgeslagen.', cleanupError);
+          }
+        }
       }
     };
-  }, [navigate, user]);
+  }, [navigate, user?.id]);
 
 
   const downloadExport = async (format = 'json', table) => {

@@ -3,6 +3,7 @@ import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Navigate,
   Outlet,
   Route,
   RouterProvider,
@@ -61,29 +62,66 @@ class AppErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="min-h-screen min-h-[100svh] bg-[color:var(--bg)] text-[color:var(--ink)]">
-          <header className="fixed left-0 right-0 top-0 z-50 bg-[#0f172a]/95 shadow-lg">
-            <nav className="container mx-auto flex items-center justify-between px-4 py-4">
-              <a href="/" className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-2xl font-bold text-transparent">Vos Web Designs</a>
-              <a href="/contact" className="hidden rounded-md bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-4 py-2 font-medium text-black sm:inline-flex">Plan een Gesprek</a>
-            </nav>
-          </header>
-          <main className="flex min-h-screen min-h-[100svh] items-center justify-center px-4 pt-24">
-            <section className="mx-auto max-w-4xl text-center">
-              <p className="mb-6 inline-block rounded-full border border-[#38bdf8]/30 bg-[#38bdf8]/10 px-4 py-2 text-sm font-medium text-[#38bdf8]">Professioneel Webdesign Bureau</p>
-              <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">Websites Die Uw <span className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">Bedrijf Laten Groeien</span></h1>
-              <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-gray-300 sm:text-xl">Wij ontwikkelen luxe, conversie-gerichte websites voor ambitieuze bedrijven in Nederland.</p>
-              <a href="/contact" className="inline-flex rounded-md bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-8 py-4 text-lg font-medium text-black">Plan een Gesprek</a>
-            </section>
-          </main>
-        </div>
-      );
+      return <ErrorFallback fullPage />;
     }
 
     return this.props.children;
   }
 }
+
+class SectionErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    if (import.meta.env.DEV) {
+      console.warn('SECTION_RENDER_ERROR', error, errorInfo);
+    }
+    capture(error, { extra: errorInfo });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback />;
+    }
+
+    return this.props.children;
+  }
+}
+
+const ErrorFallback = ({ fullPage = false }) => {
+  const content = (
+    <section className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 text-center shadow-2xl">
+      <p className="text-sm font-black uppercase tracking-[.2em] text-[color:var(--accent2)]">Vos Web Designs</p>
+      <h1 className="mt-4 text-3xl font-black text-white sm:text-4xl">Er ging iets mis met het laden van deze sectie.</h1>
+      <p className="mt-4 text-slate-300">De rest van de website blijft beschikbaar. Probeer de pagina te vernieuwen of neem contact op als dit blijft gebeuren.</p>
+      <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/" className="rounded-full border border-white/15 px-5 py-3 font-black text-white">Naar home</a>
+        <a href="/contact" className="rounded-full bg-[color:var(--accent2)] px-5 py-3 font-black text-black">Contact opnemen</a>
+      </div>
+    </section>
+  );
+
+  if (!fullPage) return <div className="px-4 py-16">{content}</div>;
+
+  return (
+    <div className="min-h-screen min-h-[100svh] bg-[color:var(--bg)] px-4 py-24 text-[color:var(--ink)]">
+      {content}
+    </div>
+  );
+};
 
 // Component to handle global SEO based on settings
 const GlobalSEO = () => {
@@ -189,13 +227,20 @@ const PublicPageLayout = ({ children }) => (
   <PublicShell>{children}</PublicShell>
 );
 
+const RouteErrorBoundary = ({ children }) => {
+  const location = useLocation();
+  return <SectionErrorBoundary resetKey={location.pathname}>{children}</SectionErrorBoundary>;
+};
+
 const RootLayout = () => (
   <AuthProvider>
     <SettingsProvider>
       <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
         <GlobalSEO />
         <ScrollToTop />
-        <Outlet />
+        <RouteErrorBoundary>
+          <Outlet />
+        </RouteErrorBoundary>
         <CookieBanner />
         <Toaster />
       </div>
@@ -212,6 +257,7 @@ const routes = createRoutesFromElements(
     <Route path="over-ons" element={<PublicPageLayout><AboutPage /></PublicPageLayout>} />
     <Route path="werkwijze" element={<PublicPageLayout><ProcessPage /></PublicPageLayout>} />
     <Route path="contact" element={<PublicPageLayout><ContactPage /></PublicPageLayout>} />
+    <Route path="offerte" element={<Navigate to="/contact" replace />} />
     <Route path="privacy" element={<PublicPageLayout><PrivacyPolicyPage /></PublicPageLayout>} />
     <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></PublicPageLayout>} />
     <Route path="newsletter/confirmed" element={<PublicPageLayout><ConfirmedPage /></PublicPageLayout>} />
