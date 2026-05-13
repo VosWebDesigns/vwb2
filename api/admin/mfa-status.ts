@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler } from '../_sentry.js';
 import { getAdminMfaMode, getCookieValue, MFA_COOKIE_NAME } from './mfa-utils.js';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const mode = getAdminMfaMode();
@@ -22,4 +23,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   return res.status(200).json({ ok: verified, mode, verified, mfaRequired: !verified });
-}
+};
+
+export default wrapHandler(handler, { route: '/admin/mfa-status' });

@@ -7,7 +7,8 @@ export const SITE_URL = () => (process.env.SITE_URL || process.env.NEXT_PUBLIC_S
 
 export const parseBody = (body: unknown) => (typeof body === 'string' ? JSON.parse(body || '{}') : (body || {})) as Record<string, any>;
 export const normalizeEmail = (email: unknown) => String(email || '').trim().toLowerCase();
-export const newToken = () => `${randomUUID()}-${randomBytes(18).toString('hex')}`;
+export const generateToken = () => `${randomUUID()}-${randomBytes(18).toString('hex')}`;
+export const newToken = generateToken;
 export const json = (res: VercelResponse, status: number, body: Record<string, unknown>) => res.status(status).json(body);
 
 export const getClientIp = (req: VercelRequest) => {
@@ -46,6 +47,8 @@ export const requireAdmin = async (req: VercelRequest) => {
   return { userId };
 };
 
+export const isResendDomainNotVerifiedError = (error: unknown) => /domain is not verified/i.test(JSON.stringify((error as any)?.body || error || {}));
+
 export const sendResendEmail = async (payload: Record<string, unknown>) => {
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is required');
   const response = await fetch('https://api.resend.com/emails', {
@@ -59,8 +62,10 @@ export const sendResendEmail = async (payload: Record<string, unknown>) => {
   const text = await response.text();
   const body = text ? JSON.parse(text) : null;
   if (!response.ok) {
-    const error = new Error(`Resend ${response.status}`) as Error & { body?: unknown };
+    const error = new Error(`Resend ${response.status}`) as Error & { body?: unknown; status?: number; reason?: string };
     error.body = body;
+    error.status = response.status;
+    if (/domain is not verified/i.test(JSON.stringify(body || {}))) error.reason = 'domain_not_verified';
     throw error;
   }
   return body;

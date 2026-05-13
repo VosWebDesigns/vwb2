@@ -60,7 +60,7 @@ const shell = ({ preheader = '', children, textFooter = '' }: { preheader?: stri
 </body></html>`,
 });
 
-export const buildConfirmEmail = ({ confirmUrl, email }: { confirmUrl: string; email: string }) => {
+export const buildNewsletterConfirmEmail = ({ confirmUrl, email }: { confirmUrl: string; email: string }) => {
   const content = `
     <h1 style="margin:0 0 14px;font-size:30px;line-height:1.15;color:#ffffff;">Bevestig je inschrijving</h1>
     <p style="margin:0 0 16px;color:#cbd5e1;">Je ontvangt na bevestiging maximaal 1x per maand praktische tips, cases en updates van Vos Web Designs.</p>
@@ -82,19 +82,19 @@ export const renderBlocks = (blocks: Block[] = []) => blocks.map((block) => {
     return `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(block.alt || '')}" width="584" style="display:block;width:100%;max-width:584px;height:auto;border-radius:18px;margin:24px 0;border:1px solid #1e293b;" />${caption}`;
   }
   if (block.type === 'divider') return `<hr style="border:0;border-top:1px solid #1e293b;margin:28px 0;" />`;
-  if (block.type === 'cta' && block.href) return button(block.href, block.label || block.text || 'Bekijk meer');
+  if (block.type === 'cta' && (block.href || block.url)) return button(block.href || block.url || '', block.label || block.text || 'Bekijk meer');
   if (block.type === 'quote') return `<blockquote style="margin:24px 0;padding:18px 20px;border-left:4px solid ${accent};background:#07111f;color:#dbeafe;border-radius:12px;">${nl2br(block.text)}</blockquote>`;
   return `<p style="margin:0 0 16px;color:#cbd5e1;font-size:16px;">${nl2br(block.text)}</p>`;
 }).join('');
 
 export const blocksToText = (blocks: Block[] = []) => blocks.map((block) => {
   if (block.type === 'image') return block.alt || block.url || '';
-  if (block.type === 'cta') return `${block.label || block.text || 'CTA'}: ${block.href || ''}`;
+  if (block.type === 'cta') return `${block.label || block.text || 'CTA'}: ${block.href || block.url || ''}`;
   if (block.type === 'divider') return '---';
   return block.text || '';
 }).filter(Boolean).join('\n\n');
 
-export const buildCampaignEmail = ({ title, preheader = '', blocks = [], heroImageUrl = '', heroAlt = '', unsubscribeUrl = '' }: { title: string; preheader?: string; blocks?: Block[]; heroImageUrl?: string; heroAlt?: string; unsubscribeUrl?: string }) => {
+export const buildNewsletterCampaignEmail = ({ title, preheader = '', blocks = [], heroImageUrl = '', heroAlt = '', unsubscribeUrl = '' }: { title: string; preheader?: string; blocks?: Block[]; heroImageUrl?: string; heroAlt?: string; unsubscribeUrl?: string }) => {
   const absoluteHeroImageUrl = absoluteUrl(heroImageUrl);
   const content = `
     <h1 style="margin:0 0 16px;font-size:34px;line-height:1.1;color:#ffffff;">${escapeHtml(title)}</h1>
@@ -107,3 +107,6 @@ export const buildCampaignEmail = ({ title, preheader = '', blocks = [], heroIma
     text: `${title}\n\n${preheader ? `${preheader}\n\n` : ''}${absoluteHeroImageUrl ? `${heroAlt || 'Hero afbeelding'}: ${absoluteHeroImageUrl}\n\n` : ''}${blocksToText(blocks)}\n\nAfmelden: ${unsubscribeUrl || `${SITE_URL()}/newsletter/unsubscribed`}`,
   };
 };
+
+export const buildConfirmEmail = buildNewsletterConfirmEmail;
+export const buildCampaignEmail = buildNewsletterCampaignEmail;

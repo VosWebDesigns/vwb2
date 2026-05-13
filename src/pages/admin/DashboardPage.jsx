@@ -83,7 +83,8 @@ const DashboardPage = () => {
           activityRes,
           featuredProjects,
           visibleTestimonials,
-          settingsRes
+          settingsRes,
+          publishedProjects
         ] = await Promise.all([
           supabase.from('projects').select('*', { count: 'exact', head: true }),
           supabase.from('testimonials').select('*', { count: 'exact', head: true }),
@@ -107,6 +108,10 @@ const DashboardPage = () => {
             .select('contact_email, contact_phone, social_instagram, social_linkedin, social_facebook, social_twitter, social_tiktok, social_youtube')
             .limit(1)
             .maybeSingle(),
+          supabase
+            .from('projects')
+            .select('id', { count: 'exact', head: true })
+            .or('is_published.is.null,is_published.eq.true'),
         ]);
 
         setStats({
@@ -141,6 +146,12 @@ const DashboardPage = () => {
             ok: Boolean(settings?.contact_email && settings?.contact_phone),
             message: 'Contact email of telefoon ontbreekt',
             fix: '/admin/settings',
+          },
+          {
+            id: 'published-projects',
+            ok: (publishedProjects.count || 0) > 0,
+            message: 'Portfolio heeft 0 gepubliceerde projecten',
+            fix: '/admin/projects',
           },
         ];
 
@@ -278,7 +289,7 @@ const DashboardPage = () => {
       <Card className="bg-[#111827] border-gray-800">
         <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <CardTitle className="text-white">Content health</CardTitle>
+            <CardTitle className="text-white">Website Health</CardTitle>
             <p className="mt-1 text-sm text-gray-400">Snelle checks die conversie en vertrouwen beschermen.</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -288,6 +299,7 @@ const DashboardPage = () => {
               <option value="leads">Leads</option>
               <option value="projects">Projecten</option>
               <option value="testimonials">Testimonials</option>
+              <option value="site_settings">Site settings</option>
               <option value="newsletter_subscribers">Subscribers</option>
             </select>
           </div>

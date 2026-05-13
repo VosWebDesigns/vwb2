@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from '../_sentry.js';
 import { buildConfirmEmail } from './email-templates.js';
-import { EMAIL_RE, getClientIp, json, newToken, normalizeEmail, parseBody, rest, sendResendEmail, SITE_URL } from './utils.js';
+import { EMAIL_RE, getClientIp, isResendDomainNotVerifiedError, json, newToken, normalizeEmail, parseBody, rest, sendResendEmail, SITE_URL } from './utils.js';
 
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
@@ -17,7 +18,7 @@ const isLimited = (key: string) => {
   return current.count > RATE_LIMIT_MAX;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
 
   try {
@@ -36,7 +37,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const row = {
       email,
       status: 'pending',
+      confirm_token: token,
       token,
+      unsubscribe_token: existing?.[0]?.unsubscribe_token || newToken(),
       confirmed_at: null,
       unsubscribed_at: null,
     };
@@ -59,8 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     } catch (mailError) {
       console.error('NEWSLETTER_CONFIRM_MAIL_ERROR', mailError);
-      const serialized = JSON.stringify((mailError as any)?.body || mailError || {});
-      if (/domain is not verified/i.test(serialized)) {
+      if (isResendDomainNotVerifiedError(mailError)) {
         return json(res, 200, {
           success: false,
           reason: 'domain_not_verified',
@@ -73,6 +75,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return json(res, 200, { success: true, message: 'Check je mail om te bevestigen.' });
   } catch (error) {
     console.error('NEWSLETTER_SUBSCRIBE_ERROR', error);
+    void captureException(error, { req, tags: { route: '/newsletter/subscribe' } });
     return json(res, 500, { error: 'Inschrijven is tijdelijk niet gelukt.' });
   }
 }
+
+export default wrapHandler(handler, { route: '/newsletter/subscribe.ts' });
