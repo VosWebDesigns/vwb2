@@ -10,11 +10,35 @@ const AdminLayout = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [mfaStatus, setMfaStatus] = useState('checking');
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    let active = true;
+
+    const checkMfa = async () => {
+      if (loading || !user || !isAdmin) {
+        if (active) setMfaStatus('checking');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/mfa-status', { credentials: 'include' });
+        const data = await response.json().catch(() => ({}));
+        if (active) setMfaStatus(data?.ok ? 'ok' : 'required');
+      } catch (error) {
+        console.error('ADMIN_MFA_STATUS_ERROR', error);
+        if (active) setMfaStatus('required');
+      }
+    };
+
+    checkMfa();
+    return () => { active = false; };
+  }, [loading, user, isAdmin]);
 
   if (loading) {
     return (
@@ -28,11 +52,22 @@ const AdminLayout = () => {
 
   if (!isAdmin) return <Navigate to="/forbidden" replace />;
 
+  if (mfaStatus === 'checking') {
+    return (
+      <div className="min-h-screen cinema-bg text-white flex items-center justify-center">
+        <div className="animate-pulse text-[#38bdf8]">Beveiliging controleren...</div>
+      </div>
+    );
+  }
+
+  if (mfaStatus === 'required') return <Navigate to="/admin/verify" replace />;
+
   const navItems = [
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin' },
     { icon: <FolderKanban size={20} />, label: 'Projecten', path: '/admin/projects' },
     { icon: <MessageSquare size={20} />, label: 'Testimonials', path: '/admin/testimonials' },
     { icon: <Layers size={20} />, label: 'Categorieën', path: '/admin/categories' },
+    { icon: <Layers size={20} />, label: 'Instellingen', path: '/admin/settings' },
   ];
 
   const SidebarContent = () => (

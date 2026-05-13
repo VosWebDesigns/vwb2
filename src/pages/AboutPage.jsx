@@ -27,7 +27,7 @@ const AboutPage = () => (
           <div className="panel cut overflow-hidden">
             <div className="grid md:grid-cols-2">
               <div className="p-7 md:p-10"><h2 className="font-heading text-4xl font-black tracking-[-.05em]">Mijn verhaal</h2><p className="mt-6 leading-8 text-slate-300">Vos Web Designs is opgericht vanuit de frustratie over trage, generieke websites zonder resultaat.</p><p className="mt-4 leading-8 text-slate-300">Mijn focus ligt op maatwerk: snelle websites, sterke gebruikerservaring en code die klopt.</p><p className="mt-4 leading-8 text-slate-300">Geen templates, geen ruis. Alleen oplossingen die werken.</p></div>
-              <img src="/werk.png" alt="Werkplek Vos Web Designs" className="h-full min-h-[320px] w-full object-cover" />
+              <SmartImage src="/werk.png" alt="Werkplek Vos Web Designs" className="h-full min-h-[320px] w-full object-cover" />
             </div>
           </div>
         </div>
@@ -42,8 +42,8 @@ const AboutPage = () => (
 
       <section className="cinematic-section pt-0">
         <div className="cinematic-container relative z-10 grid gap-8 lg:grid-cols-[1fr_.9fr] lg:items-center">
-          <div className="panel cut p-7 md:p-10"><p className="eyebrow">Wie zit er achter</p><h2 className="mt-4 font-heading text-5xl font-black tracking-[-.06em]">Melvin Vos</h2><p className="mt-2 text-[color:var(--accent)]">Founder & Lead Developer</p><p className="mt-6 text-lg leading-8 text-slate-300">Met een sterke focus op performance, schaalbaarheid en design bouw ik premium websites en webapplicaties die bedrijven écht verder helpen.</p></div>
-          <div className="panel cut overflow-hidden p-5"><img src="/logo.jpeg" alt="Melvin Vos" className="h-[420px] w-full rounded-[1.4rem] object-cover" /></div>
+          <div className="panel cut p-7 md:p-10"><p className="eyebrow">Wie zit er achter</p><h2 className="mt-4 font-heading text-5xl font-black tracking-[-.06em]">Melvin Vos</h2><p className="mt-2 text-[color:var(--accent)]">Founder & Lead Developer</p><p className="mt-6 text-lg leading-8 text-slate-300">Met een sterke focus op performance, schaalbaarheid en design bouw ik sterke websites en webapplicaties die bedrijven écht verder helpen.</p></div>
+          <div className="panel cut overflow-hidden p-5"><SmartImage src="/logo.jpeg" alt="Melvin Vos" className="h-[420px] w-full rounded-[1.4rem] object-cover" /></div>
         </div>
       </section>
 

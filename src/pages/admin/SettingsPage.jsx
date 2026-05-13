@@ -50,6 +50,8 @@ const SettingsPage = () => {
     social_linkedin: '',
     social_facebook: '',
     social_twitter: '',
+    social_tiktok: '',
+    social_youtube: '',
 
     seo_meta_description: '',
     seo_keywords: '',
@@ -400,6 +402,28 @@ const SettingsPage = () => {
                     value={formData.social_twitter || ''} 
                     onChange={handleInputChange} 
                     className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="social_tiktok" className="text-gray-300">TikTok URL</Label>
+                  <Input
+                    id="social_tiktok"
+                    name="social_tiktok"
+                    placeholder="https://tiktok.com/@..."
+                    value={formData.social_tiktok || ''}
+                    onChange={handleInputChange}
+                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="social_youtube" className="text-gray-300">YouTube URL</Label>
+                  <Input
+                    id="social_youtube"
+                    name="social_youtube"
+                    placeholder="https://youtube.com/@..."
+                    value={formData.social_youtube || ''}
+                    onChange={handleInputChange}
+                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]"
                   />
                 </div>
               </CardContent>

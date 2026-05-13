@@ -4,7 +4,7 @@ import { Send } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
 
-const initial = { name: '', email: '', phone: '', company: '', service: '', package: '', message: '', company_website: '' };
+const initial = { name: '', email: '', phone: '', company: '', service: '', package: '', message: '', website: '', company_website: '' };
 
 const ContactPage = () => {
   const { settings } = useSettings();
@@ -57,7 +57,7 @@ const ContactPage = () => {
                 <div className="mb-2 flex justify-between text-xs font-bold uppercase tracking-[.2em] text-slate-400"><span>Formulier voortgang</span><span>{completion}%</span></div>
                 <div className="h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-[color:var(--accent2)] transition-all" style={{ width: `${completion}%` }} /></div>
               </div>
-              <input type="text" name="company_website" value={formData.company_website} onChange={handleChange} className="hidden" tabIndex="-1" autoComplete="off" />
+              <input type="text" name="website" value={formData.website} onChange={handleChange} className="hidden" tabIndex="-1" autoComplete="off" aria-hidden="true" />
               <div className="grid gap-5 md:grid-cols-2"><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Naam *<input required name="name" value={formData.name} onChange={handleChange} className={inputClass} /></label><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Email *<input required type="email" name="email" value={formData.email} onChange={handleChange} className={inputClass} /></label></div>
               <div className="grid gap-5 md:grid-cols-2"><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Telefoon<input name="phone" value={formData.phone} onChange={handleChange} className={inputClass} /></label><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Bedrijf<input name="company" value={formData.company} onChange={handleChange} className={inputClass} /></label></div>
               <div className="grid gap-5 md:grid-cols-2"><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Interesse *<select required name="service" value={formData.service} onChange={handleChange} className={inputClass}><option value="">Kies dienst</option><option>Website redesign</option><option>React/Supabase build</option><option>E-commerce</option><option>SEO/content systeem</option></select></label><label className="grid gap-2 text-sm font-bold uppercase tracking-[.14em] text-[color:var(--accent)]">Budget<select name="package" value={formData.package} onChange={handleChange} className={inputClass}><option value="">Nog open</option><option>Starter</option><option>Groei</option><option>Pro</option></select></label></div>

@@ -15,9 +15,9 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error, profile } = await signIn(email, password);
     if (!error) {
-      navigate('/admin');
+      navigate(profile?.role === 'admin' ? '/admin/verify' : '/admin');
     }
     setLoading(false);
   };

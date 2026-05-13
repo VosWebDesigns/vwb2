@@ -6,6 +6,7 @@ import {
   Outlet,
   Route,
   RouterProvider,
+  useLocation,
 } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Toaster } from '@/components/ui/toaster';
@@ -33,6 +34,7 @@ import ProjectsPage from '@/pages/admin/ProjectsPage';
 import TestimonialsPage from '@/pages/admin/TestimonialsPage';
 import CategoriesPage from '@/pages/admin/CategoriesPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
+import MfaVerifyPage from '@/pages/admin/MfaVerifyPage';
 
 
 class AppErrorBoundary extends React.Component {
@@ -78,10 +80,12 @@ class AppErrorBoundary extends React.Component {
 // Component to handle global SEO based on settings
 const GlobalSEO = () => {
   const { settings } = useSettings();
+  const location = useLocation();
   const siteName = settings.site_name || 'Vos Web Designs';
   const description = settings.seo_meta_description || settings.site_description || 'Professioneel webdesign';
-  const siteUrl = 'https://voswebdesigns.nl';
-  const ogImage = `${siteUrl}/logo.jpeg`;
+  const siteUrl = (import.meta.env.NEXT_PUBLIC_SITE_URL || import.meta.env.VITE_SITE_URL || 'https://voswebdesigns.nl').replace(/\/$/, '');
+  const canonicalUrl = `${siteUrl}${location.pathname === '/' ? '/' : location.pathname}`;
+  const ogImage = settings.og_image || `${siteUrl}/logo.jpeg`;
 
   return (
     <Helmet>
@@ -91,7 +95,8 @@ const GlobalSEO = () => {
       <meta property="og:type" content="website" />
       <meta property="og:title" content={siteName} />
       <meta property="og:description" content={description} />
-      <meta property="og:url" content={siteUrl} />
+      <meta property="og:url" content={canonicalUrl} />
+      <link rel="canonical" href={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={siteName} />
@@ -138,6 +143,7 @@ const routes = createRoutesFromElements(
     <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></PublicPageLayout>} />
     <Route path="login" element={<LoginPage />} />
     <Route path="forbidden" element={<PublicPageLayout><ForbiddenPage /></PublicPageLayout>} />
+    <Route path="admin/verify" element={<MfaVerifyPage />} />
 
     <Route path="admin" element={<AdminLayout />}>
       <Route index element={<DashboardPage />} />

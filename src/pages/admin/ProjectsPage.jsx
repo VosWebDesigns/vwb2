@@ -8,6 +8,7 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import DeleteConfirmDialog from '@/components/DeleteConfirmDialog';
 import ImageUpload from '@/components/admin/ImageUpload';
+import SmartImage from '@/components/SmartImage';
 import ProjectGalleryManager from '@/components/admin/ProjectGalleryManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -317,7 +318,7 @@ const ProjectsPage = () => {
             projects.map(p => (
               <div key={p.id} className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-24 h-40 sm:h-24 bg-black rounded overflow-hidden">
-                  {p.hero_image ? <img src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <ImageIcon className="m-auto text-gray-600" />}
+                  {p.hero_image ? <SmartImage src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <ImageIcon className="m-auto text-gray-600" />}
                 </div>
 
                 <div className="flex-1">

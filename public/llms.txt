@@ -3,13 +3,14 @@
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/404): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/notfound): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [Admin Login - Vos Web Designs](/login): No description available
+- [Admin verificatie - Vos Web Designs](/mfaverify): No description available
 - [Algemene Voorwaarden - Vos Web Designs](/terms): Algemene Voorwaarden van Vos Web Designs. Lees hier onze leveringsvoorwaarden en condities.
-- [Contact - Vos Web Designs | Neem Contact Op](/contact): Klaar om uw project te starten? Neem contact op met Vos Web Designs. We beantwoorden al uw vragen en plannen graag een vrijblijvend gesprek.
-- [Diensten – Vos Web Designs](/services): No description available
+- [Contact - Vos Web Designs | Neem Contact Op](/contact): Klaar om uw project te starten? Neem contact op met Vos Web Designs voor een vrijblijvend gesprek.
+- [Diensten – Vos Web Designs](/services): Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs.
 - [Geen toegang - Vos Web Designs](/forbidden): No description available
 - [Instellingen - Vos Admin](/settings): No description available
 - [Over Ons - Vos Web Designs](/about): Leer Vos Web Designs kennen. Persoonlijk, resultaatgericht en gebouwd op moderne technologie.
 - [Portfolio - Vos Web Designs](/portfolio): Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten.
 - [Privacybeleid - Vos Web Designs](/privacypolicy): Privacybeleid van Vos Web Designs. Lees hoe wij omgaan met uw gegevens volgens de AVG/GDPR richtlijnen.
-- [Vos Web Designs - Professioneel Webdesign & Ontwikkeling in Nederland](/home): Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien.
+- [Vos Web Designs - Webdesign & Ontwikkeling in Nederland](/home): Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien.
 - [Werkwijze - Vos Web Designs | Ons Development Process](/process): Ontdek hoe we te werk gaan bij Vos Web Designs. Van strategie tot lancering - een transparant proces met gegarandeerde resultaten.

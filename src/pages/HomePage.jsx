@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Award, CheckCircle, Quote, TrendingUp, Users, Zap } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
+import SmartImage from '@/components/SmartImage';
 
 const logSupabaseError = (label, error) => {
   if (!error) return;
@@ -138,7 +139,7 @@ const HomePage = () => {
 
   const usps = [
     { icon: <Zap size={28} />, title: 'Razendsnelle Websites', description: 'Geoptimaliseerd voor snelheid en prestaties. Onze websites laden in minder dan 2 seconden.' },
-    { icon: <Award size={28} />, title: 'Premium Design', description: 'Luxe, moderne designs die uw merk naar een hoger niveau tillen en conversies verhogen.' },
+    { icon: <Award size={28} />, title: 'Sterk Design', description: 'Moderne designs die uw merk naar een hoger niveau tillen en conversies verhogen.' },
     { icon: <Users size={28} />, title: 'Persoonlijke Service', description: 'Directe communicatie met uw dedicated designer. Geen tussenpersonen, alleen resultaten.' },
     { icon: <TrendingUp size={28} />, title: 'Bewezen ROI', description: 'Onze websites genereren gemiddeld 3x meer conversies dan standaard websites.' },
   ];
@@ -146,7 +147,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Vos Web Designs - Premium Webdesign & Ontwikkeling in Nederland</title>
+        <title>Vos Web Designs - Webdesign & Ontwikkeling in Nederland</title>
         <meta name="description" content="Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien." />
       </Helmet>
 
@@ -154,7 +155,7 @@ const HomePage = () => {
         <section className="cinematic-section min-h-[calc(100svh-6rem)] flex items-center">
           <div className="cinematic-container relative z-10 grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
             <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <p className="eyebrow">Premium webdesign bureau</p>
+              <p className="eyebrow">Webdesign bureau</p>
               <h1 className="display-title mt-5 text-[clamp(3.4rem,8vw,7.7rem)]">Websites die uw <span className="gradient-text">bedrijf laten groeien</span></h1>
               <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">Wij ontwikkelen luxe, conversie-gerichte websites voor ambitieuze bedrijven in Nederland.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -169,7 +170,7 @@ const HomePage = () => {
                 <span>Featured preview</span><span className="text-[color:var(--accent2)]">Live uit Supabase</span>
               </div>
               <div className="overflow-hidden rounded-[1.4rem] border border-[color:var(--stroke)] bg-slate-950">
-                {previewImage ? <img src={previewImage} alt={previewProject.title} className="h-[300px] w-full object-cover md:h-[430px]" /> : <div className="grid h-[300px] place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(140,214,255,.22),transparent_35%),#07111f] p-8 text-center text-slate-400 md:h-[430px]">{loading ? 'Project laden…' : 'Nog geen uitgelicht project. Voeg er één toe in de admin.'}</div>}
+                {previewImage ? <SmartImage src={previewImage} alt={previewProject.title} className="h-[300px] w-full object-cover md:h-[430px]" loading="eager" fetchPriority="high" /> : <div className="grid h-[300px] place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(140,214,255,.22),transparent_35%),#07111f] p-8 text-center text-slate-400 md:h-[430px]">{loading ? 'Project laden…' : 'Nog geen uitgelicht project. Voeg er één toe in de admin.'}</div>}
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
                 <div>
@@ -222,7 +223,7 @@ const HomePage = () => {
                 {projects.map((project, index) => (
                   <motion.article key={project.id} initial={{ opacity: 0, y: 30 }} animate={projectsInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: index * 0.1 }} className="deck-card panel cut overflow-hidden">
                     <Link to={`/portfolio/${project.id}`}>
-                      <div className="aspect-[4/3] bg-slate-950">{project.hero_image ? <img src={project.hero_image} alt={project.title} className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-slate-500">Geen afbeelding</div>}</div>
+                      <div className="aspect-[4/3] bg-slate-950">{project.hero_image ? <SmartImage src={project.hero_image} alt={project.title} className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-slate-500">Geen afbeelding</div>}</div>
                       <div className="p-6">
                         <p className="eyebrow">{project.categories?.name || 'Project'}</p>
                         <h3 className="mt-3 font-heading text-3xl font-black tracking-[-.05em]">{project.title}</h3>

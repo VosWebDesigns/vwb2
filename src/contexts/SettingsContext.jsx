@@ -23,6 +23,7 @@ export const SettingsProvider = ({ children }) => {
     social_facebook: '',
     social_twitter: '',
     social_tiktok: '',
+    social_youtube: '',
     seo_meta_description: '',
     seo_keywords: '',
     notify_new_project: true,

@@ -80,7 +80,7 @@ const Header = () => {
 
                 <aside className="panel cut p-7 md:p-9">
                   <p className="eyebrow">Vos Web Designs</p>
-                  <h2 className="mt-4 font-heading text-4xl font-black leading-[.95] tracking-[-.05em]">Premium websites zonder template-smaak.</h2>
+                  <h2 className="mt-4 font-heading text-4xl font-black leading-[.95] tracking-[-.05em]">Maatwerk websites zonder template-smaak.</h2>
                   <p className="mt-5 text-slate-300">Strategie, design en techniek in één strak proces. Gebouwd voor snelheid, vertrouwen en meetbare groei.</p>
                   <div className="mt-8 grid gap-2 text-sm text-slate-300">
                     <a href={`mailto:${settings?.contact_email || 'info@voswebdesigns.nl'}`} className="hover:text-[color:var(--accent)]">{settings?.contact_email || 'info@voswebdesigns.nl'}</a>
