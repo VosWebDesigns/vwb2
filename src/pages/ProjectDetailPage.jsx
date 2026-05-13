@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ExternalLink, Layers, TrendingUp } from 'lucide-react';
 import PortfolioGallery from '@/components/portfolio/PortfolioGallery';
+import { useSettings } from '@/contexts/SettingsContext';
 import { getPortfolioByIdWithImages } from '@/lib/portfolio';
 
 const ProjectDetailPage = () => {
@@ -10,6 +11,9 @@ const ProjectDetailPage = () => {
   const [project, setProject] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { settings } = useSettings();
+  const siteName = settings.site_name || 'Vos Web Designs';
+  const siteUrl = (import.meta.env.NEXT_PUBLIC_SITE_URL || import.meta.env.VITE_SITE_URL || 'https://voswebdesigns.nl').replace(/\/$/, '');
 
   useEffect(() => {
     let mounted = true;
@@ -35,11 +39,30 @@ const ProjectDetailPage = () => {
     return <main className="cinema-bg min-h-screen pt-32"><div className="cinematic-container panel cut p-8 text-center text-slate-300">Project niet gevonden. <Link to="/portfolio" className="text-[color:var(--accent)]">Terug naar portfolio</Link></div></main>;
   }
 
+  const projectDescription = project.short_description || project.description?.slice(0, 160) || 'Project uitgevoerd door Vos Web Designs';
+  const projectUrl = `${siteUrl}/portfolio/${projectId}`;
+  const projectImage = toAbsoluteUrl(project.hero_image, siteUrl);
+  const projectSchema = pruneSchema({
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    description: projectDescription,
+    url: projectUrl,
+    image: projectImage,
+    creator: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+    },
+    sameAs: project.live_url || undefined,
+  });
+
   return (
     <>
       <Helmet>
         <title>{project.title} – Portfolio | Vos Web Designs</title>
-        <meta name="description" content={project.short_description || project.description?.slice(0, 160) || 'Project uitgevoerd door Vos Web Designs'} />
+        <meta name="description" content={projectDescription} />
+        <script type="application/ld+json">{JSON.stringify(projectSchema)}</script>
       </Helmet>
 
       <main className="cinema-bg min-h-screen pt-24">
@@ -103,6 +126,28 @@ const ProjectDetailPage = () => {
       </main>
     </>
   );
+};
+
+const toAbsoluteUrl = (value, siteUrl) => {
+  if (!value) return undefined;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${siteUrl}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
+const pruneSchema = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(pruneSchema).filter((item) => item !== undefined);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, entry]) => [key, pruneSchema(entry)])
+        .filter(([, entry]) => entry !== undefined && !(Array.isArray(entry) && entry.length === 0))
+    );
+  }
+
+  return value === '' ? undefined : value;
 };
 
 const InfoBlock = ({ label, value }) => (

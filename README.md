@@ -93,3 +93,22 @@ Na deploy en migraties moet de admin gallery het volgende ondersteunen:
 - Confirm en unsubscribe links lopen via `/api/newsletter/confirm` en `/api/newsletter/unsubscribe` en redirecten naar publieke statuspagina's.
 - Admin campagnes staan op `/admin/newsletter`; content is DB-driven via `newsletter_campaigns.content_json` en afbeeldingen komen uit upload, galerij of URL.
 - Als Resend het afzenderdomein nog niet heeft geverifieerd, gebruik tijdelijk `RESEND_FROM_EMAIL=onboarding@resend.dev` of laat `ADMIN_MFA_MODE=optional` staan tijdens onboarding.
+
+## Sentry monitoring
+
+- `SENTRY_DSN` is server-only and is read by Vercel serverless API routes through `api/_sentry.ts`; use this for backend exceptions from contact, newsletter and admin MFA endpoints.
+- `VITE_SENTRY_DSN` is bundled into the browser app and enables React client-side error monitoring and tracing. It is safe to expose because Sentry browser DSNs are public project identifiers, but keep sampling intentional with `VITE_SENTRY_TRACES_SAMPLE_RATE`.
+- Use `SENTRY_ENVIRONMENT` for serverless functions and `VITE_SENTRY_ENV` for the Vite client so production, preview and local errors stay separated.
+- Both Sentry integrations are optional: when the relevant DSN is empty, error capture is a no-op and the app continues to work.
+
+## Resend deliverability checklist
+
+Nieuwsbriefmails en admin MFA zijn afhankelijk van betrouwbare Resend delivery. Controleer dit vóórdat `ADMIN_MFA_MODE=required` wordt gezet:
+
+1. Ga in Resend naar **Domains** en voeg het verzenddomein toe, bijvoorbeeld `voswebdesigns.nl`.
+2. Publiceer alle DNS-records die Resend toont bij de DNS-provider. Dit omvat meestal DKIM-records en een SPF-compatible return-path/bounce record.
+3. Voeg of controleer SPF voor het afzenderdomein. Als er al een SPF-record bestaat, voeg Resend toe aan hetzelfde record in plaats van een tweede SPF-record te maken.
+4. Zet DKIM op `verified` in Resend; DKIM is essentieel voor inbox placement en voorkomt dat MFA- en nieuwsbriefmails als spoofing worden gezien.
+5. Voeg DMARC toe, start veilig met monitoring en verhoog later de policy. Voorbeeld startpunt: `v=DMARC1; p=none; rua=mailto:dmarc@voswebdesigns.nl; adkim=s; aspf=s`.
+6. Gebruik tijdelijk `RESEND_FROM_EMAIL=onboarding@resend.dev` zolang het domein niet geverifieerd is. Zet daarna pas terug naar een eigen afzender zoals `contact@voswebdesigns.nl` of `nieuwsbrief@voswebdesigns.nl`.
+7. Test expliciet: contactformulier, nieuwsbrief double opt-in, unsubscribe en admin MFA-code. Pas daarna `ADMIN_MFA_MODE=required` inschakelen.
