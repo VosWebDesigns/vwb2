@@ -14,6 +14,7 @@ import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import CookieBanner from '@/components/CookieBanner';
 import ScrollToTop from '@/components/ScrollToTop';
+import { capture } from '@/lib/sentryClient';
 
 import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
@@ -55,6 +56,7 @@ class AppErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('APP_RENDER_ERROR', error, errorInfo);
+    capture(error, { extra: errorInfo });
   }
 
   render() {
@@ -91,7 +93,47 @@ const GlobalSEO = () => {
   const description = settings.seo_meta_description || settings.site_description || 'Professioneel webdesign';
   const siteUrl = (import.meta.env.NEXT_PUBLIC_SITE_URL || import.meta.env.VITE_SITE_URL || 'https://voswebdesigns.nl').replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}${location.pathname === '/' ? '/' : location.pathname}`;
-  const ogImage = settings.og_image || `${siteUrl}/logo.jpeg`;
+  const ogImage = toAbsoluteUrl(settings.og_image || '/logo.jpeg', siteUrl);
+  const sameAs = [
+    settings.social_instagram,
+    settings.social_linkedin,
+    settings.social_facebook,
+    settings.social_twitter,
+    settings.social_tiktok,
+    settings.social_youtube,
+  ].filter(Boolean);
+  const schema = [
+    pruneSchema({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: siteName,
+      url: siteUrl,
+      image: ogImage,
+      email: settings.contact_email || undefined,
+      telephone: settings.contact_phone || undefined,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: settings.address_street || undefined,
+        addressLocality: settings.address_city || undefined,
+        postalCode: settings.address_postal_code || undefined,
+        addressCountry: settings.address_country || 'NL',
+      },
+      sameAs: sameAs.length ? sameAs : undefined,
+    }),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: siteUrl,
+    },
+    pruneSchema({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: siteName,
+      url: canonicalUrl,
+      description,
+    }),
+  ];
 
   return (
     <Helmet>
@@ -108,8 +150,31 @@ const GlobalSEO = () => {
       <meta name="twitter:title" content={siteName} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+      <script type="application/ld+json">{JSON.stringify(schema)}</script>
     </Helmet>
   );
+};
+
+const toAbsoluteUrl = (value, siteUrl) => {
+  if (!value) return undefined;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${siteUrl}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
+const pruneSchema = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(pruneSchema).filter((item) => item !== undefined);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, entry]) => [key, pruneSchema(entry)])
+        .filter(([, entry]) => entry !== undefined && !(Array.isArray(entry) && entry.length === 0))
+    );
+  }
+
+  return value === '' ? undefined : value;
 };
 
 function App() {
