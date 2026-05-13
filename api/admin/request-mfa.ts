@@ -1,11 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { buildAdminMfaEmail } from './mfa-email.js';
-import { generateCode, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, newId, supabaseHeaders } from './mfa-utils.js';
+import { generateCode, getAdminMfaMode, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, isResendDomainNotVerified, newId, supabaseHeaders } from './mfa-utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
+    const mode = getAdminMfaMode();
+    if (mode === 'off') return res.status(200).json({ success: true, mode, mfaDisabled: true });
+
     const { supabaseUrl, serviceRoleKey } = getSupabaseConfig();
     const user = await getUserFromToken(supabaseUrl, serviceRoleKey, getBearerToken(req));
 
@@ -29,7 +32,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'Vos Web Designs <contact@voswebdesigns.nl>';
     const resendKey = process.env.RESEND_API_KEY;
-    if (!resendKey) return res.status(500).json({ error: 'Mail configuration missing' });
+    if (!resendKey) {
+      const payload = { success: false, reason: 'mail_config_missing', mode, error: 'Mail configuration missing' };
+      return mode === 'optional' ? res.status(200).json(payload) : res.status(500).json(payload);
+    }
 
     const { subject, html, text } = buildAdminMfaEmail({ code, email: user.email, expiresMinutes: 10 });
 
@@ -48,10 +54,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!mailResponse.ok) {
       const body = await mailResponse.text();
       console.error('ADMIN_MFA_MAIL_ERROR', { status: mailResponse.status, body });
-      return res.status(500).json({ error: 'MFA mail could not be sent' });
+      if (isResendDomainNotVerified(mailResponse.status, body)) {
+        return res.status(200).json({ success: false, reason: 'domain_not_verified', mode });
+      }
+      const payload = { success: false, reason: 'mail_failed', mode, error: 'MFA mail could not be sent' };
+      return mode === 'optional' ? res.status(200).json(payload) : res.status(500).json(payload);
     }
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, mode });
   } catch (error) {
     console.error('ADMIN_MFA_REQUEST_ERROR', error);
     return res.status(500).json({ error: 'MFA request failed' });

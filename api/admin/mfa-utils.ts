@@ -14,6 +14,16 @@ export const getRequiredEnv = (name: string) => {
   return value;
 };
 
+
+export const getAdminMfaMode = () => {
+  const raw = (process.env.ADMIN_MFA_MODE || 'optional').toLowerCase();
+  return raw === 'off' || raw === 'required' || raw === 'optional' ? raw : 'optional';
+};
+
+export const isResendDomainNotVerified = (status: number, body: string) => (
+  status === 403 && /domain is not verified/i.test(body || '')
+);
+
 export const getBearerToken = (req: VercelRequest) => {
   const header = req.headers.authorization || '';
   return header.startsWith('Bearer ') ? header.slice('Bearer '.length) : '';

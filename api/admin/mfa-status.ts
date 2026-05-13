@@ -1,7 +1,25 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getCookieValue, MFA_COOKIE_NAME } from './mfa-utils.js';
+import { getAdminMfaMode, getCookieValue, MFA_COOKIE_NAME } from './mfa-utils.js';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  return res.status(200).json({ ok: getCookieValue(req, MFA_COOKIE_NAME) === '1' });
+
+  const mode = getAdminMfaMode();
+  const verified = getCookieValue(req, MFA_COOKIE_NAME) === '1';
+
+  if (mode === 'off') {
+    return res.status(200).json({ ok: true, mode, verified: false, mfaRequired: false });
+  }
+
+  if (mode === 'optional' && !verified) {
+    return res.status(200).json({
+      ok: true,
+      mode,
+      verified: false,
+      mfaRequired: false,
+      reason: 'optional_not_verified',
+    });
+  }
+
+  return res.status(200).json({ ok: verified, mode, verified, mfaRequired: !verified });
 }

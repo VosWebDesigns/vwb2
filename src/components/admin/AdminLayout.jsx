@@ -11,6 +11,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mfaStatus, setMfaStatus] = useState('checking');
+  const [mfaNotice, setMfaNotice] = useState(null);
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -29,10 +30,20 @@ const AdminLayout = () => {
       try {
         const response = await fetch('/api/admin/mfa-status', { credentials: 'include' });
         const data = await response.json().catch(() => ({}));
-        if (active) setMfaStatus(data?.ok ? 'ok' : 'required');
+        if (active) {
+          setMfaStatus(data?.ok ? 'ok' : 'required');
+          if (data?.mode === 'optional' && !data?.verified) {
+            setMfaNotice(data?.reason || 'optional_not_verified');
+          } else {
+            setMfaNotice(null);
+          }
+        }
       } catch (error) {
         console.error('ADMIN_MFA_STATUS_ERROR', error);
-        if (active) setMfaStatus('required');
+        if (active) {
+          setMfaStatus('required');
+          setMfaNotice('status_error');
+        }
       }
     };
 
@@ -172,6 +183,11 @@ const AdminLayout = () => {
         
         {/* Scrollable Content Container */}
         <div className="flex-1 p-4 lg:p-8 w-full max-w-[100vw] overflow-x-hidden">
+          {mfaNotice && (
+            <div className="mb-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
+              <strong className="text-amber-200">MFA optioneel actief:</strong> de admin is toegankelijk, maar er is nog geen geldige e-mailverificatie in deze sessie. Controleer RESEND_FROM_EMAIL/domeinverificatie en zet ADMIN_MFA_MODE=required zodra mail betrouwbaar werkt.
+            </div>
+          )}
           <Outlet />
         </div>
       </main>

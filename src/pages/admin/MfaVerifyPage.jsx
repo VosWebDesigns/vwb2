@@ -12,6 +12,7 @@ const MfaVerifyPage = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [configNotice, setConfigNotice] = useState(null);
 
   const requestCode = async () => {
     setLoading(true);
@@ -20,7 +21,18 @@ const MfaVerifyPage = () => {
         method: 'POST',
         headers: { Authorization: `Bearer ${session?.access_token || ''}` },
       });
-      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || await response.text());
+      if (data?.success === false) {
+        setConfigNotice(data.reason);
+        if (data.reason === 'domain_not_verified') {
+          toast({ variant: 'destructive', title: 'Resend domein niet geverifieerd', description: 'Gebruik tijdelijk onboarding@resend.dev of verifieer het domein.' });
+          return;
+        }
+        toast({ variant: 'destructive', title: 'Code niet verstuurd', description: 'Controleer RESEND_API_KEY en RESEND_FROM_EMAIL.' });
+        return;
+      }
+      setConfigNotice(null);
       toast({ title: 'Code verstuurd', description: 'Controleer uw mailbox voor een nieuwe code.' });
     } catch (error) {
       console.error('ADMIN_MFA_RESEND_ERROR', error);
@@ -58,6 +70,14 @@ const MfaVerifyPage = () => {
         <p className="eyebrow">Admin beveiliging</p>
         <h1 className="mt-3 font-heading text-4xl font-black tracking-[-.06em]">Verifieer uw login</h1>
         <p className="mt-4 text-sm leading-6 text-slate-300">Vul de 6-cijferige code in die naar uw admin e-mailadres is gestuurd.</p>
+        {configNotice && (
+          <div className="mt-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-left text-sm leading-6 text-amber-100">
+            <strong className="block text-amber-200">MFA-mail kon niet worden verstuurd.</strong>
+            {configNotice === 'domain_not_verified'
+              ? 'Resend accepteert dit afzenderdomein nog niet. Zet RESEND_FROM_EMAIL tijdelijk op onboarding@resend.dev of verifieer voswebdesigns.nl in Resend.'
+              : 'Controleer RESEND_API_KEY en RESEND_FROM_EMAIL in Vercel.'}
+          </div>
+        )}
         <form onSubmit={verifyCode} className="mt-7 grid gap-4">
           <input
             inputMode="numeric"

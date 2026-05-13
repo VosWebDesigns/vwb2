@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Send } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
+import { trackAnalyticsEvent } from '@/components/CookieBanner';
 
 const initial = { name: '', email: '', phone: '', company: '', service: '', package: '', message: '', website: '', company_website: '' };
 
@@ -24,6 +25,7 @@ const ContactPage = () => {
     try {
       const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       if (!res.ok) throw new Error(await res.text());
+      trackAnalyticsEvent('submit_contact', { service: formData.service || 'unknown' });
       toast({ title: 'Bericht verzonden', description: 'We reageren binnen 24 uur met een eerste voorstel.' });
       setFormData(initial);
       setStatus('sent');

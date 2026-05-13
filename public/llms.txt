@@ -9,6 +9,8 @@
 - [Diensten – Vos Web Designs](/services): Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs.
 - [Geen toegang - Vos Web Designs](/forbidden): No description available
 - [Instellingen - Vos Admin](/settings): No description available
+- [Nieuwsbrief afgemeld | Vos Web Designs](/unsubscribed): No description available
+- [Nieuwsbrief bevestigd | Vos Web Designs](/confirmed): No description available
 - [Over Ons - Vos Web Designs](/about): Leer Vos Web Designs kennen. Persoonlijk, resultaatgericht en gebouwd op moderne technologie.
 - [Portfolio - Vos Web Designs](/portfolio): Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten.
 - [Privacybeleid - Vos Web Designs](/privacypolicy): Privacybeleid van Vos Web Designs. Lees hoe wij omgaan met uw gegevens volgens de AVG/GDPR richtlijnen.
