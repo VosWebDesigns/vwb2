@@ -24,6 +24,8 @@ import ContactPage from '@/pages/ContactPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsPage from '@/pages/TermsPage';
+import ConfirmedPage from '@/pages/newsletter/ConfirmedPage';
+import UnsubscribedPage from '@/pages/newsletter/UnsubscribedPage';
 import ForbiddenPage from '@/pages/ForbiddenPage';
 
 // Admin Imports
@@ -35,6 +37,7 @@ import TestimonialsPage from '@/pages/admin/TestimonialsPage';
 import CategoriesPage from '@/pages/admin/CategoriesPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
 import MfaVerifyPage from '@/pages/admin/MfaVerifyPage';
+import NewsletterPage from '@/pages/admin/NewsletterPage';
 
 
 class AppErrorBoundary extends React.Component {
@@ -141,6 +144,8 @@ const routes = createRoutesFromElements(
     <Route path="contact" element={<PublicPageLayout><ContactPage /></PublicPageLayout>} />
     <Route path="privacy" element={<PublicPageLayout><PrivacyPolicyPage /></PublicPageLayout>} />
     <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></PublicPageLayout>} />
+    <Route path="newsletter/confirmed" element={<PublicPageLayout><ConfirmedPage /></PublicPageLayout>} />
+    <Route path="newsletter/unsubscribed" element={<PublicPageLayout><UnsubscribedPage /></PublicPageLayout>} />
     <Route path="login" element={<LoginPage />} />
     <Route path="forbidden" element={<PublicPageLayout><ForbiddenPage /></PublicPageLayout>} />
     <Route path="admin/verify" element={<MfaVerifyPage />} />
@@ -151,6 +156,7 @@ const routes = createRoutesFromElements(
       <Route path="testimonials" element={<TestimonialsPage />} />
       <Route path="categories" element={<CategoriesPage />} />
       <Route path="settings" element={<SettingsPage />} />
+      <Route path="newsletter" element={<NewsletterPage />} />
     </Route>
 
     <Route path="*" element={<PublicPageLayout><NotFoundPage /></PublicPageLayout>} />

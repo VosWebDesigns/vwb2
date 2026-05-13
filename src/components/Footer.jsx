@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowUpRight,
@@ -9,6 +9,7 @@ import {
   MapPin,
   MessageCircle,
   Phone,
+  Send,
   Youtube,
 } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -49,6 +50,37 @@ const Footer = () => {
   const location = getLocation(settings);
   const telHref = contactPhone ? cleanPhoneHref(contactPhone) : '';
   const whatsappUrl = contactPhone ? getWhatsappUrl(contactPhone) : '';
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterWebsite, setNewsletterWebsite] = useState('');
+  const [newsletterState, setNewsletterState] = useState({ status: 'idle', message: '' });
+
+  const handleNewsletterSubmit = async (event) => {
+    event.preventDefault();
+    if (newsletterState.status === 'loading') return;
+
+    const email = newsletterEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email)) {
+      setNewsletterState({ status: 'error', message: 'Vul een geldig e-mailadres in.' });
+      return;
+    }
+
+    setNewsletterState({ status: 'loading', message: 'Inschrijving verwerken...' });
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, website: newsletterWebsite }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || 'Inschrijven is niet gelukt.');
+      setNewsletterEmail('');
+      setNewsletterState({ status: 'success', message: data?.message || 'Check je mail om te bevestigen.' });
+    } catch (error) {
+      setNewsletterState({ status: 'error', message: error.message || 'Inschrijven is tijdelijk niet gelukt.' });
+    }
+  };
+
   const socialLinks = [
     { label: 'Instagram', href: settings?.social_instagram, icon: Instagram },
     { label: 'LinkedIn', href: settings?.social_linkedin, icon: Linkedin },
@@ -116,6 +148,47 @@ const Footer = () => {
           </div>
 
           <div className="grid content-start gap-7">
+            <div className="grid gap-3 rounded-3xl border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/5 p-4 shadow-[0_20px_80px_rgba(56,189,248,0.08)]">
+              <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Nieuwsbrief</span>
+              <p className="text-sm leading-6 text-slate-400">1x per maand tips, cases en updates om uw website slimmer te laten groeien.</p>
+              <form onSubmit={handleNewsletterSubmit} className="grid gap-3">
+                <label className="sr-only" htmlFor="newsletter-email">E-mailadres</label>
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  value={newsletterEmail}
+                  onChange={(event) => setNewsletterEmail(event.target.value)}
+                  placeholder="uw@email.nl"
+                  disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
+                  className="min-h-12 rounded-2xl border border-white/10 bg-[#07111f] px-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-70"
+                />
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={newsletterWebsite}
+                  onChange={(event) => setNewsletterWebsite(event.target.value)}
+                  className="hidden"
+                  aria-hidden="true"
+                />
+                <button
+                  type="submit"
+                  disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-5 text-sm font-black text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  <Send size={16} />
+                  {newsletterState.status === 'loading' ? 'Versturen...' : 'Inschrijven'}
+                </button>
+              </form>
+              {newsletterState.message && (
+                <p className={`text-sm leading-6 ${newsletterState.status === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>
+                  {newsletterState.message}
+                </p>
+              )}
+              <p className="text-xs leading-5 text-slate-500">Afmelden kan altijd. Lees ons <Link to="/privacy" className="text-[color:var(--accent)] underline-offset-4 hover:underline">privacybeleid</Link>.</p>
+            </div>
+
             <div className="grid gap-3">
               <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Volg ons</span>
               {socialLinks.length > 0 ? (
@@ -138,8 +211,6 @@ const Footer = () => {
                 <p className="text-sm leading-6 text-slate-500">Social media links worden binnenkort toegevoegd.</p>
               )}
             </div>
-
-
           </div>
         </div>
 
