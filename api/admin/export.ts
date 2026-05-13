@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from '../_sentry.js';
 import { getBearerToken, getSupabaseConfig, getUserFromToken, isAdminUser, supabaseHeaders } from './mfa-utils.js';
 
 const EXPORT_TABLES = ['projects', 'testimonials', 'site_settings', 'leads', 'newsletter_subscribers'] as const;
@@ -54,7 +55,7 @@ const toCsv = (rows: Record<string, unknown>[]) => {
   ].join('\n');
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
@@ -89,6 +90,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).send(JSON.stringify(payload, null, 2));
   } catch (error) {
     console.error('ADMIN_EXPORT_ERROR', error);
+    void captureException(error, { req, tags: { route: '/admin/export' } });
     return res.status(500).json({ error: 'Export failed' });
   }
 }
+
+export default wrapHandler(handler, { route: '/admin/export.ts' });

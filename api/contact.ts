@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from './_sentry.js';
 import { buildAdminLeadEmail, buildCustomerConfirmationEmail } from './email/templates.js';
 
 const DEFAULT_FROM_EMAIL = 'Vos Web Designs <contact@voswebdesigns.nl>';
@@ -106,7 +107,7 @@ const sendEmail = async (payload: Record<string, unknown>) => {
   return { data: await response.json(), error: null };
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -175,6 +176,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('CONTACT_MAIL_ERROR', error);
+    void captureException(error, { req, tags: { route: '/contact' } });
     return res.status(500).json({ error: 'Mail failed' });
   }
 }
+
+export default wrapHandler(handler, { route: '/contact.ts' });

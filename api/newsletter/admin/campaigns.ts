@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from '../../_sentry.js';
 import { json, parseBody, requireAdmin, rest } from '../utils.js';
 
 const sanitizeCampaign = (body: Record<string, any>, userId?: string) => ({
@@ -10,7 +11,7 @@ const sanitizeCampaign = (body: Record<string, any>, userId?: string) => ({
   ...(userId ? { created_by: userId } : {}),
 });
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   const admin = await requireAdmin(req);
   if (!admin) return json(res, 401, { error: 'Unauthorized' });
 
@@ -50,6 +51,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return json(res, 405, { error: 'Method not allowed' });
   } catch (error) {
     console.error('NEWSLETTER_ADMIN_CAMPAIGNS_ERROR', error);
+    void captureException(error, { req, tags: { route: '/newsletter/admin/campaigns' } });
     return json(res, 500, { error: 'Campaign request failed' });
   }
 }
+
+export default wrapHandler(handler, { route: '/newsletter/admin/campaigns.ts' });

@@ -134,14 +134,15 @@ const ImagePickerModal = ({
     try {
       const ext = getExtension(file.name, file.type);
       const owner = campaignId || 'draft';
-      const path = `newsletter/${owner}/${crypto.randomUUID()}.${ext}`;
+      const rootPrefix = DEFAULT_PREFIX_BY_BUCKET[selectedBucket] || 'newsletter';
+      const path = `${rootPrefix}/${owner}/${crypto.randomUUID()}.${ext}`;
       const contentType = file.type || `image/${ext === 'jpg' ? 'jpeg' : ext}`;
       const { error } = await supabase.storage
-        .from('newsletter-media')
+        .from(selectedBucket)
         .upload(path, file, { cacheControl: '3600', contentType, upsert: false });
       if (error) throw error;
 
-      const { data } = supabase.storage.from('newsletter-media').getPublicUrl(path);
+      const { data } = supabase.storage.from(selectedBucket).getPublicUrl(path);
       toast({ title: 'Afbeelding geüpload', description: 'De public URL is geselecteerd.' });
       selectImage({ url: data.publicUrl, alt: fileNameToAlt(file.name) });
     } catch (error) {
@@ -183,8 +184,8 @@ const ImagePickerModal = ({
           <TabsContent value="upload" className="mt-5">
             <label className="flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/20 p-8 text-center transition hover:border-[#38bdf8]/70">
               {uploading ? <Loader2 className="mb-3 animate-spin text-[#38bdf8]" /> : <Upload className="mb-3 text-[#38bdf8]" />}
-              <span className="font-bold text-white">Upload naar newsletter-media</span>
-              <span className="mt-2 text-sm text-slate-400">Bestanden worden public-read opgeslagen in newsletter/{campaignId || 'draft'}/...</span>
+              <span className="font-bold text-white">Upload naar {selectedBucket}</span>
+              <span className="mt-2 text-sm text-slate-400">Bestanden worden public-read opgeslagen in de gekozen bucket onder een nette campagne-map.</span>
               <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadFile} />
             </label>
           </TabsContent>
