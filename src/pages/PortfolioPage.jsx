@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import SmartImage from '@/components/SmartImage';
+import { trackAnalyticsEvent } from '@/components/CookieBanner';
 
 const logError = (label, error) => {
   if (error) console.error(label, { message: error.message, details: error.details, hint: error.hint, code: error.code });
@@ -81,7 +82,7 @@ const PortfolioPage = () => {
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredProjects.map((project, index) => (
                   <motion.article key={project.id} initial={{ opacity: 0, y: 30 }} animate={projectsInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: index * 0.06 }} className="panel cut group overflow-hidden">
-                    <Link to={`/portfolio/${project.id}`}>
+                    <Link to={`/portfolio/${project.id}`} onClick={() => trackAnalyticsEvent('click_portfolio', { project_id: project.id })}>
                       <div className="aspect-[4/3] overflow-hidden bg-slate-950">
                         {project.hero_image ? <SmartImage src={project.hero_image} alt={project.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center text-slate-500">Geen afbeelding</div>}
                       </div>

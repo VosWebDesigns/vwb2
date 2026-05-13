@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
+import CookieBanner from '@/components/CookieBanner';
 
 import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
@@ -127,6 +128,7 @@ const RootLayout = () => (
       <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
         <GlobalSEO />
         <Outlet />
+        <CookieBanner />
         <Toaster />
       </div>
     </SettingsProvider>

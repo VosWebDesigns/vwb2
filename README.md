@@ -25,8 +25,11 @@ Zet op Vercel bij Project Settings → Environment Variables minimaal deze varia
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 RESEND_API_KEY=
+RESEND_FROM_EMAIL=
 SITE_URL=
+ADMIN_MFA_MODE=optional
 ```
 
 Gebruik lokaal een `.env.local` bestand met dezelfde keys. Je kunt starten vanaf `.env.example`:
@@ -36,12 +39,15 @@ cp .env.example .env.local
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL` en `NEXT_PUBLIC_SUPABASE_ANON_KEY` worden door de Vite client bundle gebruikt voor Supabase. `VITE_SUPABASE_URL` en `VITE_SUPABASE_ANON_KEY` blijven als fallback ondersteund.
-- `RESEND_API_KEY` wordt gebruikt door `/api/contact`.
-- `SITE_URL` wordt gebruikt voor absolute URLs in `/sitemap.xml`.
+- `SUPABASE_SERVICE_ROLE_KEY` is server-only en wordt gebruikt door Vercel API routes voor admin MFA en nieuwsbriefacties.
+- `RESEND_API_KEY` en `RESEND_FROM_EMAIL` worden gebruikt door `/api/contact`, admin MFA en nieuwsbriefmails. Gebruik tijdelijk `onboarding@resend.dev` of verifieer het domein voordat `contact@voswebdesigns.nl` als afzender wordt gebruikt.
+- `ADMIN_MFA_MODE` ondersteunt `off`, `optional` en `required`; start veilig met `optional` en zet op `required` zodra Resend betrouwbaar mailt.
+- `VITE_SENTRY_DSN` is optioneel voor browser monitoring. `VITE_PLAUSIBLE_DOMAIN` of `VITE_GA_ID` schakelt analytics in na cookie consent.
+- `SITE_URL` wordt gebruikt voor absolute URLs in `/sitemap.xml` en nieuwsbrieflinks.
 
 ## Supabase setup
 
-1. Run de SQL migraties in `supabase/migrations/` op de Supabase database. De launch-ready basis staat in `supabase/migrations/001_portfolio_gallery.sql`.
+1. Run de SQL migraties in `supabase/migrations/` op de Supabase database. Voor deze finish-touch pack zijn vooral `202605120001_projects_featured_preview.sql`, `202605120002_admin_mfa_and_settings.sql` en `202605130001_newsletter.sql` belangrijk.
 2. De migratie maakt of verhardt:
    - `public.profiles` met `user_id` en `role`.
    - `public.is_admin(uid uuid)`.

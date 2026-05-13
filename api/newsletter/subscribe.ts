@@ -49,13 +49,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const confirmUrl = `${SITE_URL()}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
     const emailPayload = buildConfirmEmail({ confirmUrl, email });
-    await sendResendEmail({
-      from: process.env.RESEND_FROM_EMAIL || 'Vos Web Designs <contact@voswebdesigns.nl>',
-      to: [email],
-      subject: 'Bevestig je inschrijving – Vos Web Designs',
-      html: emailPayload.html,
-      text: emailPayload.text,
-    });
+    try {
+      await sendResendEmail({
+        from: process.env.RESEND_FROM_EMAIL || 'Vos Web Designs <contact@voswebdesigns.nl>',
+        to: [email],
+        subject: 'Bevestig je inschrijving – Vos Web Designs',
+        html: emailPayload.html,
+        text: emailPayload.text,
+      });
+    } catch (mailError) {
+      console.error('NEWSLETTER_CONFIRM_MAIL_ERROR', mailError);
+      const serialized = JSON.stringify((mailError as any)?.body || mailError || {});
+      if (/domain is not verified/i.test(serialized)) {
+        return json(res, 200, {
+          success: false,
+          reason: 'domain_not_verified',
+          error: 'Nieuwsbriefmail kon niet worden verstuurd: verifieer het Resend domein of gebruik tijdelijk onboarding@resend.dev.',
+        });
+      }
+      return json(res, 500, { error: 'Bevestigingsmail kon niet worden verstuurd.' });
+    }
 
     return json(res, 200, { success: true, message: 'Check je mail om te bevestigen.' });
   } catch (error) {
