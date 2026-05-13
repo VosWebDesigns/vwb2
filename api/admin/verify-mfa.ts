@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { clearMfaCookie, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, mfaCookie, supabaseHeaders } from './mfa-utils';
+import { clearMfaCookie, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, mfaCookie, supabaseHeaders } from './mfa-utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
