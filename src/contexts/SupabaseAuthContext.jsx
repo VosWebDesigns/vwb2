@@ -21,28 +21,38 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = useCallback(async (authUser) => {
-    if (!authUser) {
+    if (!authUser?.id) {
       setProfile(null);
+      setIsAdmin(false);
+      setProfileLoading(false);
       return null;
     }
 
+    setProfileLoading(true);
+
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('user_id, role, full_name')
       .eq('user_id', authUser.id)
       .maybeSingle();
 
     if (error) {
       logSupabaseError('PROFILE_FETCH_ERROR', error);
       setProfile(null);
+      setIsAdmin(false);
+      setProfileLoading(false);
       return null;
     }
 
-    setProfile(data || null);
-    return data || null;
+    setProfile(data ?? null);
+    setIsAdmin(data?.role === 'admin');
+    setProfileLoading(false);
+    return data ?? null;
   }, []);
 
   const handleSession = useCallback(async (nextSession) => {
@@ -158,24 +168,25 @@ export const AuthProvider = ({ children }) => {
       });
     } else {
       setProfile(null);
+      setIsAdmin(false);
+      setProfileLoading(false);
     }
 
     return { error };
   }, [toast]);
-
-  const isAdmin = profile?.role === 'admin';
 
   const value = useMemo(() => ({
     user,
     session,
     profile,
     isAdmin,
+    profileLoading,
     loading,
     refreshProfile: () => fetchProfile(user),
     signUp,
     signIn,
     signOut,
-  }), [user, session, profile, isAdmin, loading, fetchProfile, signUp, signIn, signOut]);
+  }), [user, session, profile, isAdmin, profileLoading, loading, fetchProfile, signUp, signIn, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

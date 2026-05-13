@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminLayout = () => {
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, loading, isAdmin, profileLoading, signOut } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mfaStatus, setMfaStatus] = useState('checking');
@@ -21,7 +21,7 @@ const AdminLayout = () => {
     let active = true;
 
     const checkMfa = async () => {
-      if (loading || !user || !isAdmin) {
+      if (loading || profileLoading || !user || !isAdmin) {
         if (active) setMfaStatus('checking');
         return;
       }
@@ -38,9 +38,9 @@ const AdminLayout = () => {
 
     checkMfa();
     return () => { active = false; };
-  }, [loading, user, isAdmin]);
+  }, [loading, profileLoading, user, isAdmin]);
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen cinema-bg text-white flex items-center justify-center">
         <div className="animate-pulse text-[#38bdf8]">Laden...</div>
