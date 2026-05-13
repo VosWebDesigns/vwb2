@@ -4,16 +4,33 @@ const isBrowser = typeof window !== 'undefined';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+const decodeJwtPayload = (token) => {
+  if (!token || typeof token !== 'string' || !token.includes('.')) return null;
+
+  try {
+    const payload = token.split('.')[1];
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '='));
+    return JSON.parse(json);
+  } catch (_error) {
+    return null;
+  }
+};
+
+const anonKeyPayload = isBrowser ? decodeJwtPayload(supabaseAnonKey) : null;
+const hasFrontendServiceRoleKey = anonKeyPayload?.role === 'service_role';
+
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey && !hasFrontendServiceRoleKey);
 export const supabaseConfigStatus = {
   hasUrl: Boolean(supabaseUrl),
   hasAnonKey: Boolean(supabaseAnonKey),
+  hasFrontendServiceRoleKey,
 };
 
 const createSupabaseUnavailableError = () => ({
   message: 'Supabase is niet geconfigureerd voor deze frontend build.',
   details: null,
-  hint: 'Set VITE_SUPABASE_URL en VITE_SUPABASE_ANON_KEY. Gebruik nooit een service-role key in de frontend.',
+  hint: 'Set VITE_SUPABASE_URL en VITE_SUPABASE_ANON_KEY. Gebruik nooit NEXT_PUBLIC_* of een service-role key in de frontend.',
   code: 'SUPABASE_ENV_MISSING',
 });
 

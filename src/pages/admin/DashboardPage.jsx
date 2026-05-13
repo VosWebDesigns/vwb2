@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '@/lib/customSupabaseClient';
+import useSafeAdminRealtime from '@/hooks/useSafeAdminRealtime';
 import { formatDateTimeNL } from '@/lib/formatDateTime';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,9 +56,8 @@ const formatActivityText = (a) => {
 /* ================= PAGE ================= */
 
 const DashboardPage = () => {
-  const { user, session } = useAuth();
+  const { user, session, isAdmin, profileLoading, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const channelRef = useRef(null);
 
   const [stats, setStats] = useState({
     projects: 0,
@@ -167,88 +167,40 @@ const DashboardPage = () => {
     fetchInitialData();
   }, []);
 
-  /* ================= REALTIME (ADMIN ONLY, SAFE) ================= */
+  /* ================= REALTIME (OPTIONAL ADMIN ENHANCEMENT) ================= */
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || !isSupabaseConfigured || channelRef.current) {
-      return undefined;
-    }
+  const handleActivityChange = useCallback((payload) => {
+    const activity = payload?.new;
+    if (!activity) return;
 
-    let mounted = true;
-    let channel = null;
+    setActivities(prev => [activity, ...prev].slice(0, 8));
 
-    try {
-      channel = supabase
-        .channel('activity-log-realtime')
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'activity_log' },
-          (payload) => {
-            if (!mounted) return;
-
-            try {
-              const activity = payload?.new;
-              if (!activity) return;
-
-              setActivities(prev => [activity, ...prev].slice(0, 8));
-
-              toast({
-                title: 'Nieuwe activiteit',
-                description: `${formatActivityText(activity)} ${
-                  activity.user_id === user?.id ? '(door jou)' : '(door andere gebruiker)'
-                }`,
-                action: getTargetRoute(activity)
-                  ? (
-                    <Button
-                      variant="link"
-                      className="text-[#38bdf8]"
-                      onClick={() => navigate(getTargetRoute(activity))}
-                    >
-                      Bekijk
-                    </Button>
-                  )
-                  : null,
-              });
-            } catch (callbackError) {
-              if (import.meta.env.DEV) {
-                console.warn('Activity realtime update overgeslagen.', callbackError);
-              }
-            }
-          }
-        );
-
-      channelRef.current = channel;
-
-      channel.subscribe((status, error) => {
-        if (!mounted) return;
-        if ((status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') && import.meta.env.DEV) {
-          console.warn('Activity realtime niet beschikbaar; dashboard blijft werken.', { status, error });
-        }
-      });
-    } catch (subscriptionError) {
-      channelRef.current = null;
-      if (import.meta.env.DEV) {
-        console.warn('Activity realtime subscription kon niet starten.', subscriptionError);
-      }
-    }
-
-    return () => {
-      mounted = false;
-      const activeChannel = channelRef.current || channel;
-      channelRef.current = null;
-
-      if (activeChannel) {
-        try {
-          activeChannel.unsubscribe?.();
-          supabase.removeChannel?.(activeChannel);
-        } catch (cleanupError) {
-          if (import.meta.env.DEV) {
-            console.warn('Activity realtime cleanup overgeslagen.', cleanupError);
-          }
-        }
-      }
-    };
+    toast({
+      title: 'Nieuwe activiteit',
+      description: `${formatActivityText(activity)} ${
+        activity.user_id === user?.id ? '(door jou)' : '(door andere gebruiker)'
+      }`,
+      action: getTargetRoute(activity)
+        ? (
+          <Button
+            variant="link"
+            className="text-[#38bdf8]"
+            onClick={() => navigate(getTargetRoute(activity))}
+          >
+            Bekijk
+          </Button>
+        )
+        : null,
+    });
   }, [navigate, user?.id]);
+
+  useSafeAdminRealtime({
+    enabled: Boolean(isSupabaseConfigured && user && session && isAdmin && !authLoading && !profileLoading),
+    channelName: 'activity-log-realtime',
+    table: 'activity_log',
+    event: 'INSERT',
+    onChange: handleActivityChange,
+  });
 
 
   const downloadExport = async (format = 'json', table) => {

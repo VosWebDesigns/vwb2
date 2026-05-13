@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Helmet } from 'react-helmet';
+import { isSupabaseConfigured } from '@/lib/customSupabaseClient';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -21,6 +22,20 @@ const LoginPage = () => {
     }
     setLoading(false);
   };
+
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen cinema-bg flex items-center justify-center px-4 text-white">
+        <Helmet>
+          <title>Admin configuratie ontbreekt - Vos Web Designs</title>
+        </Helmet>
+        <div className="panel cut p-8 w-full max-w-md text-center">
+          <h1 className="font-heading text-3xl font-black tracking-[-.05em]">Admin configuratie ontbreekt.</h1>
+          <p className="mt-4 text-gray-300">Controleer Supabase environment variables.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen cinema-bg flex items-center justify-center px-4 text-white">

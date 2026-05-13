@@ -45,6 +45,54 @@ import NewsletterPage from '@/pages/admin/NewsletterPage';
 import InboxPage from '@/pages/admin/InboxPage';
 
 
+
+class AdminErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ADMIN_RENDER_ERROR', error, errorInfo);
+    capture(error, { extra: errorInfo });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <AdminErrorFallback onRetry={() => this.setState({ hasError: false })} />;
+    }
+
+    return this.props.children;
+  }
+}
+
+const AdminErrorFallback = ({ onRetry }) => (
+  <div className="min-h-screen cinema-bg flex items-center justify-center px-4 text-white">
+    <section className="panel cut max-w-xl p-8 text-center">
+      <p className="text-sm font-black uppercase tracking-[.2em] text-[#38bdf8]">Vos Admin</p>
+      <h1 className="mt-4 text-3xl font-black text-white">Er ging iets mis in het beheerpaneel.</h1>
+      <p className="mt-4 text-gray-300">De publieke website blijft beschikbaar. Probeer het beheerpaneel opnieuw te laden.</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-7 rounded-full bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-6 py-3 font-black text-black hover:opacity-90"
+      >
+        Opnieuw proberen
+      </button>
+    </section>
+  </div>
+);
+
 class AppErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -232,6 +280,12 @@ const RouteErrorBoundary = ({ children }) => {
   return <SectionErrorBoundary resetKey={location.pathname}>{children}</SectionErrorBoundary>;
 };
 
+
+const AdminRouteErrorBoundary = ({ children }) => {
+  const location = useLocation();
+  return <AdminErrorBoundary resetKey={location.pathname}>{children}</AdminErrorBoundary>;
+};
+
 const RootLayout = () => (
   <AuthProvider>
     <SettingsProvider>
@@ -264,9 +318,10 @@ const routes = createRoutesFromElements(
     <Route path="newsletter/unsubscribed" element={<PublicPageLayout><UnsubscribedPage /></PublicPageLayout>} />
     <Route path="login" element={<LoginPage />} />
     <Route path="forbidden" element={<PublicPageLayout><ForbiddenPage /></PublicPageLayout>} />
-    <Route path="admin/verify" element={<MfaVerifyPage />} />
+    <Route path="admin/login" element={<LoginPage />} />
+    <Route path="admin/verify" element={<AdminRouteErrorBoundary><MfaVerifyPage /></AdminRouteErrorBoundary>} />
 
-    <Route path="admin" element={<AdminLayout />}>
+    <Route path="admin" element={<AdminRouteErrorBoundary><AdminLayout /></AdminRouteErrorBoundary>}>
       <Route index element={<DashboardPage />} />
       <Route path="projects" element={<ProjectsPage />} />
       <Route path="inbox" element={<InboxPage />} />
