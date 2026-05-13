@@ -22,6 +22,7 @@ const sendCampaignTo = async (campaign: any, recipient: { email: string; unsubsc
     preheader: campaign.preheader || '',
     blocks: campaignBlocks(campaign),
     heroImageUrl: campaign.hero_image_url || '',
+    heroAlt: campaign.content_json?.hero_alt || '',
     unsubscribeUrl,
   });
   return sendResendEmail({
