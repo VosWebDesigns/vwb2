@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink, Layers, TrendingUp } from 'lucide-react';
 import PortfolioGallery from '@/components/portfolio/PortfolioGallery';
 import { getPortfolioByIdWithImages } from '@/lib/portfolio';
 
@@ -68,6 +68,25 @@ const ProjectDetailPage = () => {
               <aside className="panel cut h-fit p-6">
                 <p className="eyebrow">Projectinfo</p>
                 <p className="mt-4 text-2xl font-bold leading-tight">{project.short_description || 'Een maatwerk project van Vos Web Designs.'}</p>
+                <div className="mt-6 grid gap-3">
+                  {project.live_url && (
+                    <a href={project.live_url} target="_blank" rel="noreferrer" className="cta-link w-full justify-center">
+                      Bekijk live website <ExternalLink size={18} />
+                    </a>
+                  )}
+                  {project.stack && (
+                    <div className="rounded-2xl border border-[color:var(--stroke)] bg-white/[.035] p-4">
+                      <span className="flex items-center gap-2 text-xs uppercase tracking-[.18em] text-[color:var(--accent)]"><Layers size={14} /> Stack</span>
+                      <p className="mt-2 font-bold text-white">{project.stack}</p>
+                    </div>
+                  )}
+                  {project.resultaat && (
+                    <div className="rounded-2xl border border-[#38bdf8]/30 bg-[#38bdf8]/10 p-4">
+                      <span className="flex items-center gap-2 text-xs uppercase tracking-[.18em] text-[#38bdf8]"><TrendingUp size={14} /> Resultaat</span>
+                      <p className="mt-2 text-xl font-black text-white">{project.resultaat}</p>
+                    </div>
+                  )}
+                </div>
               </aside>
               <article className="panel cut p-6 md:p-9">
                 <h2 className="font-heading text-4xl font-black tracking-[-.05em]">Projectbeschrijving</h2>

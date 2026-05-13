@@ -39,6 +39,7 @@ import CategoriesPage from '@/pages/admin/CategoriesPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
 import MfaVerifyPage from '@/pages/admin/MfaVerifyPage';
 import NewsletterPage from '@/pages/admin/NewsletterPage';
+import InboxPage from '@/pages/admin/InboxPage';
 
 
 class AppErrorBoundary extends React.Component {
@@ -155,6 +156,7 @@ const routes = createRoutesFromElements(
     <Route path="admin" element={<AdminLayout />}>
       <Route index element={<DashboardPage />} />
       <Route path="projects" element={<ProjectsPage />} />
+      <Route path="inbox" element={<InboxPage />} />
       <Route path="testimonials" element={<TestimonialsPage />} />
       <Route path="categories" element={<CategoriesPage />} />
       <Route path="settings" element={<SettingsPage />} />

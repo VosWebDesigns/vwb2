@@ -26,6 +26,8 @@ const INITIAL_FORM_STATE = {
   description: '',
   hero_image: '',
   live_url: '',
+  stack: '',
+  resultaat: '',
   featured_preview_image: '',
   client: '',
   year: '2026',
@@ -247,6 +249,18 @@ const ProjectsPage = () => {
                   placeholder="Live website URL (https://...)"
                   value={formData.live_url || ''}
                   onChange={e => setFormData({ ...formData, live_url: e.target.value })}
+                />
+                <input
+                  className={INPUT}
+                  placeholder="Tech stack (bv. React, Supabase, Vercel)"
+                  value={formData.stack || ''}
+                  onChange={e => setFormData({ ...formData, stack: e.target.value })}
+                />
+                <input
+                  className={INPUT}
+                  placeholder="Resultaat (bv. +32% aanvragen)"
+                  value={formData.resultaat || ''}
+                  onChange={e => setFormData({ ...formData, resultaat: e.target.value })}
                 />
 
                 <div className="space-y-2">

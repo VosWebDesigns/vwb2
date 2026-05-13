@@ -12,7 +12,10 @@ import {
   Layers,
   Eye,
   Plus,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle,
+  CheckCircle2,
+  Download
 } from 'lucide-react';
 
 /* ================= HELPERS ================= */
@@ -52,7 +55,7 @@ const formatActivityText = (a) => {
 /* ================= PAGE ================= */
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const navigate = useNavigate();
   const channelRef = useRef(null);
 
@@ -61,6 +64,7 @@ const DashboardPage = () => {
     testimonials: 0,
     categories: 0,
   });
+  const [healthChecks, setHealthChecks] = useState([]);
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +80,10 @@ const DashboardPage = () => {
           projects,
           testimonials,
           categories,
-          activityRes
+          activityRes,
+          featuredProjects,
+          visibleTestimonials,
+          settingsRes
         ] = await Promise.all([
           supabase.from('projects').select('*', { count: 'exact', head: true }),
           supabase.from('testimonials').select('*', { count: 'exact', head: true }),
@@ -86,6 +93,20 @@ const DashboardPage = () => {
             .select('*')
             .order('created_at', { ascending: false })
             .limit(8),
+          supabase
+            .from('projects')
+            .select('id', { count: 'exact', head: true })
+            .eq('is_featured', true)
+            .or('is_published.is.null,is_published.eq.true'),
+          supabase
+            .from('testimonials')
+            .select('id', { count: 'exact', head: true })
+            .or('is_visible.is.null,is_visible.eq.true'),
+          supabase
+            .from('site_settings')
+            .select('contact_email, contact_phone, social_instagram, social_linkedin, social_facebook, social_twitter, social_tiktok, social_youtube')
+            .limit(1)
+            .maybeSingle(),
         ]);
 
         setStats({
@@ -94,6 +115,36 @@ const DashboardPage = () => {
           categories: categories.count || 0,
         });
 
+        const settings = settingsRes.data || {};
+        const socials = ['social_instagram', 'social_linkedin', 'social_facebook', 'social_twitter', 'social_tiktok', 'social_youtube'];
+        const checks = [
+          {
+            id: 'featured-projects',
+            ok: (featuredProjects.count || 0) > 0,
+            message: 'Je hebt 0 uitgelichte projecten',
+            fix: '/admin/projects',
+          },
+          {
+            id: 'visible-testimonials',
+            ok: (visibleTestimonials.count || 0) > 0,
+            message: 'Er zijn geen zichtbare testimonials',
+            fix: '/admin/testimonials',
+          },
+          {
+            id: 'footer-socials',
+            ok: socials.some(field => settings?.[field]),
+            message: 'Footer socials zijn leeg',
+            fix: '/admin/settings',
+          },
+          {
+            id: 'contact-details',
+            ok: Boolean(settings?.contact_email && settings?.contact_phone),
+            message: 'Contact email of telefoon ontbreekt',
+            fix: '/admin/settings',
+          },
+        ];
+
+        setHealthChecks(checks);
         setActivities(activityRes.data || []);
       } catch (e) {
         console.error('Dashboard fetch error:', e);
@@ -148,6 +199,43 @@ const DashboardPage = () => {
     };
   }, [navigate, user]);
 
+
+  const downloadExport = async (format = 'json', table) => {
+    try {
+      const token = session?.access_token;
+      if (!token) throw new Error('Geen actieve sessie gevonden.');
+
+      const params = new URLSearchParams();
+      if (format === 'csv') {
+        params.set('format', 'csv');
+        params.set('table', table || 'leads');
+      }
+
+      const response = await fetch(`/api/admin/export${params.toString() ? `?${params}` : ''}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+
+      const blob = await response.blob();
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const filename = disposition.match(/filename="?([^";]+)"?/)?.[1] || `vwb2-export.${format}`;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      localStorage.setItem('vwb2_last_export_at', new Date().toISOString());
+      toast({ title: 'Backup gestart', description: `${filename} wordt gedownload.` });
+    } catch (error) {
+      console.error('ADMIN_EXPORT_DOWNLOAD_ERROR', error);
+      toast({ variant: 'destructive', title: 'Export mislukt', description: 'Controleer of je adminsessie actief is.' });
+    }
+  };
+
   /* ================= COMPONENTS ================= */
 
   const StatCard = ({ title, value, icon: Icon, color, href }) => (
@@ -184,6 +272,46 @@ const DashboardPage = () => {
           Live overzicht van alles wat er gebeurt.
         </p>
       </div>
+
+
+      {/* HEALTH */}
+      <Card className="bg-[#111827] border-gray-800">
+        <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle className="text-white">Content health</CardTitle>
+            <p className="mt-1 text-sm text-gray-400">Snelle checks die conversie en vertrouwen beschermen.</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button onClick={() => downloadExport('json')} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Download size={16} /> Download backup (JSON)</Button>
+            <select onChange={(event) => event.target.value && downloadExport('csv', event.target.value)} defaultValue="" className="rounded-lg border border-gray-700 bg-black/30 px-3 py-2 text-sm text-gray-200 outline-none focus:border-[#38bdf8]">
+              <option value="" disabled>CSV export...</option>
+              <option value="leads">Leads</option>
+              <option value="projects">Projecten</option>
+              <option value="testimonials">Testimonials</option>
+              <option value="newsletter_subscribers">Subscribers</option>
+            </select>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {healthChecks.every(check => check.ok) ? (
+            <div className="flex items-center gap-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-emerald-100">
+              <CheckCircle2 size={20} /> Alles staat klaar voor bezoekers.
+            </div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {healthChecks.filter(check => !check.ok).map(check => (
+                <div key={check.id} className="flex items-start justify-between gap-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4">
+                  <div className="flex gap-3">
+                    <AlertTriangle className="mt-0.5 shrink-0 text-amber-300" size={18} />
+                    <p className="text-sm font-medium text-amber-100">{check.message}</p>
+                  </div>
+                  <Button onClick={() => navigate(check.fix)} variant="link" className="h-auto p-0 text-[#38bdf8]">Fix</Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* STATS */}
       <div className="grid gap-4 md:grid-cols-3">
