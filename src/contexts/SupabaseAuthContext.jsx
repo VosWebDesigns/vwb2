@@ -69,28 +69,40 @@ export const AuthProvider = ({ children }) => {
     let mounted = true;
 
     const getSession = async () => {
-      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-      if (error) {
-        logSupabaseError('AUTH_SESSION_ERROR', error);
-      }
-      if (mounted) {
-        await handleSession(currentSession);
+      try {
+        const { data: { session: currentSession } = {}, error } = await supabase.auth.getSession();
+        if (error) {
+          logSupabaseError('AUTH_SESSION_ERROR', error);
+        }
+        if (mounted) {
+          await handleSession(currentSession);
+        }
+      } catch (error) {
+        logSupabaseError('AUTH_SESSION_UNEXPECTED_ERROR', error);
+        if (mounted) {
+          await handleSession(null);
+        }
       }
     };
 
     getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, nextSession) => {
-        if (mounted) {
-          await handleSession(nextSession);
+    let subscription;
+    try {
+      ({ data: { subscription } = {} } = supabase.auth.onAuthStateChange(
+        async (_event, nextSession) => {
+          if (mounted) {
+            await handleSession(nextSession);
+          }
         }
-      }
-    );
+      ));
+    } catch (error) {
+      logSupabaseError('AUTH_STATE_LISTENER_ERROR', error);
+    }
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      subscription?.unsubscribe?.();
     };
   }, [handleSession]);
 

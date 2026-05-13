@@ -4,6 +4,7 @@ import { Navigate, Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { LayoutDashboard, FolderKanban, MessageSquare, Layers, LogOut, Menu, X, Mail, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { isSupabaseConfigured } from '@/lib/customSupabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminLayout = () => {
@@ -59,7 +60,18 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen cinema-bg text-white flex items-center justify-center px-4">
+        <div className="panel cut max-w-xl p-8 text-center">
+          <h1 className="text-2xl font-black text-white">Admin configuratie ontbreekt.</h1>
+          <p className="mt-3 text-gray-300">Controleer Supabase environment variables.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/admin/login" replace />;
 
   if (!isAdmin) return <Navigate to="/forbidden" replace />;
 

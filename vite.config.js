@@ -234,7 +234,7 @@ logger.error = (msg, options) => {
 }
 
 export default defineConfig({
-	envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
+	envPrefix: ['VITE_'],
 	customLogger: logger,
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin(), selectionModePlugin()] : []),
