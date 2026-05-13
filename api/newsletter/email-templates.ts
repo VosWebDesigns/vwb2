@@ -7,6 +7,7 @@ type Block = {
   alt?: string;
   label?: string;
   href?: string;
+  caption?: string;
 };
 
 const accent = '#38bdf8';
@@ -21,6 +22,16 @@ const escapeHtml = (value = '') => String(value)
   .replace(/'/g, '&#039;');
 
 const nl2br = (value = '') => escapeHtml(value).replace(/\n/g, '<br />');
+
+const absoluteUrl = (value = '') => {
+  const url = String(value || '').trim();
+  if (!url) return '';
+  try {
+    return new URL(url, SITE_URL()).toString();
+  } catch {
+    return '';
+  }
+};
 
 const button = (href: string, label: string) => `
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:26px 0;">
@@ -64,7 +75,12 @@ export const buildConfirmEmail = ({ confirmUrl, email }: { confirmUrl: string; e
 
 export const renderBlocks = (blocks: Block[] = []) => blocks.map((block) => {
   if (block.type === 'heading') return `<h2 style="margin:28px 0 10px;font-size:24px;line-height:1.2;color:#ffffff;">${escapeHtml(block.text)}</h2>`;
-  if (block.type === 'image' && block.url) return `<img src="${escapeHtml(block.url)}" alt="${escapeHtml(block.alt || '')}" width="584" style="display:block;width:100%;max-width:584px;border-radius:18px;margin:24px 0;border:1px solid #1e293b;" />`;
+  if (block.type === 'image') {
+    const imageUrl = absoluteUrl(block.url);
+    if (!imageUrl) return '';
+    const caption = block.caption ? `<div style="margin:-14px 0 24px;color:#94a3b8;font-size:13px;line-height:1.5;">${escapeHtml(block.caption)}</div>` : '';
+    return `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(block.alt || '')}" width="584" style="display:block;width:100%;max-width:584px;height:auto;border-radius:18px;margin:24px 0;border:1px solid #1e293b;" />${caption}`;
+  }
   if (block.type === 'divider') return `<hr style="border:0;border-top:1px solid #1e293b;margin:28px 0;" />`;
   if (block.type === 'cta' && block.href) return button(block.href, block.label || block.text || 'Bekijk meer');
   if (block.type === 'quote') return `<blockquote style="margin:24px 0;padding:18px 20px;border-left:4px solid ${accent};background:#07111f;color:#dbeafe;border-radius:12px;">${nl2br(block.text)}</blockquote>`;
@@ -78,15 +94,16 @@ export const blocksToText = (blocks: Block[] = []) => blocks.map((block) => {
   return block.text || '';
 }).filter(Boolean).join('\n\n');
 
-export const buildCampaignEmail = ({ title, preheader = '', blocks = [], heroImageUrl = '', unsubscribeUrl = '' }: { title: string; preheader?: string; blocks?: Block[]; heroImageUrl?: string; unsubscribeUrl?: string }) => {
+export const buildCampaignEmail = ({ title, preheader = '', blocks = [], heroImageUrl = '', heroAlt = '', unsubscribeUrl = '' }: { title: string; preheader?: string; blocks?: Block[]; heroImageUrl?: string; heroAlt?: string; unsubscribeUrl?: string }) => {
+  const absoluteHeroImageUrl = absoluteUrl(heroImageUrl);
   const content = `
     <h1 style="margin:0 0 16px;font-size:34px;line-height:1.1;color:#ffffff;">${escapeHtml(title)}</h1>
-    ${heroImageUrl ? `<img src="${escapeHtml(heroImageUrl)}" alt="" width="584" style="display:block;width:100%;max-width:584px;border-radius:20px;margin:0 0 24px;border:1px solid #1e293b;" />` : ''}
+    ${absoluteHeroImageUrl ? `<img src="${escapeHtml(absoluteHeroImageUrl)}" alt="${escapeHtml(heroAlt)}" width="584" style="display:block;width:100%;max-width:584px;height:auto;border-radius:20px;margin:0 0 24px;border:1px solid #1e293b;" />` : ''}
     ${renderBlocks(blocks)}
   `;
   const footer = unsubscribeUrl ? `Geen interesse meer? <a href="${escapeHtml(unsubscribeUrl)}" style="color:${accent};">Afmelden</a>.` : '';
   return {
     ...shell({ preheader, children: content, textFooter: footer }),
-    text: `${title}\n\n${preheader ? `${preheader}\n\n` : ''}${blocksToText(blocks)}\n\nAfmelden: ${unsubscribeUrl || `${SITE_URL()}/newsletter/unsubscribed`}`,
+    text: `${title}\n\n${preheader ? `${preheader}\n\n` : ''}${absoluteHeroImageUrl ? `${heroAlt || 'Hero afbeelding'}: ${absoluteHeroImageUrl}\n\n` : ''}${blocksToText(blocks)}\n\nAfmelden: ${unsubscribeUrl || `${SITE_URL()}/newsletter/unsubscribed`}`,
   };
 };

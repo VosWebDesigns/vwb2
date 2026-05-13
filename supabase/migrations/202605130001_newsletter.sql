@@ -118,3 +118,29 @@ for all
 to authenticated
 using (public.is_admin(auth.uid()))
 with check (public.is_admin(auth.uid()));
+
+-- Public newsletter media bucket: public-read for email clients, admin write via RLS.
+insert into storage.buckets (id, name, public)
+select 'newsletter-media', 'newsletter-media', true
+where not exists (
+  select 1 from storage.buckets where id = 'newsletter-media'
+);
+
+update storage.buckets
+set public = true
+where id = 'newsletter-media' and public is distinct from true;
+
+drop policy if exists "Newsletter media public read" on storage.objects;
+create policy "Newsletter media public read"
+on storage.objects
+for select
+to anon, authenticated
+using (bucket_id = 'newsletter-media');
+
+drop policy if exists "Newsletter media admin all" on storage.objects;
+create policy "Newsletter media admin all"
+on storage.objects
+for all
+to authenticated
+using (bucket_id = 'newsletter-media' and public.is_admin(auth.uid()))
+with check (bucket_id = 'newsletter-media' and public.is_admin(auth.uid()));
