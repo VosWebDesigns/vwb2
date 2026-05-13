@@ -13,6 +13,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import CookieBanner from '@/components/CookieBanner';
+import ScrollToTop from '@/components/ScrollToTop';
 
 import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
@@ -128,6 +129,7 @@ const RootLayout = () => (
     <SettingsProvider>
       <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
         <GlobalSEO />
+        <ScrollToTop />
         <Outlet />
         <CookieBanner />
         <Toaster />
