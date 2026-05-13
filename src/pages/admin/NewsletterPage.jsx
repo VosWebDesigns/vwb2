@@ -127,6 +127,7 @@ const NewsletterPage = () => {
       await fetchCampaigns();
       setSelected(data.campaign);
       toast({ title: 'Nieuwsbrief opgeslagen', description: 'De campagne is bijgewerkt.' });
+      return data.campaign;
     } catch (error) {
       toast({ variant: 'destructive', title: 'Nieuwsbrief', description: error.message });
     } finally {
@@ -134,23 +135,39 @@ const NewsletterPage = () => {
     }
   };
 
-  const sendCampaign = async (mode, offset = 0) => {
-    if (!selected.id) await saveCampaign();
+  const sendCampaign = async (mode) => {
+    const campaign = selected.id ? selected : await saveCampaign();
+    if (!campaign?.id) return;
     if (mode === 'send' && !window.confirm('Weet u zeker dat u deze nieuwsbrief naar alle actieve subscribers wilt versturen?')) return;
     setSending(true);
     try {
-      const response = await fetch('/api/newsletter/admin/send', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ campaign_id: selected.id, mode, test_email: testEmail, offset }),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data?.error || 'Versturen mislukt.');
-      toast({ title: mode === 'test' ? 'Testmail verstuurd' : 'Batch verstuurd', description: mode === 'send' ? `${data.processed} verwerkt, ${data.sent} verzonden, ${data.failed} mislukt.` : data.message });
-      await fetchCampaigns();
-      if (mode === 'send' && data.next_offset !== null) {
-        toast({ title: 'Volgende batch klaar', description: 'Klik opnieuw op versturen om de volgende veilige batch te verwerken.' });
+      let cursor = 0;
+      let totals = { processed: 0, sent: 0, failed: 0 };
+      do {
+        const response = await fetch('/api/newsletter/admin/send', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ campaign_id: campaign.id, mode, test_email: testEmail, cursor, batchSize: 50 }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data?.success === false) throw new Error(data?.error || 'Versturen mislukt.');
+        if (mode === 'test') {
+          toast({ title: 'Testmail verstuurd', description: data.message });
+          break;
+        }
+        totals = {
+          processed: totals.processed + (data.processed || 0),
+          sent: totals.sent + (data.sentCount ?? data.sent ?? 0),
+          failed: totals.failed + (data.failedCount ?? data.failed ?? 0),
+        };
+        cursor = data.nextCursor ?? data.next_offset;
+        if (!cursor) break;
+      } while (mode === 'send');
+
+      if (mode === 'send') {
+        toast({ title: 'Nieuwsbrief verstuurd', description: `${totals.processed} verwerkt, ${totals.sent} verzonden, ${totals.failed} mislukt.` });
       }
+      await fetchCampaigns();
     } catch (error) {
       toast({ variant: 'destructive', title: 'Nieuwsbrief', description: error.message });
     } finally {

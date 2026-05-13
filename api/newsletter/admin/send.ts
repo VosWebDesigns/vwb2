@@ -1,10 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from '../../_sentry.js';
 import { buildCampaignEmail } from '../email-templates.js';
-import { EMAIL_RE, json, normalizeEmail, parseBody, requireAdmin, rest, sendResendEmail, SITE_URL } from '../utils.js';
+import { EMAIL_RE, isResendDomainNotVerifiedError, json, normalizeEmail, parseBody, requireAdmin, rest, sendResendEmail, SITE_URL } from '../utils.js';
 
-const MAX_BATCH = 50;
+const DEFAULT_BATCH = 50;
+const MAX_BATCH = 100;
 
-const campaignBlocks = (campaign: any) => Array.isArray(campaign?.content_json?.blocks) ? campaign.content_json.blocks : [];
+const campaignBlocks = (campaign: any) => {
+  if (Array.isArray(campaign?.content_json)) return campaign.content_json;
+  return Array.isArray(campaign?.content_json?.blocks) ? campaign.content_json.blocks : [];
+};
 
 const logSend = async (campaignId: string, email: string, status: 'sent' | 'failed' | 'skipped', error = '') => {
   await rest('newsletter_send_log', {
@@ -34,7 +39,7 @@ const sendCampaignTo = async (campaign: any, recipient: { email: string; unsubsc
   });
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
   const admin = await requireAdmin(req);
   if (!admin) return json(res, 401, { error: 'Unauthorized' });
@@ -52,17 +57,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (mode === 'test') {
       const testEmail = normalizeEmail(body.test_email);
       if (!EMAIL_RE.test(testEmail)) return json(res, 400, { error: 'Vul een geldig testadres in.' });
-      await sendCampaignTo(campaign, { email: testEmail }, true);
+      try {
+        await sendCampaignTo(campaign, { email: testEmail }, true);
+      } catch (sendError) {
+        if (isResendDomainNotVerifiedError(sendError)) {
+          return json(res, 200, { success: false, reason: 'domain_not_verified', error: 'Resend domein is nog niet verified. Gebruik tijdelijk onboarding@resend.dev als RESEND_FROM_EMAIL.' });
+        }
+        throw sendError;
+      }
       return json(res, 200, { success: true, message: 'Testmail verstuurd.' });
     }
 
-    const offset = Number.isFinite(Number(body.offset)) ? Math.max(0, Number(body.offset)) : 0;
+    const offset = Number.isFinite(Number(body.offset ?? body.cursor)) ? Math.max(0, Number(body.offset ?? body.cursor)) : 0;
+    const batchSize = Math.min(MAX_BATCH, Math.max(1, Number(body.batchSize || DEFAULT_BATCH) || DEFAULT_BATCH));
     await rest(`newsletter_campaigns?id=eq.${encodeURIComponent(campaignId)}`, {
       method: 'PATCH',
       body: JSON.stringify({ status: 'sending' }),
     });
 
-    const subscribers = await rest(`newsletter_subscribers?select=email,unsubscribe_token&status=eq.active&order=created_at.asc&offset=${offset}&limit=${MAX_BATCH}`);
+    const subscribers = await rest(`newsletter_subscribers?select=email,unsubscribe_token&status=eq.active&order=created_at.asc&offset=${offset}&limit=${batchSize}`);
     let sent = 0;
     let failed = 0;
 
@@ -82,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    const hasMore = subscribers.length === MAX_BATCH;
+    const hasMore = subscribers.length === batchSize;
     if (!hasMore) {
       await rest(`newsletter_campaigns?id=eq.${encodeURIComponent(campaignId)}`, {
         method: 'PATCH',
@@ -90,9 +103,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    return json(res, 200, { success: true, sent, failed, processed: subscribers.length, next_offset: hasMore ? offset + MAX_BATCH : null, status: hasMore ? 'sending' : 'sent' });
+    return json(res, 200, {
+      success: true,
+      done: !hasMore,
+      sentCount: sent,
+      failedCount: failed,
+      sent,
+      failed,
+      processed: subscribers.length,
+      nextCursor: hasMore ? offset + batchSize : null,
+      next_offset: hasMore ? offset + batchSize : null,
+      status: hasMore ? 'sending' : 'sent',
+    });
   } catch (error) {
     console.error('NEWSLETTER_ADMIN_SEND_ERROR', error);
+    void captureException(error, { req, tags: { route: '/newsletter/admin/send' } });
     return json(res, 500, { error: 'Versturen is mislukt.' });
   }
 }
+
+export default wrapHandler(handler, { route: '/newsletter/admin/send.ts' });

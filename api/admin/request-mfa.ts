@@ -1,8 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { wrapHandler, captureException } from '../_sentry.js';
 import { buildAdminMfaEmail } from './mfa-email.js';
 import { generateCode, getAdminMfaMode, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, isResendDomainNotVerified, newId, supabaseHeaders } from './mfa-utils.js';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
@@ -64,6 +65,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ success: true, mode });
   } catch (error) {
     console.error('ADMIN_MFA_REQUEST_ERROR', error);
+    void captureException(error, { req, tags: { route: '/admin/request-mfa' } });
     return res.status(500).json({ error: 'MFA request failed' });
   }
 }
+
+export default wrapHandler(handler, { route: '/admin/request-mfa.ts' });

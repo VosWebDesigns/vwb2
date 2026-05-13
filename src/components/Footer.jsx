@@ -75,6 +75,11 @@ const Footer = () => {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data?.error || 'Inschrijven is niet gelukt.');
       setNewsletterEmail('');
+      if (data?.reason === 'domain_not_verified') {
+        console.warn('NEWSLETTER_DOMAIN_NOT_VERIFIED', data?.error);
+        setNewsletterState({ status: 'success', message: 'Inschrijving ontvangen, maar de bevestigingsmailconfiguratie is nog niet actief. Probeer later opnieuw.' });
+        return;
+      }
       setNewsletterState({ status: 'success', message: data?.message || 'Check je mail om te bevestigen.' });
     } catch (error) {
       setNewsletterState({ status: 'error', message: error.message || 'Inschrijven is tijdelijk niet gelukt.' });
