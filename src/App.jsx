@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   createBrowserRouter,
@@ -43,7 +42,7 @@ import SettingsPage from '@/pages/admin/SettingsPage';
 import MfaVerifyPage from '@/pages/admin/MfaVerifyPage';
 import NewsletterPage from '@/pages/admin/NewsletterPage';
 import InboxPage from '@/pages/admin/InboxPage';
-
+import QuotesInvoicesPage from '@/pages/admin/QuotesInvoicesPage';
 
 
 class AdminErrorBoundary extends React.Component {
@@ -325,6 +324,7 @@ const routes = createRoutesFromElements(
       <Route index element={<DashboardPage />} />
       <Route path="projects" element={<ProjectsPage />} />
       <Route path="inbox" element={<InboxPage />} />
+      <Route path="documents" element={<QuotesInvoicesPage />} />
       <Route path="testimonials" element={<TestimonialsPage />} />
       <Route path="categories" element={<CategoriesPage />} />
       <Route path="settings" element={<SettingsPage />} />
