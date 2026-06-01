@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart, Lightbulb, Target, Users } from 'lucide-react';
+import SmartImage from '@/components/SmartImage';
 
 const values = [
   { icon: <Heart size={28} />, title: 'Passie voor Kwaliteit', description: 'Elk project behandelen we met maximale aandacht voor detail. Geen snelle oplossingen, maar duurzaam vakwerk.' },
