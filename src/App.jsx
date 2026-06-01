@@ -43,6 +43,7 @@ import MfaVerifyPage from '@/pages/admin/MfaVerifyPage';
 import NewsletterPage from '@/pages/admin/NewsletterPage';
 import InboxPage from '@/pages/admin/InboxPage';
 import QuotesInvoicesPage from '@/pages/admin/QuotesInvoicesPage';
+import CustomersPage from '@/pages/admin/CustomersPage';
 
 
 class AdminErrorBoundary extends React.Component {
@@ -324,6 +325,7 @@ const routes = createRoutesFromElements(
       <Route index element={<DashboardPage />} />
       <Route path="projects" element={<ProjectsPage />} />
       <Route path="inbox" element={<InboxPage />} />
+      <Route path="customers" element={<CustomersPage />} />
       <Route path="documents" element={<QuotesInvoicesPage />} />
       <Route path="testimonials" element={<TestimonialsPage />} />
       <Route path="categories" element={<CategoriesPage />} />

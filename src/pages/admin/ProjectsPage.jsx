@@ -28,8 +28,12 @@ const INITIAL_FORM_STATE = {
   live_url: '',
   stack: '',
   resultaat: '',
+  problem: '',
+  solution: '',
+  tags: '',
   featured_preview_image: '',
   client: '',
+  industry: '',
   year: '2026',
   duration: '',
   is_featured: false,
@@ -105,7 +109,18 @@ const ProjectsPage = () => {
     e.preventDefault();
 
     try {
-      const { category, ...cleanData } = formData;
+      const { category, project_status, ...cleanData } = formData;
+
+      if (project_status === 'concept') {
+        cleanData.is_published = false;
+        cleanData.is_featured = false;
+      } else if (project_status === 'published') {
+        cleanData.is_published = true;
+        cleanData.is_featured = false;
+      } else if (project_status === 'featured') {
+        cleanData.is_published = true;
+        cleanData.is_featured = true;
+      }
 
       if (!cleanData.slug && cleanData.title) {
         cleanData.slug = cleanData.title
@@ -262,6 +277,24 @@ const ProjectsPage = () => {
                   value={formData.resultaat || ''}
                   onChange={e => setFormData({ ...formData, resultaat: e.target.value })}
                 />
+                <textarea
+                  className={`${INPUT} h-24`}
+                  placeholder="Probleem / uitdaging van de klant"
+                  value={formData.problem || ''}
+                  onChange={e => setFormData({ ...formData, problem: e.target.value })}
+                />
+                <textarea
+                  className={`${INPUT} h-24`}
+                  placeholder="Oplossing / aanpak"
+                  value={formData.solution || ''}
+                  onChange={e => setFormData({ ...formData, solution: e.target.value })}
+                />
+                <input
+                  className={INPUT}
+                  placeholder="Tags (gescheiden door komma's)"
+                  value={formData.tags || ''}
+                  onChange={e => setFormData({ ...formData, tags: e.target.value })}
+                />
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">Featured preview afbeelding</label>
@@ -288,27 +321,33 @@ const ProjectsPage = () => {
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
 
-                <input className={INPUT} placeholder="Klant" value={formData.client || ''} onChange={e => setFormData({ ...formData, client: e.target.value })} />
+                <input className={INPUT} placeholder="Klant / branche" value={formData.client || ''} onChange={e => setFormData({ ...formData, client: e.target.value })} />
+                <input className={INPUT} placeholder="Branche (bv. Bouw, coaching, horeca)" value={formData.industry || ''} onChange={e => setFormData({ ...formData, industry: e.target.value })} />
                 <input className={INPUT} placeholder="Jaar" value={formData.year || ''} onChange={e => setFormData({ ...formData, year: e.target.value })} />
                 <input className={INPUT} placeholder="Projectduur" value={formData.duration || ''} onChange={e => setFormData({ ...formData, duration: e.target.value })} />
 
                 <textarea className={`${INPUT} h-24`} placeholder="Korte beschrijving" value={formData.short_description || ''} onChange={e => setFormData({ ...formData, short_description: e.target.value })} />
                 <textarea className={`${INPUT} h-36`} placeholder="Uitgebreide projectbeschrijving" value={formData.description || ''} onChange={e => setFormData({ ...formData, description: e.target.value })} />
 
-                <div className="flex flex-wrap gap-4 text-sm">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={formData.is_published} onChange={e => setFormData({ ...formData, is_published: e.target.checked })} />
-                    Online
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={formData.is_featured} onChange={e => setFormData({ ...formData, is_featured: e.target.checked })} />
-                    Uitgelicht
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={formData.home_featured} onChange={e => setFormData({ ...formData, home_featured: e.target.checked })} />
-                    Featured preview op homepage
-                  </label>
-                </div>
+                <select
+                  className={INPUT}
+                  value={formData.is_featured ? 'featured' : formData.is_published ? 'published' : 'concept'}
+                  onChange={e => setFormData({
+                    ...formData,
+                    project_status: e.target.value,
+                    is_published: e.target.value !== 'concept',
+                    is_featured: e.target.value === 'featured',
+                  })}
+                >
+                  <option value="concept">Concept</option>
+                  <option value="published">Gepubliceerd</option>
+                  <option value="featured">Uitgelicht</option>
+                </select>
+
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={formData.home_featured} onChange={e => setFormData({ ...formData, home_featured: e.target.checked })} />
+                  Featured preview op homepage
+                </label>
 
                 <div className="flex gap-3">
                   <Button type="submit" className="flex-1 bg-[#38bdf8] text-black">Opslaan</Button>
@@ -332,12 +371,18 @@ const ProjectsPage = () => {
             projects.map(p => (
               <div key={p.id} className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-24 h-40 sm:h-24 bg-black rounded overflow-hidden">
-                  {p.hero_image ? <SmartImage src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <ImageIcon className="m-auto text-gray-600" />}
+                  {p.hero_image ? <SmartImage src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#082f49]"><ImageIcon className="text-[#38bdf8]/60" /></div>}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-bold text-white">{p.title}</h3>
+                    {!p.is_published && (
+                      <span className="rounded-full border border-slate-500/40 bg-slate-500/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-slate-300">Concept</span>
+                    )}
+                    {p.is_featured && (
+                      <span className="rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-amber-200">Uitgelicht</span>
+                    )}
                     {p.home_featured && (
                       <span className="rounded-full border border-[#38bdf8]/40 bg-[#38bdf8]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#38bdf8]">Home preview</span>
                     )}
@@ -345,6 +390,9 @@ const ProjectsPage = () => {
                   <p className="text-sm text-gray-400 line-clamp-3">{p.short_description || '—'}</p>
                   {p.category?.name && (
                     <span className="text-xs text-[#38bdf8]">{p.category.name}</span>
+                  )}
+                  {(p.client || p.industry || p.resultaat) && (
+                    <p className="mt-2 text-xs text-gray-500">{[p.client, p.industry, p.resultaat].filter(Boolean).join(' • ')}</p>
                   )}
                 </div>
 
