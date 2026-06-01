@@ -309,6 +309,9 @@ const routes = createRoutesFromElements(
     <Route path="portfolio/:projectId" element={<PublicPageLayout><ProjectDetailPage /></PublicPageLayout>} />
     <Route path="diensten" element={<PublicPageLayout><ServicesPage /></PublicPageLayout>} />
     <Route path="over-ons" element={<PublicPageLayout><AboutPage /></PublicPageLayout>} />
+    <Route path="over" element={<Navigate to="/over-ons" replace />} />
+    <Route path="overons" element={<Navigate to="/over-ons" replace />} />
+    <Route path="over-ons/" element={<Navigate to="/over-ons" replace />} />
     <Route path="werkwijze" element={<PublicPageLayout><ProcessPage /></PublicPageLayout>} />
     <Route path="contact" element={<PublicPageLayout><ContactPage /></PublicPageLayout>} />
     <Route path="offerte" element={<Navigate to="/contact" replace />} />
