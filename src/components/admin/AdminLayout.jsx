@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate, Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
-import { LayoutDashboard, FolderKanban, MessageSquare, Layers, LogOut, Menu, X, Mail, Inbox } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, MessageSquare, Layers, LogOut, Menu, X, Mail, Inbox, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isSupabaseConfigured } from '@/lib/customSupabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -89,6 +88,7 @@ const AdminLayout = () => {
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin' },
     { icon: <FolderKanban size={20} />, label: 'Projecten', path: '/admin/projects' },
     { icon: <Inbox size={20} />, label: 'Inbox', path: '/admin/inbox' },
+    { icon: <FileText size={20} />, label: 'Offertes & facturen', path: '/admin/documents' },
     { icon: <MessageSquare size={20} />, label: 'Testimonials', path: '/admin/testimonials' },
     { icon: <Layers size={20} />, label: 'Categorieën', path: '/admin/categories' },
     { icon: <Layers size={20} />, label: 'Instellingen', path: '/admin/settings' },
