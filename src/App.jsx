@@ -9,6 +9,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
@@ -31,7 +32,6 @@ import ConfirmedPage from '@/pages/newsletter/ConfirmedPage';
 import UnsubscribedPage from '@/pages/newsletter/UnsubscribedPage';
 import ForbiddenPage from '@/pages/ForbiddenPage';
 
-// Admin Imports
 import LoginPage from '@/pages/admin/LoginPage';
 import AdminLayout from '@/components/admin/AdminLayout';
 import DashboardPage from '@/pages/admin/DashboardPage';
@@ -45,7 +45,7 @@ import InboxPage from '@/pages/admin/InboxPage';
 import QuotesInvoicesPage from '@/pages/admin/QuotesInvoicesPage';
 import CustomersPage from '@/pages/admin/CustomersPage';
 
-class AdminErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -56,7 +56,7 @@ class AdminErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('ADMIN_RENDER_ERROR', error, errorInfo);
+    console.error(this.props.label || 'RENDER_ERROR', error, errorInfo);
     capture(error, { extra: errorInfo });
   }
 
@@ -68,92 +68,25 @@ class AdminErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <AdminErrorFallback onRetry={() => this.setState({ hasError: false })} />;
+      return <ErrorFallback fullPage={this.props.fullPage} admin={this.props.admin} />;
     }
 
     return this.props.children;
   }
 }
 
-const AdminErrorFallback = ({ onRetry }) => (
-  <div className="min-h-screen cinema-bg flex items-center justify-center px-4 text-white">
-    <section className="panel cut max-w-xl p-8 text-center">
-      <p className="text-sm font-black uppercase tracking-[.2em] text-[#38bdf8]">Vos Admin</p>
-      <h1 className="mt-4 text-3xl font-black text-white">Er ging iets mis in het beheerpaneel.</h1>
-      <p className="mt-4 text-gray-300">De publieke website blijft beschikbaar. Probeer het beheerpaneel opnieuw te laden.</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-7 rounded-full bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-6 py-3 font-black text-black hover:opacity-90"
-      >
-        Opnieuw proberen
-      </button>
-    </section>
-  </div>
-);
-
-class AppErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('APP_RENDER_ERROR', error, errorInfo);
-    capture(error, { extra: errorInfo });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback fullPage />;
-    }
-
-    return this.props.children;
-  }
-}
-
-class SectionErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    if (import.meta.env.DEV) {
-      console.warn('SECTION_RENDER_ERROR', error, errorInfo);
-    }
-    capture(error, { extra: errorInfo });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
-      this.setState({ hasError: false });
-    }
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback />;
-    }
-
-    return this.props.children;
-  }
-}
-
-const ErrorFallback = ({ fullPage = false }) => {
+const ErrorFallback = ({ fullPage = false, admin = false }) => {
   const content = (
     <section className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 text-center shadow-2xl">
-      <p className="text-sm font-black uppercase tracking-[.2em] text-[color:var(--accent2)]">Vos Web Designs</p>
-      <h1 className="mt-4 text-3xl font-black text-white sm:text-4xl">Er ging iets mis met het laden van deze sectie.</h1>
-      <p className="mt-4 text-slate-300">De rest van de website blijft beschikbaar. Probeer de pagina te vernieuwen of neem contact op als dit blijft gebeuren.</p>
+      <p className="text-sm font-black uppercase tracking-[.2em] text-[color:var(--accent2)]">
+        {admin ? 'Vos Admin' : 'Vos Web Designs'}
+      </p>
+      <h1 className="mt-4 text-3xl font-black text-white sm:text-4xl">
+        Er ging iets mis met het laden van deze sectie.
+      </h1>
+      <p className="mt-4 text-slate-300">
+        De rest van de website blijft beschikbaar. Probeer de pagina te vernieuwen of neem contact op als dit blijft gebeuren.
+      </p>
       <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
         <a href="/" className="rounded-full border border-white/15 px-5 py-3 font-black text-white">Naar home</a>
         <a href="/contact" className="rounded-full bg-[color:var(--accent2)] px-5 py-3 font-black text-black">Contact opnemen</a>
@@ -170,10 +103,28 @@ const ErrorFallback = ({ fullPage = false }) => {
   );
 };
 
-// Component to handle global SEO based on settings
+const toAbsoluteUrl = (value, siteUrl) => {
+  if (!value) return undefined;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${siteUrl}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
+const pruneSchema = (value) => {
+  if (Array.isArray(value)) return value.map(pruneSchema).filter((item) => item !== undefined);
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, entry]) => [key, pruneSchema(entry)])
+        .filter(([, entry]) => entry !== undefined && !(Array.isArray(entry) && entry.length === 0))
+    );
+  }
+
+  return value === '' ? undefined : value;
+};
+
 const GlobalSEO = () => {
-  const settingsContext = useSettings() || {};
-  const settings = settingsContext.settings || {};
+  const { settings = {} } = useSettings() || {};
   const location = useLocation();
   const siteName = settings.site_name || 'Vos Web Designs';
   const description = settings.seo_meta_description || settings.site_description || 'Professioneel webdesign';
@@ -188,6 +139,7 @@ const GlobalSEO = () => {
     settings.social_tiktok,
     settings.social_youtube,
   ].filter(Boolean);
+
   const schema = [
     pruneSchema({
       '@context': 'https://schema.org',
@@ -241,48 +193,16 @@ const GlobalSEO = () => {
   );
 };
 
-const toAbsoluteUrl = (value, siteUrl) => {
-  if (!value) return undefined;
-  if (/^https?:\/\//i.test(value)) return value;
-  return `${siteUrl}${value.startsWith('/') ? value : `/${value}`}`;
-};
-
-const pruneSchema = (value) => {
-  if (Array.isArray(value)) {
-    return value.map(pruneSchema).filter((item) => item !== undefined);
-  }
-
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value)
-        .map(([key, entry]) => [key, pruneSchema(entry)])
-        .filter(([, entry]) => entry !== undefined && !(Array.isArray(entry) && entry.length === 0))
-    );
-  }
-
-  return value === '' ? undefined : value;
-};
-
-function App() {
-  return (
-    <AppErrorBoundary>
-      <RouterProvider router={router} />
-    </AppErrorBoundary>
-  );
-}
-
-const PublicPageLayout = ({ children }) => (
-  <PublicShell>{children}</PublicShell>
-);
+const PublicPageLayout = ({ children }) => <PublicShell>{children}</PublicShell>;
 
 const RouteErrorBoundary = ({ children }) => {
   const location = useLocation();
-  return <SectionErrorBoundary resetKey={location.pathname}>{children}</SectionErrorBoundary>;
+  return <ErrorBoundary resetKey={location.pathname} label="SECTION_RENDER_ERROR">{children}</ErrorBoundary>;
 };
 
 const AdminRouteErrorBoundary = ({ children }) => {
   const location = useLocation();
-  return <AdminErrorBoundary resetKey={location.pathname}>{children}</AdminErrorBoundary>;
+  return <ErrorBoundary resetKey={location.pathname} label="ADMIN_RENDER_ERROR" admin>{children}</ErrorBoundary>;
 };
 
 const RootLayout = () => (
@@ -314,7 +234,7 @@ const routes = createRoutesFromElements(
     <Route path="contact" element={<PublicPageLayout><ContactPage /></PublicPageLayout>} />
     <Route path="offerte" element={<Navigate to="/contact" replace />} />
     <Route path="privacy" element={<PublicPageLayout><PrivacyPolicyPage /></PublicPageLayout>} />
-    <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></TermsPage></PublicPageLayout>} />
+    <Route path="voorwaarden" element={<PublicPageLayout><TermsPage /></PublicPageLayout>} />
     <Route path="newsletter/confirmed" element={<PublicPageLayout><ConfirmedPage /></PublicPageLayout>} />
     <Route path="newsletter/unsubscribed" element={<PublicPageLayout><UnsubscribedPage /></PublicPageLayout>} />
     <Route path="login" element={<LoginPage />} />
@@ -344,5 +264,11 @@ const router = createBrowserRouter(routes, {
     v7_relativeSplatPath: true,
   },
 });
+
+const App = () => (
+  <ErrorBoundary fullPage label="APP_RENDER_ERROR">
+    <RouterProvider router={router} />
+  </ErrorBoundary>
+);
 
 export default App;
