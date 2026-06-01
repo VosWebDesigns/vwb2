@@ -40,11 +40,15 @@ const SettingsPage = () => {
     site_description: '',
     contact_email: '',
     contact_phone: '',
+    website: '',
+    logo_url: '',
 
     address_street: '',
     address_city: '',
     address_postal_code: '',
     address_country: '',
+    kvk: '',
+    iban: '',
 
     social_instagram: '',
     social_linkedin: '',
@@ -55,6 +59,10 @@ const SettingsPage = () => {
 
     seo_meta_description: '',
     seo_keywords: '',
+    seo_title: '',
+    default_payment_term_days: 14,
+    default_vat_rate: 21,
+    default_quote_validity_days: 14,
 
     notify_new_project: true,
     notify_new_review: true,
@@ -294,6 +302,16 @@ const SettingsPage = () => {
                     />
                   </div>
                 </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="website" className="text-gray-300">Website URL</Label>
+                    <Input id="website" name="website" value={formData.website || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="logo_url" className="text-gray-300">Logo URL</Label>
+                    <Input id="logo_url" name="logo_url" value={formData.logo_url || ''} onChange={handleInputChange} placeholder="/logo.jpeg" className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -346,6 +364,16 @@ const SettingsPage = () => {
                       onChange={handleInputChange} 
                       className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
                     />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="kvk" className="text-gray-300">KVK</Label>
+                    <Input id="kvk" name="kvk" value={formData.kvk || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="iban" className="text-gray-300">IBAN</Label>
+                    <Input id="iban" name="iban" value={formData.iban || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
                   </div>
                 </div>
               </CardContent>
@@ -439,6 +467,10 @@ const SettingsPage = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
+                  <Label htmlFor="seo_title" className="text-gray-300">SEO titel</Label>
+                  <Input id="seo_title" name="seo_title" value={formData.seo_title || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                </div>
+                <div className="grid gap-2">
                   <Label htmlFor="seo_meta_description" className="text-gray-300">Standaard Meta Beschrijving</Label>
                   <Textarea 
                     id="seo_meta_description" 
@@ -460,6 +492,20 @@ const SettingsPage = () => {
                     onChange={handleInputChange} 
                     className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
                   />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="grid gap-2">
+                    <Label htmlFor="default_payment_term_days" className="text-gray-300">Standaard betalingstermijn</Label>
+                    <Input id="default_payment_term_days" name="default_payment_term_days" type="number" value={formData.default_payment_term_days || 14} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="default_vat_rate" className="text-gray-300">Standaard btw %</Label>
+                    <Input id="default_vat_rate" name="default_vat_rate" type="number" value={formData.default_vat_rate || 21} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="default_quote_validity_days" className="text-gray-300">Offerte geldigheid</Label>
+                    <Input id="default_quote_validity_days" name="default_quote_validity_days" type="number" value={formData.default_quote_validity_days || 14} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  </div>
                 </div>
               </CardContent>
             </Card>

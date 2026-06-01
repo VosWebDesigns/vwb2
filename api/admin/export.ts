@@ -2,10 +2,10 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { wrapHandler, captureException } from '../_sentry.js';
 import { getBearerToken, getSupabaseConfig, getUserFromToken, isAdminUser, supabaseHeaders } from './mfa-utils.js';
 
-const EXPORT_TABLES = ['projects', 'testimonials', 'site_settings', 'leads', 'newsletter_subscribers'] as const;
+const EXPORT_TABLES = ['projects', 'testimonials', 'site_settings', 'leads', 'customers', 'business_documents', 'newsletter_subscribers'] as const;
 type ExportTable = typeof EXPORT_TABLES[number];
 
-const OPTIONAL_TABLES = new Set<ExportTable>(['newsletter_subscribers']);
+const OPTIONAL_TABLES = new Set<ExportTable>(['newsletter_subscribers', 'customers', 'business_documents']);
 
 const isExportTable = (table: string): table is ExportTable => EXPORT_TABLES.includes(table as ExportTable);
 
