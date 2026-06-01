@@ -45,7 +45,6 @@ import InboxPage from '@/pages/admin/InboxPage';
 import QuotesInvoicesPage from '@/pages/admin/QuotesInvoicesPage';
 import CustomersPage from '@/pages/admin/CustomersPage';
 
-
 class AdminErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -171,9 +170,12 @@ const ErrorFallback = ({ fullPage = false }) => {
   );
 };
 
+const isAboutPath = (path = '') => path.replace(/\/+$/, '') === '/over-ons';
+
 // Component to handle global SEO based on settings
 const GlobalSEO = () => {
-  const { settings } = useSettings();
+  const settingsContext = useSettings() || {};
+  const settings = settingsContext.settings || {};
   const location = useLocation();
   const siteName = settings.site_name || 'Vos Web Designs';
   const description = settings.seo_meta_description || settings.site_description || 'Professioneel webdesign';
@@ -280,27 +282,29 @@ const RouteErrorBoundary = ({ children }) => {
   return <SectionErrorBoundary resetKey={location.pathname}>{children}</SectionErrorBoundary>;
 };
 
-
 const AdminRouteErrorBoundary = ({ children }) => {
   const location = useLocation();
   return <AdminErrorBoundary resetKey={location.pathname}>{children}</AdminErrorBoundary>;
 };
 
-const RootLayout = () => (
-  <AuthProvider>
-    <SettingsProvider>
-      <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
-        <GlobalSEO />
-        <ScrollToTop />
-        <RouteErrorBoundary>
-          <Outlet />
-        </RouteErrorBoundary>
-        <CookieBanner />
-        <Toaster />
-      </div>
-    </SettingsProvider>
-  </AuthProvider>
-);
+const RootLayout = () => {
+  const location = useLocation();
+  const outlet = <Outlet />;
+
+  return (
+    <AuthProvider>
+      <SettingsProvider>
+        <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
+          <GlobalSEO />
+          <ScrollToTop />
+          {isAboutPath(location.pathname) ? outlet : <RouteErrorBoundary>{outlet}</RouteErrorBoundary>}
+          <CookieBanner />
+          <Toaster />
+        </div>
+      </SettingsProvider>
+    </AuthProvider>
+  );
+};
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<RootLayout />}>
@@ -308,10 +312,9 @@ const routes = createRoutesFromElements(
     <Route path="portfolio" element={<PublicPageLayout><PortfolioPage /></PublicPageLayout>} />
     <Route path="portfolio/:projectId" element={<PublicPageLayout><ProjectDetailPage /></PublicPageLayout>} />
     <Route path="diensten" element={<PublicPageLayout><ServicesPage /></PublicPageLayout>} />
-    <Route path="over-ons" element={<PublicPageLayout><AboutPage /></PublicPageLayout>} />
+    <Route path="over-ons" element={<AboutPage />} />
     <Route path="over" element={<Navigate to="/over-ons" replace />} />
     <Route path="overons" element={<Navigate to="/over-ons" replace />} />
-    <Route path="over-ons/" element={<Navigate to="/over-ons" replace />} />
     <Route path="werkwijze" element={<PublicPageLayout><ProcessPage /></PublicPageLayout>} />
     <Route path="contact" element={<PublicPageLayout><ContactPage /></PublicPageLayout>} />
     <Route path="offerte" element={<Navigate to="/contact" replace />} />
