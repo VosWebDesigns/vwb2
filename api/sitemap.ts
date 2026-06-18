@@ -11,6 +11,11 @@ const STATIC_ROUTES = [
   '/voorwaarden',
 ];
 
+type SitemapRoute = {
+  path: string;
+  lastmod?: string;
+};
+
 const escapeXml = (value: string) => value
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -20,7 +25,7 @@ const escapeXml = (value: string) => value
 
 const normalizeSiteUrl = () => (process.env.SITE_URL || 'https://voswebdesigns.nl').replace(/\/$/, '');
 
-const fetchPublishedProjectUrls = async () => {
+const fetchPublishedProjectUrls = async (): Promise<SitemapRoute[]> => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
@@ -63,8 +68,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
 
   try {
     const projectRoutes = await fetchPublishedProjectUrls();
-    const urls = [
-      ...STATIC_ROUTES.map((path) => ({ path })),
+    const urls: SitemapRoute[] = [
+      ...STATIC_ROUTES.map((path): SitemapRoute => ({ path })),
       ...projectRoutes,
     ];
 
