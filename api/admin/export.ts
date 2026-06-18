@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { wrapHandler, captureException } from '../_sentry.js';
-import { getBearerToken, getSupabaseConfig, getUserFromToken, isAdminUser, supabaseHeaders } from './mfa-utils.js';
+import { wrapHandler, captureException } from '../../server/api/sentry.js';
+import { getBearerToken, getSupabaseConfig, getUserFromToken, isAdminUser, supabaseHeaders } from '../../server/api/admin/mfa-utils.js';
 
 const EXPORT_TABLES = ['projects', 'testimonials', 'site_settings', 'leads', 'customers', 'business_documents', 'newsletter_subscribers'] as const;
 type ExportTable = typeof EXPORT_TABLES[number];
