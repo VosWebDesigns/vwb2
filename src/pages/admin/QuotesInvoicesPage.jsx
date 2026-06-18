@@ -55,8 +55,7 @@ const addDays = (dateString, days) => {
 };
 const createId = () => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `doc-${Date.now()}-${Math.random().toString(16).slice(2)}`);
 const parseMoney = (value) => {
-  const normalized = String(value ?? '').replace(',', '.');
-  const parsed = Number.parseFloat(normalized);
+  const parsed = Number.parseFloat(String(value ?? '').replace(',', '.'));
   return Number.isFinite(parsed) ? parsed : 0;
 };
 const vatPercent = (value) => (value === 'exempt' ? 0 : parseMoney(value));
@@ -75,19 +74,13 @@ const readLocalCustomers = () => {
 
 const getDraftStorage = () => {
   if (typeof window === 'undefined') return null;
-  try {
-    return window.sessionStorage || window.localStorage;
-  } catch (_error) {
-    return null;
-  }
+  try { return window.sessionStorage || window.localStorage; } catch (_error) { return null; }
 };
 const readDraftDocument = () => {
   try {
     const parsed = JSON.parse(getDraftStorage()?.getItem(DRAFT_STORAGE_KEY) || 'null');
     return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch (_error) {
-    return null;
-  }
+  } catch (_error) { return null; }
 };
 const writeDraftDocument = (document) => {
   const storage = getDraftStorage();
@@ -98,7 +91,18 @@ const writeDraftDocument = (document) => {
 const getLineTotal = (item) => parseMoney(item.quantity) * parseMoney(item.unitPrice);
 const getLineVat = (item) => getLineTotal(item) * (vatPercent(item.vatRate) / 100);
 const statusLabelsFor = (kind) => (kind === 'invoice' ? INVOICE_STATUS_LABELS : QUOTE_STATUS_LABELS);
-const defaultStatusFor = (kind) => (kind === 'invoice' ? 'concept' : 'concept');
+const defaultStatusFor = () => 'concept';
+const calculateTotals = (document) => {
+  const items = Array.isArray(document?.items) ? document.items : [];
+  const subtotal = items.reduce((sum, item) => sum + getLineTotal(item), 0);
+  const vat = items.reduce((sum, item) => sum + getLineVat(item), 0);
+  const gross = subtotal + vat;
+  const rawDiscount = parseMoney(document?.discountValue);
+  const discount = document?.discountType === 'percent'
+    ? Math.min(gross, Math.max(0, gross * (rawDiscount / 100)))
+    : Math.min(gross, Math.max(0, rawDiscount));
+  return { subtotal, vat, gross, discount, total: Math.max(0, gross - discount) };
+};
 
 const nextDocumentNumber = (kind, existingDocuments = []) => {
   const prefix = kind === 'invoice' ? 'FAC' : 'OFF';
@@ -145,6 +149,9 @@ const createDefaultDocument = (kind = 'quote', existingDocuments = [], settings 
       ? 'Bedankt voor de samenwerking. Hieronder vind je de factuur voor de uitgevoerde werkzaamheden.'
       : 'Bedankt voor je aanvraag. Hieronder vind je een duidelijke offerte op basis van de gekozen werkzaamheden.',
     items: [{ id: createId(), description: buildWorkDescription(service, pkg), quantity: 1, unitPrice: pkg.price, vatRate: defaultVat }],
+    discountType: 'amount',
+    discountValue: 0,
+    discountLabel: 'Korting',
     notes: kind === 'invoice'
       ? `Graag betalen binnen ${paymentTermDays} dagen op IBAN ${settings.iban || FALLBACK_COMPANY.iban} t.n.v. ${settings.site_name || FALLBACK_COMPANY.name}.`
       : `Deze offerte is ${quoteValidityDays} dagen geldig. Na akkoord plannen we samen de startdatum en exacte oplevermomenten.`,
@@ -170,28 +177,34 @@ const normalizeDocument = (document, existingDocuments = [], settings = {}) => {
     customerCity: document?.customerCity || '',
     customerVatNumber: document?.customerVatNumber || '',
     items: Array.isArray(document?.items) && document.items.length ? document.items : fallback.items,
+    discountType: document?.discountType === 'percent' ? 'percent' : 'amount',
+    discountValue: document?.discountValue ?? 0,
+    discountLabel: document?.discountLabel || 'Korting',
     termsLine: document?.termsLine || TERMS_LINE,
     updatedAt: new Date().toISOString(),
   };
 };
 
-const toDatabaseRow = (document, userId) => ({
-  id: document.id,
-  type: document.kind,
-  status: document.status,
-  number: document.number,
-  customer_id: document.customerId || null,
-  customer_name: document.customerName,
-  company_name: document.companyName,
-  total_ex_vat: document.items.reduce((sum, item) => sum + getLineTotal(item), 0),
-  vat_total: document.items.reduce((sum, item) => sum + getLineVat(item), 0),
-  total_inc_vat: document.items.reduce((sum, item) => sum + getLineTotal(item) + getLineVat(item), 0),
-  due_date: document.kind === 'invoice' ? document.dueDate : null,
-  issue_date: document.issueDate || todayISO(),
-  document_json: document,
-  created_by: userId || null,
-  updated_at: new Date().toISOString(),
-});
+const toDatabaseRow = (document, userId) => {
+  const totals = calculateTotals(document);
+  return {
+    id: document.id,
+    type: document.kind,
+    status: document.status,
+    number: document.number,
+    customer_id: document.customerId || null,
+    customer_name: document.customerName,
+    company_name: document.companyName,
+    total_ex_vat: totals.subtotal,
+    vat_total: totals.vat,
+    total_inc_vat: totals.total,
+    due_date: document.kind === 'invoice' ? document.dueDate : null,
+    issue_date: document.issueDate || todayISO(),
+    document_json: document,
+    created_by: userId || null,
+    updated_at: new Date().toISOString(),
+  };
+};
 
 const fromDatabaseRow = (row) => ({
   ...row.document_json,
@@ -239,12 +252,7 @@ const QuotesInvoicesPage = () => {
     logo: settings.logo_url || settings.logo || FALLBACK_COMPANY.logo,
   }), [settings]);
 
-  const totals = useMemo(() => {
-    const subtotal = currentDocument.items.reduce((sum, item) => sum + getLineTotal(item), 0);
-    const vat = currentDocument.items.reduce((sum, item) => sum + getLineVat(item), 0);
-    return { subtotal, vat, total: subtotal + vat };
-  }, [currentDocument.items]);
-
+  const totals = useMemo(() => calculateTotals(currentDocument), [currentDocument]);
   const selectedService = getService(currentDocument.workType);
   const selectedPackage = getPackage(selectedService, currentDocument.packageName);
   const kindLabel = currentDocument.kind === 'invoice' ? 'Factuur' : 'Offerte';
@@ -275,12 +283,10 @@ const QuotesInvoicesPage = () => {
           supabase.from('business_documents').select('*').order('updated_at', { ascending: false }).limit(200),
           supabase.from('customers').select('*').order('company_name', { ascending: true }),
         ]);
-
         if (documentsRes.error) throw documentsRes.error;
         const dbDocs = (documentsRes.data || []).map(fromDatabaseRow).map((document) => normalizeDocument(document, [], settings));
         const dbCustomers = customersRes.error ? localCustomers : (customersRes.data || []);
         const availableDocs = dbDocs.length ? dbDocs : localDocs;
-
         if (active) {
           setDocuments(availableDocs);
           setCustomers(dbCustomers);
@@ -299,7 +305,6 @@ const QuotesInvoicesPage = () => {
         if (active) setLoading(false);
       }
     };
-
     loadData();
     return () => { active = false; };
   }, []);
@@ -312,13 +317,9 @@ const QuotesInvoicesPage = () => {
   useEffect(() => {
     if (loading) return undefined;
     const persistDraft = () => writeDraftDocument(currentDocument);
-    const persistWhenHidden = () => {
-      if (document.visibilityState === 'hidden') persistDraft();
-    };
-
+    const persistWhenHidden = () => { if (document.visibilityState === 'hidden') persistDraft(); };
     window.addEventListener('pagehide', persistDraft);
     document.addEventListener('visibilitychange', persistWhenHidden);
-
     return () => {
       persistDraft();
       window.removeEventListener('pagehide', persistDraft);
@@ -337,7 +338,6 @@ const QuotesInvoicesPage = () => {
   useEffect(() => {
     const leadId = searchParams.get('leadId');
     if (!leadId || !isSupabaseConfigured) return;
-
     let active = true;
     const loadLead = async () => {
       const { data, error } = await supabase.from('leads').select('*').eq('id', leadId).maybeSingle();
@@ -352,7 +352,6 @@ const QuotesInvoicesPage = () => {
         notes: previous.notes || data.message || '',
       }));
     };
-
     loadLead();
     return () => { active = false; };
   }, [searchParams]);
@@ -361,15 +360,25 @@ const QuotesInvoicesPage = () => {
   const updateServicePreset = (serviceTitle, packageName) => {
     const service = getService(serviceTitle);
     const pkg = getPackage(service, packageName);
-    setCurrentDocument((previous) => ({
-      ...previous,
-      workType: service.title,
-      packageName: pkg.name,
-      items: previous.items.map((item, index) => index === 0 ? { ...item, description: buildWorkDescription(service, pkg), unitPrice: pkg.price, quantity: 1, vatRate: settings.default_vat_rate ?? item.vatRate ?? 21 } : item),
-    }));
+    setCurrentDocument((previous) => ({ ...previous, workType: service.title, packageName: pkg.name }));
   };
   const updateLineItem = (itemId, field, value) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)) }));
   const addLineItem = () => setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, { id: createId(), description: 'Extra werkzaamheden', quantity: 1, unitPrice: 0, vatRate: settings.default_vat_rate ?? 21 }] }));
+  const addSelectedPackage = () => {
+    const service = getService(currentDocument.workType);
+    const pkg = getPackage(service, currentDocument.packageName);
+    const item = { id: createId(), description: buildWorkDescription(service, pkg), quantity: 1, unitPrice: pkg.price, vatRate: settings.default_vat_rate ?? 21 };
+    setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, item] }));
+    toast({ title: 'Pakket toegevoegd', description: `${service.title} ${pkg.name} staat nu als extra regel in de offerte.` });
+  };
+  const replaceFirstLineWithPackage = () => {
+    const service = getService(currentDocument.workType);
+    const pkg = getPackage(service, currentDocument.packageName);
+    setCurrentDocument((previous) => ({
+      ...previous,
+      items: previous.items.map((item, index) => index === 0 ? { ...item, description: buildWorkDescription(service, pkg), quantity: 1, unitPrice: pkg.price, vatRate: settings.default_vat_rate ?? item.vatRate ?? 21 } : item),
+    }));
+  };
   const removeLineItem = (itemId) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.length === 1 ? previous.items : previous.items.filter((item) => item.id !== itemId) }));
 
   const applyCustomer = (customer) => {
@@ -488,7 +497,7 @@ const QuotesInvoicesPage = () => {
           <div>
             <p className="text-xs font-black uppercase tracking-[.22em] text-[#38bdf8]">Vos Admin</p>
             <h1 className="mt-3 text-3xl font-black tracking-[-.04em] text-white md:text-5xl">Offertes & facturen</h1>
-            <p className="mt-3 max-w-2xl text-slate-400">Maak professionele A4-documenten met klantkoppeling, btw per regel, betalingstermijn en nette print/PDF-layout.</p>
+            <p className="mt-3 max-w-2xl text-slate-400">Maak professionele A4-documenten met meerdere pakketten, korting, btw per regel en nette print/PDF-layout.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => createNewDocument('quote')} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><FileText size={16} /> Nieuwe offerte</Button>
@@ -501,41 +510,72 @@ const QuotesInvoicesPage = () => {
           <SummaryCard label="Type" value={kindLabel} />
           <SummaryCard label="Nummer" value={currentDocument.number} />
           <SummaryCard label="Totaal incl. btw" value={currency.format(totals.total)} accent />
-          <SummaryCard label="Opslag" value={storageMode === 'supabase' ? 'Supabase' : 'Browser lokaal'} hint={storageMode === 'local' ? 'Run migraties voor gedeelde opslag.' : ''} />
+          <SummaryCard label="Korting" value={totals.discount > 0 ? currency.format(totals.discount) : 'Geen'} hint={currentDocument.discountType === 'percent' && parseMoney(currentDocument.discountValue) > 0 ? `${currentDocument.discountValue}% korting` : ''} />
         </div>
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_520px]">
           <div className="no-print space-y-6">
-            <Card className="border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Documentgegevens</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2">
-              <Field label="Soort document"><select className={inputClass} value={currentDocument.kind} onChange={(e) => createNewDocument(e.target.value)}><option value="quote">Offerte</option><option value="invoice">Factuur</option></select></Field>
-              <Field label="Status"><select className={inputClass} value={currentDocument.status} onChange={(e) => updateDocument('status', e.target.value)}>{Object.entries(statusLabelsFor(currentDocument.kind)).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
-              <Field label="Nummer"><input className={inputClass} value={currentDocument.number} onChange={(e) => updateDocument('number', e.target.value)} /></Field>
-              <Field label="Datum"><input type="date" className={inputClass} value={currentDocument.issueDate} onChange={(e) => updateDocument('issueDate', e.target.value)} /></Field>
-              {currentDocument.kind === 'quote' ? <Field label="Geldig tot"><input type="date" className={inputClass} value={currentDocument.validUntil} onChange={(e) => updateDocument('validUntil', e.target.value)} /></Field> : <Field label="Betalingstermijn"><select className={inputClass} value={currentDocument.paymentTermDays} onChange={(e) => { const days = Number(e.target.value); setCurrentDocument((prev) => ({ ...prev, paymentTermDays: days, dueDate: addDays(prev.issueDate, days) })); }}>{PAYMENT_TERMS.map((days) => <option key={days} value={days}>{days} dagen</option>)}</select></Field>}
-              {currentDocument.kind === 'invoice' && <Field label="Vervaldatum"><input type="date" className={inputClass} value={currentDocument.dueDate} onChange={(e) => updateDocument('dueDate', e.target.value)} /></Field>}
-              <div className="md:col-span-2"><Field label="Titel"><input className={inputClass} value={currentDocument.title} onChange={(e) => updateDocument('title', e.target.value)} /></Field></div>
-            </CardContent></Card>
+            <Card className="border-white/10 bg-[#111827]">
+              <CardHeader><CardTitle className="text-white">Documentgegevens</CardTitle></CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <Field label="Soort document"><select className={inputClass} value={currentDocument.kind} onChange={(e) => createNewDocument(e.target.value)}><option value="quote">Offerte</option><option value="invoice">Factuur</option></select></Field>
+                <Field label="Status"><select className={inputClass} value={currentDocument.status} onChange={(e) => updateDocument('status', e.target.value)}>{Object.entries(statusLabelsFor(currentDocument.kind)).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
+                <Field label="Nummer"><input className={inputClass} value={currentDocument.number} onChange={(e) => updateDocument('number', e.target.value)} /></Field>
+                <Field label="Datum"><input type="date" className={inputClass} value={currentDocument.issueDate} onChange={(e) => updateDocument('issueDate', e.target.value)} /></Field>
+                {currentDocument.kind === 'quote' ? <Field label="Geldig tot"><input type="date" className={inputClass} value={currentDocument.validUntil} onChange={(e) => updateDocument('validUntil', e.target.value)} /></Field> : <Field label="Betalingstermijn"><select className={inputClass} value={currentDocument.paymentTermDays} onChange={(e) => { const days = Number(e.target.value); setCurrentDocument((prev) => ({ ...prev, paymentTermDays: days, dueDate: addDays(prev.issueDate, days) })); }}>{PAYMENT_TERMS.map((days) => <option key={days} value={days}>{days} dagen</option>)}</select></Field>}
+                {currentDocument.kind === 'invoice' && <Field label="Vervaldatum"><input type="date" className={inputClass} value={currentDocument.dueDate} onChange={(e) => updateDocument('dueDate', e.target.value)} /></Field>}
+                <div className="md:col-span-2"><Field label="Titel"><input className={inputClass} value={currentDocument.title} onChange={(e) => updateDocument('title', e.target.value)} /></Field></div>
+              </CardContent>
+            </Card>
 
-            <Card className="border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Klantgegevens</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2">
-              <div className="md:col-span-2"><Field label="Bestaande klant kiezen" hint="Kies een klant om gegevens automatisch te vullen."><select className={inputClass} value={currentDocument.customerId || ''} onChange={(e) => { const customer = customers.find((item) => item.id === e.target.value); if (customer) applyCustomer(customer); else updateDocument('customerId', ''); }}><option value="">Geen klant geselecteerd</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.company_name || customer.name} {customer.email ? `• ${customer.email}` : ''}</option>)}</select></Field></div>
-              <Field label="Naam klant"><input className={inputClass} value={currentDocument.customerName} onChange={(e) => updateDocument('customerName', e.target.value)} /></Field>
-              <Field label="Bedrijf"><input className={inputClass} value={currentDocument.companyName} onChange={(e) => updateDocument('companyName', e.target.value)} /></Field>
-              <Field label="E-mail"><input type="email" className={inputClass} value={currentDocument.customerEmail} onChange={(e) => updateDocument('customerEmail', e.target.value)} /></Field>
-              <Field label="Telefoon"><input className={inputClass} value={currentDocument.customerPhone} onChange={(e) => updateDocument('customerPhone', e.target.value)} /></Field>
-              <Field label="Adres"><input className={inputClass} value={currentDocument.customerAddress} onChange={(e) => updateDocument('customerAddress', e.target.value)} /></Field>
-              <Field label="Postcode / plaats"><input className={inputClass} value={[currentDocument.customerPostalCode, currentDocument.customerCity].filter(Boolean).join(' ')} onChange={(e) => updateDocument('customerCity', e.target.value)} /></Field>
-            </CardContent></Card>
+            <Card className="border-white/10 bg-[#111827]">
+              <CardHeader><CardTitle className="text-white">Klantgegevens</CardTitle></CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <div className="md:col-span-2"><Field label="Bestaande klant kiezen" hint="Kies een klant om gegevens automatisch te vullen."><select className={inputClass} value={currentDocument.customerId || ''} onChange={(e) => { const customer = customers.find((item) => item.id === e.target.value); if (customer) applyCustomer(customer); else updateDocument('customerId', ''); }}><option value="">Geen klant geselecteerd</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.company_name || customer.name} {customer.email ? `• ${customer.email}` : ''}</option>)}</select></Field></div>
+                <Field label="Naam klant"><input className={inputClass} value={currentDocument.customerName} onChange={(e) => updateDocument('customerName', e.target.value)} /></Field>
+                <Field label="Bedrijf"><input className={inputClass} value={currentDocument.companyName} onChange={(e) => updateDocument('companyName', e.target.value)} /></Field>
+                <Field label="E-mail"><input type="email" className={inputClass} value={currentDocument.customerEmail} onChange={(e) => updateDocument('customerEmail', e.target.value)} /></Field>
+                <Field label="Telefoon"><input className={inputClass} value={currentDocument.customerPhone} onChange={(e) => updateDocument('customerPhone', e.target.value)} /></Field>
+                <Field label="Adres"><input className={inputClass} value={currentDocument.customerAddress} onChange={(e) => updateDocument('customerAddress', e.target.value)} /></Field>
+                <Field label="Postcode"><input className={inputClass} value={currentDocument.customerPostalCode} onChange={(e) => updateDocument('customerPostalCode', e.target.value)} /></Field>
+                <Field label="Plaats"><input className={inputClass} value={currentDocument.customerCity} onChange={(e) => updateDocument('customerCity', e.target.value)} /></Field>
+              </CardContent>
+            </Card>
 
-            <Card className="border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Werkzaamheden</CardTitle></CardHeader><CardContent className="space-y-5">
-              <div className="grid gap-4 md:grid-cols-2"><Field label="Type werkzaamheden"><select className={inputClass} value={currentDocument.workType} onChange={(e) => updateServicePreset(e.target.value, getService(e.target.value).packages[0].name)}>{SERVICE_CATALOG.map((service) => <option key={service.title} value={service.title}>{service.title}</option>)}</select></Field><Field label="Pakket"><select className={inputClass} value={currentDocument.packageName} onChange={(e) => updateServicePreset(currentDocument.workType, e.target.value)}>{selectedService.packages.map((pkg) => <option key={pkg.name} value={pkg.name}>{pkg.name} - {currency.format(pkg.price)} {pkg.recurring || ''}</option>)}</select></Field></div>
-              <div className="rounded-2xl border border-[#38bdf8]/20 bg-[#38bdf8]/10 p-4 text-sm leading-7 text-slate-200"><strong className="text-white">Gekozen pakket:</strong> {selectedService.title} {selectedPackage.name} - {currency.format(selectedPackage.price)} {selectedPackage.recurring || ''}</div>
-              <Field label="Intro / omschrijving"><textarea className={textareaClass} value={currentDocument.intro} onChange={(e) => updateDocument('intro', e.target.value)} /></Field>
-            </CardContent></Card>
+            <Card className="border-white/10 bg-[#111827]">
+              <CardHeader><CardTitle className="text-white">Pakketten toevoegen</CardTitle></CardHeader>
+              <CardContent className="space-y-5">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="Type werkzaamheden"><select className={inputClass} value={currentDocument.workType} onChange={(e) => updateServicePreset(e.target.value, getService(e.target.value).packages[0].name)}>{SERVICE_CATALOG.map((service) => <option key={service.title} value={service.title}>{service.title}</option>)}</select></Field>
+                  <Field label="Pakket"><select className={inputClass} value={currentDocument.packageName} onChange={(e) => updateServicePreset(currentDocument.workType, e.target.value)}>{selectedService.packages.map((pkg) => <option key={pkg.name} value={pkg.name}>{pkg.name} - {currency.format(pkg.price)} {pkg.recurring || ''}</option>)}</select></Field>
+                </div>
+                <div className="rounded-2xl border border-[#38bdf8]/20 bg-[#38bdf8]/10 p-4 text-sm leading-7 text-slate-200"><strong className="text-white">Gekozen pakket:</strong> {selectedService.title} {selectedPackage.name} - {currency.format(selectedPackage.price)} {selectedPackage.recurring || ''}</div>
+                <div className="flex flex-wrap gap-3">
+                  <Button type="button" onClick={addSelectedPackage} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Plus size={16} /> Pakket toevoegen</Button>
+                  <Button type="button" onClick={replaceFirstLineWithPackage} variant="outline" className="border-white/10 text-white hover:bg-white/10">Eerste regel vervangen</Button>
+                </div>
+                <Field label="Intro / omschrijving"><textarea className={textareaClass} value={currentDocument.intro} onChange={(e) => updateDocument('intro', e.target.value)} /></Field>
+              </CardContent>
+            </Card>
 
-            <Card className="border-white/10 bg-[#111827]"><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="text-white">Kostenregels</CardTitle><Button type="button" onClick={addLineItem} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><Plus size={16} /> Regel toevoegen</Button></CardHeader><CardContent className="space-y-4">
-              {currentDocument.items.map((item, index) => <div key={item.id} className="rounded-3xl border border-white/10 bg-black/20 p-4"><div className="mb-4 flex items-center justify-between gap-4"><p className="font-black text-white">Regel {index + 1}</p><Button type="button" onClick={() => removeLineItem(item.id)} variant="ghost" className="text-red-300 hover:bg-red-500/10 hover:text-red-200"><Trash2 size={16} /></Button></div><div className="grid gap-4 md:grid-cols-[1.3fr_.45fr_.55fr_.45fr]"><Field label="Omschrijving"><textarea className={`${textareaClass} min-h-[92px]`} value={item.description} onChange={(e) => updateLineItem(item.id, 'description', e.target.value)} /></Field><Field label="Aantal"><input type="number" min="0" step="0.01" className={inputClass} value={item.quantity} onChange={(e) => updateLineItem(item.id, 'quantity', e.target.value)} /></Field><Field label="Prijs excl."><input type="number" min="0" step="0.01" className={inputClass} value={item.unitPrice} onChange={(e) => updateLineItem(item.id, 'unitPrice', e.target.value)} /></Field><Field label="Btw"><select className={inputClass} value={item.vatRate} onChange={(e) => updateLineItem(item.id, 'vatRate', e.target.value)}>{VAT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></Field></div><p className="mt-4 text-right text-sm text-slate-400">Regeltotaal incl. btw: <span className="font-black text-white">{currency.format(getLineTotal(item) + getLineVat(item))}</span></p></div>)}
-              <Field label="Opmerkingen / betaalgegevens"><textarea className={textareaClass} value={currentDocument.notes} onChange={(e) => updateDocument('notes', e.target.value)} /></Field>
-            </CardContent></Card>
+            <Card className="border-white/10 bg-[#111827]">
+              <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="text-white">Kostenregels</CardTitle><Button type="button" onClick={addLineItem} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><Plus size={16} /> Handmatige regel</Button></CardHeader>
+              <CardContent className="space-y-4">
+                {currentDocument.items.map((item, index) => <div key={item.id} className="rounded-3xl border border-white/10 bg-black/20 p-4"><div className="mb-4 flex items-center justify-between gap-4"><p className="font-black text-white">Regel {index + 1}</p><Button type="button" onClick={() => removeLineItem(item.id)} variant="ghost" className="text-red-300 hover:bg-red-500/10 hover:text-red-200"><Trash2 size={16} /></Button></div><div className="grid gap-4 md:grid-cols-[1.3fr_.45fr_.55fr_.45fr]"><Field label="Omschrijving"><textarea className={`${textareaClass} min-h-[92px]`} value={item.description} onChange={(e) => updateLineItem(item.id, 'description', e.target.value)} /></Field><Field label="Aantal"><input type="number" min="0" step="0.01" className={inputClass} value={item.quantity} onChange={(e) => updateLineItem(item.id, 'quantity', e.target.value)} /></Field><Field label="Prijs excl."><input type="number" min="0" step="0.01" className={inputClass} value={item.unitPrice} onChange={(e) => updateLineItem(item.id, 'unitPrice', e.target.value)} /></Field><Field label="Btw"><select className={inputClass} value={item.vatRate} onChange={(e) => updateLineItem(item.id, 'vatRate', e.target.value)}>{VAT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></Field></div><p className="mt-4 text-right text-sm text-slate-400">Regeltotaal incl. btw: <span className="font-black text-white">{currency.format(getLineTotal(item) + getLineVat(item))}</span></p></div>)}
+
+                <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
+                  <div className="mb-4"><p className="font-black text-white">Korting</p><p className="mt-1 text-sm text-amber-100/80">Korting wordt toegepast op het totaal inclusief btw.</p></div>
+                  <div className="grid gap-4 md:grid-cols-[1fr_.45fr_.55fr]">
+                    <Field label="Label"><input className={inputClass} value={currentDocument.discountLabel || 'Korting'} onChange={(e) => updateDocument('discountLabel', e.target.value)} /></Field>
+                    <Field label="Soort"><select className={inputClass} value={currentDocument.discountType || 'amount'} onChange={(e) => updateDocument('discountType', e.target.value)}><option value="amount">Bedrag €</option><option value="percent">Percentage %</option></select></Field>
+                    <Field label="Waarde"><input type="number" min="0" step="0.01" className={inputClass} value={currentDocument.discountValue ?? 0} onChange={(e) => updateDocument('discountValue', e.target.value)} /></Field>
+                  </div>
+                  <p className="mt-4 text-right text-sm text-slate-300">Korting: <span className="font-black text-amber-100">-{currency.format(totals.discount)}</span></p>
+                </div>
+
+                <Field label="Opmerkingen / betaalgegevens"><textarea className={textareaClass} value={currentDocument.notes} onChange={(e) => updateDocument('notes', e.target.value)} /></Field>
+              </CardContent>
+            </Card>
           </div>
 
           <aside className="space-y-6">
@@ -578,7 +618,7 @@ const DocumentPreview = ({ company, document, totals, kindLabel, customerDisplay
       <section className="grid gap-6 border-b border-slate-200 pb-6 sm:grid-cols-2"><div><p className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Van</p><p className="mt-2 font-black">{company.name}</p><p>{company.address}</p><p>{[company.postalCode, company.city].filter(Boolean).join(' ')}</p><p>KVK: {company.kvk}</p><p>{company.website}</p><p>{company.email}</p></div><div><p className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Voor</p><p className="mt-2 font-black">{customerDisplay}</p>{document.customerName && document.companyName && <p>T.a.v. {document.customerName}</p>}{document.customerAddress && <p>{document.customerAddress}</p>}{(document.customerPostalCode || document.customerCity) && <p>{[document.customerPostalCode, document.customerCity].filter(Boolean).join(' ')}</p>}{document.customerEmail && <p>{document.customerEmail}</p>}{document.customerPhone && <p>{document.customerPhone}</p>}{document.customerVatNumber && <p>BTW: {document.customerVatNumber}</p>}</div></section>
       <section><p className="leading-7 text-slate-700">{document.intro}</p></section>
       <section className="overflow-hidden rounded-2xl border border-slate-200"><table className="w-full border-collapse text-left text-sm"><thead className="bg-slate-100 text-xs uppercase tracking-[.12em] text-slate-500"><tr><th className="p-4">Werkzaamheden</th><th className="p-4 text-right">Aantal</th><th className="p-4 text-right">Prijs excl.</th><th className="p-4 text-right">Btw</th><th className="p-4 text-right">Totaal</th></tr></thead><tbody>{document.items.map((item) => <tr key={item.id} className="border-t border-slate-200 align-top"><td className="p-4 font-medium leading-6">{item.description}</td><td className="p-4 text-right">{item.quantity}</td><td className="p-4 text-right">{currency.format(parseMoney(item.unitPrice))}</td><td className="p-4 text-right">{item.vatRate === 'exempt' ? 'Vrijgesteld' : `${parseMoney(item.vatRate)}%`}</td><td className="p-4 text-right font-black">{currency.format(getLineTotal(item) + getLineVat(item))}</td></tr>)}</tbody></table></section>
-      <section className="ml-auto max-w-sm space-y-3 rounded-2xl bg-slate-100 p-5"><div className="flex justify-between gap-6 text-sm"><span>Subtotaal excl. btw</span><strong>{currency.format(totals.subtotal)}</strong></div><div className="flex justify-between gap-6 text-sm"><span>Btw</span><strong>{currency.format(totals.vat)}</strong></div><div className="border-t border-slate-300 pt-3 text-xl font-black"><div className="flex justify-between gap-6"><span>Totaal incl. btw</span><span>{currency.format(totals.total)}</span></div></div></section>
+      <section className="ml-auto max-w-sm space-y-3 rounded-2xl bg-slate-100 p-5"><div className="flex justify-between gap-6 text-sm"><span>Subtotaal excl. btw</span><strong>{currency.format(totals.subtotal)}</strong></div><div className="flex justify-between gap-6 text-sm"><span>Btw</span><strong>{currency.format(totals.vat)}</strong></div>{totals.discount > 0 && <div className="flex justify-between gap-6 text-sm text-amber-700"><span>{document.discountLabel || 'Korting'}{document.discountType === 'percent' ? ` (${document.discountValue}%)` : ''}</span><strong>-{currency.format(totals.discount)}</strong></div>}<div className="border-t border-slate-300 pt-3 text-xl font-black"><div className="flex justify-between gap-6"><span>Totaal incl. btw</span><span>{currency.format(totals.total)}</span></div></div></section>
       {document.notes && <section className="rounded-2xl border border-slate-200 p-5"><p className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Opmerking</p><p className="mt-3 whitespace-pre-line leading-7 text-slate-700">{document.notes}</p></section>}
       <p className="text-xs leading-6 text-slate-500">{document.termsLine || TERMS_LINE}</p>
     </div>
