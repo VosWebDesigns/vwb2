@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 
 const STORAGE_KEY = 'vwb2_admin_business_documents';
 const CUSTOMER_STORAGE_KEY = 'vwb2_admin_customers';
+const DRAFT_STORAGE_KEY = 'vwb2_admin_current_business_document_draft';
 
 const FALLBACK_COMPANY = {
   name: 'Voswebdesigns',
@@ -70,6 +71,28 @@ const readLocalDocuments = () => {
 const writeLocalDocuments = (documents) => localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
 const readLocalCustomers = () => {
   try { const parsed = JSON.parse(localStorage.getItem(CUSTOMER_STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (_error) { return []; }
+};
+
+const getDraftStorage = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.sessionStorage || window.localStorage;
+  } catch (_error) {
+    return null;
+  }
+};
+const readDraftDocument = () => {
+  try {
+    const parsed = JSON.parse(getDraftStorage()?.getItem(DRAFT_STORAGE_KEY) || 'null');
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch (_error) {
+    return null;
+  }
+};
+const writeDraftDocument = (document) => {
+  const storage = getDraftStorage();
+  if (!storage || !document?.id) return;
+  storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ ...document, updatedAt: new Date().toISOString() }));
 };
 
 const getLineTotal = (item) => parseMoney(item.quantity) * parseMoney(item.unitPrice);
@@ -231,6 +254,8 @@ const QuotesInvoicesPage = () => {
     let active = true;
     const loadData = async () => {
       setLoading(true);
+      const requestedKind = searchParams.get('type') === 'invoice' ? 'invoice' : 'quote';
+      const draftDocument = readDraftDocument();
       const localDocs = readLocalDocuments().map((document) => normalizeDocument(document, [], settings));
       const localCustomers = readLocalCustomers();
 
@@ -239,7 +264,7 @@ const QuotesInvoicesPage = () => {
           setDocuments(localDocs);
           setCustomers(localCustomers);
           setStorageMode('local');
-          setCurrentDocument((previous) => normalizeDocument(previous, localDocs, settings));
+          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, localDocs, settings), localDocs, settings));
           setLoading(false);
         }
         return;
@@ -254,18 +279,20 @@ const QuotesInvoicesPage = () => {
         if (documentsRes.error) throw documentsRes.error;
         const dbDocs = (documentsRes.data || []).map(fromDatabaseRow).map((document) => normalizeDocument(document, [], settings));
         const dbCustomers = customersRes.error ? localCustomers : (customersRes.data || []);
+        const availableDocs = dbDocs.length ? dbDocs : localDocs;
 
         if (active) {
-          setDocuments(dbDocs.length ? dbDocs : localDocs);
+          setDocuments(availableDocs);
           setCustomers(dbCustomers);
           setStorageMode('supabase');
-          setCurrentDocument(createDefaultDocument(searchParams.get('type') === 'invoice' ? 'invoice' : 'quote', dbDocs, settings));
+          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, availableDocs, settings), availableDocs, settings));
         }
       } catch (error) {
         if (active) {
           setDocuments(localDocs);
           setCustomers(localCustomers);
           setStorageMode('local');
+          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, localDocs, settings), localDocs, settings));
           toast({ variant: 'destructive', title: 'Documenten lokaal geladen', description: 'Controleer of de Supabase migraties zijn uitgevoerd.' });
         }
       } finally {
@@ -276,6 +303,28 @@ const QuotesInvoicesPage = () => {
     loadData();
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    writeDraftDocument(currentDocument);
+  }, [currentDocument, loading]);
+
+  useEffect(() => {
+    if (loading) return undefined;
+    const persistDraft = () => writeDraftDocument(currentDocument);
+    const persistWhenHidden = () => {
+      if (document.visibilityState === 'hidden') persistDraft();
+    };
+
+    window.addEventListener('pagehide', persistDraft);
+    document.addEventListener('visibilitychange', persistWhenHidden);
+
+    return () => {
+      persistDraft();
+      window.removeEventListener('pagehide', persistDraft);
+      document.removeEventListener('visibilitychange', persistWhenHidden);
+    };
+  }, [currentDocument, loading]);
 
   useEffect(() => {
     const customerId = searchParams.get('customerId');
@@ -348,12 +397,15 @@ const QuotesInvoicesPage = () => {
   const saveDocument = async () => {
     const documentToSave = normalizeDocument(currentDocument, documents, settings);
     setCurrentDocument(documentToSave);
+    writeDraftDocument(documentToSave);
 
     if (storageMode === 'supabase' && isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.from('business_documents').upsert(toDatabaseRow(documentToSave, user?.id)).select('*').single();
         if (error) throw error;
         const savedDocument = normalizeDocument(fromDatabaseRow(data), documents, settings);
+        setCurrentDocument(savedDocument);
+        writeDraftDocument(savedDocument);
         setDocuments((previous) => [savedDocument, ...previous.filter((document) => document.id !== savedDocument.id)]);
         toast({ title: `${kindLabel} opgeslagen`, description: `${documentToSave.number} staat in de admin.` });
         return;
@@ -367,11 +419,20 @@ const QuotesInvoicesPage = () => {
     toast({ title: `${kindLabel} lokaal opgeslagen`, description: 'Supabase tabel ontbreekt nog; document staat tijdelijk in deze browser.' });
   };
 
-  const createNewDocument = (kind) => setCurrentDocument(createDefaultDocument(kind, documents, settings));
-  const loadDocument = (document) => setCurrentDocument(normalizeDocument(document, documents, settings));
+  const createNewDocument = (kind) => {
+    const nextDocument = createDefaultDocument(kind, documents, settings);
+    setCurrentDocument(nextDocument);
+    writeDraftDocument(nextDocument);
+  };
+  const loadDocument = (document) => {
+    const nextDocument = normalizeDocument(document, documents, settings);
+    setCurrentDocument(nextDocument);
+    writeDraftDocument(nextDocument);
+  };
   const duplicateDocument = () => {
     const duplicate = { ...normalizeDocument(currentDocument, documents, settings), id: createId(), number: nextDocumentNumber(currentDocument.kind, documents), status: 'concept', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
     setCurrentDocument(duplicate);
+    writeDraftDocument(duplicate);
     toast({ title: 'Kopie gemaakt', description: 'Je kunt deze kopie aanpassen en opslaan.' });
   };
   const convertQuoteToInvoice = () => {
@@ -392,6 +453,7 @@ const QuotesInvoicesPage = () => {
       updatedAt: new Date().toISOString(),
     };
     setCurrentDocument(invoice);
+    writeDraftDocument(invoice);
     toast({ title: 'Factuur aangemaakt', description: `${invoice.number} is gevuld op basis van ${base.number}.` });
   };
   const deleteDocument = async (documentId) => {
