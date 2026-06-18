@@ -37,7 +37,7 @@ const fetchPublishedProjectUrls = async (): Promise<SitemapRoute[]> => {
     return [];
   }
 
-  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/projects?select=id,updated_at,created_at,is_published&or=(is_published.is.null,is_published.eq.true)`;
+  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/projects?select=id,created_at,is_published&or=(is_published.is.null,is_published.eq.true)`;
   const response = await fetch(endpoint, {
     headers: {
       apikey: supabaseAnonKey,
@@ -59,7 +59,7 @@ const fetchPublishedProjectUrls = async (): Promise<SitemapRoute[]> => {
 
   return (Array.isArray(projects) ? projects : []).map((project) => ({
     path: `/portfolio/${project.id}`,
-    lastmod: project.updated_at || project.created_at,
+    lastmod: project.created_at,
   }));
 };
 
