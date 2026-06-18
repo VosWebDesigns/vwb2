@@ -44,6 +44,7 @@ import NewsletterPage from '@/pages/admin/NewsletterPage';
 import InboxPage from '@/pages/admin/InboxPage';
 import QuotesInvoicesPage from '@/pages/admin/QuotesInvoicesPage';
 import CustomersPage from '@/pages/admin/CustomersPage';
+import ServicePricingPage from '@/pages/admin/ServicePricingPage';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -248,6 +249,7 @@ const routes = createRoutesFromElements(
       <Route path="inbox" element={<InboxPage />} />
       <Route path="customers" element={<CustomersPage />} />
       <Route path="documents" element={<QuotesInvoicesPage />} />
+      <Route path="service-pricing" element={<ServicePricingPage />} />
       <Route path="testimonials" element={<TestimonialsPage />} />
       <Route path="categories" element={<CategoriesPage />} />
       <Route path="settings" element={<SettingsPage />} />
@@ -258,17 +260,8 @@ const routes = createRoutesFromElements(
   </Route>
 );
 
-const router = createBrowserRouter(routes, {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true,
-  },
-});
+const router = createBrowserRouter(routes);
 
-const App = () => (
-  <ErrorBoundary fullPage label="APP_RENDER_ERROR">
-    <RouterProvider router={router} />
-  </ErrorBoundary>
-);
+const App = () => <RouterProvider router={router} />;
 
 export default App;
