@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { wrapHandler } from '../_sentry.js';
-import { getAdminMfaMode, getCookieValue, MFA_COOKIE_NAME } from './mfa-utils.js';
+import { wrapHandler } from '../../server/api/sentry.js';
+import { getAdminMfaMode, getCookieValue, MFA_COOKIE_NAME } from '../../server/api/admin/mfa-utils.js';
 
 const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
