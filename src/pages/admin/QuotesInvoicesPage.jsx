@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
 import { Copy, Download, FileText, Plus, Printer, ReceiptText, Save, Trash2 } from 'lucide-react';
@@ -64,26 +64,25 @@ const getService = (title) => SERVICE_CATALOG.find((service) => service.title ==
 const getPackage = (service, packageName) => service.packages.find((pkg) => pkg.name === packageName) || service.packages[0];
 const buildWorkDescription = (service, pkg) => `${service.title} pakket ${pkg.name}${pkg.recurring ? ` ${pkg.recurring}` : ''} - ${service.description}.${pkg.features?.length ? ` Inclusief: ${pkg.features.join(', ')}.` : ''}`;
 
-const readLocalDocuments = () => {
-  try { const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (_error) { return []; }
-};
-const writeLocalDocuments = (documents) => localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
-const readLocalCustomers = () => {
-  try { const parsed = JSON.parse(localStorage.getItem(CUSTOMER_STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (_error) { return []; }
-};
-
-const getDraftStorage = () => {
+const getSafeStorage = () => {
   if (typeof window === 'undefined') return null;
-  try { return window.sessionStorage || window.localStorage; } catch (_error) { return null; }
+  try { return window.localStorage; } catch (_error) { return null; }
+};
+const readLocalDocuments = () => {
+  try { const parsed = JSON.parse(getSafeStorage()?.getItem(STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (_error) { return []; }
+};
+const writeLocalDocuments = (documents) => getSafeStorage()?.setItem(STORAGE_KEY, JSON.stringify(documents));
+const readLocalCustomers = () => {
+  try { const parsed = JSON.parse(getSafeStorage()?.getItem(CUSTOMER_STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (_error) { return []; }
 };
 const readDraftDocument = () => {
   try {
-    const parsed = JSON.parse(getDraftStorage()?.getItem(DRAFT_STORAGE_KEY) || 'null');
+    const parsed = JSON.parse(getSafeStorage()?.getItem(DRAFT_STORAGE_KEY) || 'null');
     return parsed && typeof parsed === 'object' ? parsed : null;
   } catch (_error) { return null; }
 };
 const writeDraftDocument = (document) => {
-  const storage = getDraftStorage();
+  const storage = getSafeStorage();
   if (!storage || !document?.id) return;
   storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ ...document, updatedAt: new Date().toISOString() }));
 };
@@ -91,7 +90,6 @@ const writeDraftDocument = (document) => {
 const getLineTotal = (item) => parseMoney(item.quantity) * parseMoney(item.unitPrice);
 const getLineVat = (item) => getLineTotal(item) * (vatPercent(item.vatRate) / 100);
 const statusLabelsFor = (kind) => (kind === 'invoice' ? INVOICE_STATUS_LABELS : QUOTE_STATUS_LABELS);
-const defaultStatusFor = () => 'concept';
 const calculateTotals = (document) => {
   const items = Array.isArray(document?.items) ? document.items : [];
   const subtotal = items.reduce((sum, item) => sum + getLineTotal(item), 0);
@@ -126,7 +124,7 @@ const createDefaultDocument = (kind = 'quote', existingDocuments = [], settings 
   return {
     id: createId(),
     kind,
-    status: defaultStatusFor(kind),
+    status: 'concept',
     number: nextDocumentNumber(kind, existingDocuments),
     issueDate,
     validUntil: addDays(issueDate, quoteValidityDays),
@@ -163,13 +161,17 @@ const createDefaultDocument = (kind = 'quote', existingDocuments = [], settings 
 };
 
 const normalizeDocument = (document, existingDocuments = [], settings = {}) => {
-  const fallback = createDefaultDocument(document?.kind || 'quote', existingDocuments, settings);
-  return {
+  const fallback = createDefaultDocument(document?.kind || document?.type || 'quote', existingDocuments, settings);
+  const normalized = {
     ...fallback,
-    ...document,
+    ...(document || {}),
+    id: document?.id || fallback.id,
+    kind: document?.kind || document?.type || fallback.kind,
+    status: document?.status || fallback.status,
+    number: document?.number || fallback.number,
     customerId: document?.customerId || document?.customer_id || '',
-    customerName: document?.customerName || '',
-    companyName: document?.companyName || '',
+    customerName: document?.customerName || document?.customer_name || '',
+    companyName: document?.companyName || document?.company_name || '',
     customerEmail: document?.customerEmail || '',
     customerPhone: document?.customerPhone || '',
     customerAddress: document?.customerAddress || '',
@@ -183,6 +185,8 @@ const normalizeDocument = (document, existingDocuments = [], settings = {}) => {
     termsLine: document?.termsLine || TERMS_LINE,
     updatedAt: new Date().toISOString(),
   };
+
+  return normalized;
 };
 
 const toDatabaseRow = (document, userId) => {
@@ -206,8 +210,8 @@ const toDatabaseRow = (document, userId) => {
   };
 };
 
-const fromDatabaseRow = (row) => ({
-  ...row.document_json,
+const fromDatabaseRow = (row) => normalizeDocument({
+  ...(row.document_json || {}),
   id: row.id,
   kind: row.document_json?.kind || row.type || 'quote',
   status: row.status || row.document_json?.status || 'concept',
@@ -233,6 +237,7 @@ const QuotesInvoicesPage = () => {
   const { user } = useAuth();
   const { settings } = useSettings();
   const [searchParams] = useSearchParams();
+  const editorRef = useRef(null);
   const [documents, setDocuments] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [currentDocument, setCurrentDocument] = useState(() => createDefaultDocument('quote'));
@@ -263,16 +268,24 @@ const QuotesInvoicesPage = () => {
     const loadData = async () => {
       setLoading(true);
       const requestedKind = searchParams.get('type') === 'invoice' ? 'invoice' : 'quote';
-      const draftDocument = readDraftDocument();
+      const requestedDocumentId = searchParams.get('documentId');
       const localDocs = readLocalDocuments().map((document) => normalizeDocument(document, [], settings));
       const localCustomers = readLocalCustomers();
+
+      const pickInitialDocument = (availableDocs) => {
+        const requestedDocument = requestedDocumentId ? availableDocs.find((doc) => doc.id === requestedDocumentId) : null;
+        if (requestedDocument) return normalizeDocument(requestedDocument, availableDocs, settings);
+        const draftDocument = readDraftDocument();
+        if (draftDocument?.id) return normalizeDocument(draftDocument, availableDocs, settings);
+        return createDefaultDocument(requestedKind, availableDocs, settings);
+      };
 
       if (!isSupabaseConfigured) {
         if (active) {
           setDocuments(localDocs);
           setCustomers(localCustomers);
           setStorageMode('local');
-          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, localDocs, settings), localDocs, settings));
+          setCurrentDocument(pickInitialDocument(localDocs));
           setLoading(false);
         }
         return;
@@ -291,14 +304,14 @@ const QuotesInvoicesPage = () => {
           setDocuments(availableDocs);
           setCustomers(dbCustomers);
           setStorageMode('supabase');
-          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, availableDocs, settings), availableDocs, settings));
+          setCurrentDocument(pickInitialDocument(availableDocs));
         }
       } catch (error) {
         if (active) {
           setDocuments(localDocs);
           setCustomers(localCustomers);
           setStorageMode('local');
-          setCurrentDocument(normalizeDocument(draftDocument || createDefaultDocument(requestedKind, localDocs, settings), localDocs, settings));
+          setCurrentDocument(pickInitialDocument(localDocs));
           toast({ variant: 'destructive', title: 'Documenten lokaal geladen', description: 'Controleer of de Supabase migraties zijn uitgevoerd.' });
         }
       } finally {
@@ -310,8 +323,7 @@ const QuotesInvoicesPage = () => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
-    writeDraftDocument(currentDocument);
+    if (!loading) writeDraftDocument(currentDocument);
   }, [currentDocument, loading]);
 
   useEffect(() => {
@@ -335,40 +347,19 @@ const QuotesInvoicesPage = () => {
     }
   }, [customers, searchParams]);
 
-  useEffect(() => {
-    const leadId = searchParams.get('leadId');
-    if (!leadId || !isSupabaseConfigured) return;
-    let active = true;
-    const loadLead = async () => {
-      const { data, error } = await supabase.from('leads').select('*').eq('id', leadId).maybeSingle();
-      if (!active || error || !data) return;
-      setCurrentDocument((previous) => ({
-        ...previous,
-        customerName: previous.customerName || data.name || '',
-        companyName: previous.companyName || data.company || '',
-        customerEmail: previous.customerEmail || data.email || '',
-        customerPhone: previous.customerPhone || data.phone || '',
-        intro: previous.intro || `Bedankt voor je aanvraag over ${data.service || 'je project'}.`,
-        notes: previous.notes || data.message || '',
-      }));
-    };
-    loadLead();
-    return () => { active = false; };
-  }, [searchParams]);
-
-  const updateDocument = (field, value) => setCurrentDocument((previous) => ({ ...previous, [field]: value }));
+  const updateDocument = (field, value) => setCurrentDocument((previous) => ({ ...previous, [field]: value, updatedAt: new Date().toISOString() }));
   const updateServicePreset = (serviceTitle, packageName) => {
     const service = getService(serviceTitle);
     const pkg = getPackage(service, packageName);
-    setCurrentDocument((previous) => ({ ...previous, workType: service.title, packageName: pkg.name }));
+    setCurrentDocument((previous) => ({ ...previous, workType: service.title, packageName: pkg.name, updatedAt: new Date().toISOString() }));
   };
-  const updateLineItem = (itemId, field, value) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)) }));
-  const addLineItem = () => setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, { id: createId(), description: 'Extra werkzaamheden', quantity: 1, unitPrice: 0, vatRate: settings.default_vat_rate ?? 21 }] }));
+  const updateLineItem = (itemId, field, value) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)), updatedAt: new Date().toISOString() }));
+  const addLineItem = () => setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, { id: createId(), description: 'Extra werkzaamheden', quantity: 1, unitPrice: 0, vatRate: settings.default_vat_rate ?? 21 }], updatedAt: new Date().toISOString() }));
   const addSelectedPackage = () => {
     const service = getService(currentDocument.workType);
     const pkg = getPackage(service, currentDocument.packageName);
     const item = { id: createId(), description: buildWorkDescription(service, pkg), quantity: 1, unitPrice: pkg.price, vatRate: settings.default_vat_rate ?? 21 };
-    setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, item] }));
+    setCurrentDocument((previous) => ({ ...previous, items: [...previous.items, item], updatedAt: new Date().toISOString() }));
     toast({ title: 'Pakket toegevoegd', description: `${service.title} ${pkg.name} staat nu als extra regel in de offerte.` });
   };
   const replaceFirstLineWithPackage = () => {
@@ -377,24 +368,24 @@ const QuotesInvoicesPage = () => {
     setCurrentDocument((previous) => ({
       ...previous,
       items: previous.items.map((item, index) => index === 0 ? { ...item, description: buildWorkDescription(service, pkg), quantity: 1, unitPrice: pkg.price, vatRate: settings.default_vat_rate ?? item.vatRate ?? 21 } : item),
+      updatedAt: new Date().toISOString(),
     }));
   };
-  const removeLineItem = (itemId) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.length === 1 ? previous.items : previous.items.filter((item) => item.id !== itemId) }));
+  const removeLineItem = (itemId) => setCurrentDocument((previous) => ({ ...previous, items: previous.items.length === 1 ? previous.items : previous.items.filter((item) => item.id !== itemId), updatedAt: new Date().toISOString() }));
 
-  const applyCustomer = (customer) => {
-    setCurrentDocument((previous) => ({
-      ...previous,
-      customerId: customer.id,
-      customerName: customer.name || '',
-      companyName: customer.company_name || '',
-      customerEmail: customer.email || '',
-      customerPhone: customer.phone || '',
-      customerAddress: customer.address || '',
-      customerPostalCode: customer.postal_code || '',
-      customerCity: customer.city || '',
-      customerVatNumber: customer.vat_number || '',
-    }));
-  };
+  const applyCustomer = (customer) => setCurrentDocument((previous) => ({
+    ...previous,
+    customerId: customer.id,
+    customerName: customer.name || '',
+    companyName: customer.company_name || '',
+    customerEmail: customer.email || '',
+    customerPhone: customer.phone || '',
+    customerAddress: customer.address || '',
+    customerPostalCode: customer.postal_code || '',
+    customerCity: customer.city || '',
+    customerVatNumber: customer.vat_number || '',
+    updatedAt: new Date().toISOString(),
+  }));
 
   const persistLocal = (documentToSave) => {
     const existing = readLocalDocuments();
@@ -404,7 +395,7 @@ const QuotesInvoicesPage = () => {
   };
 
   const saveDocument = async () => {
-    const documentToSave = normalizeDocument(currentDocument, documents, settings);
+    const documentToSave = normalizeDocument({ ...currentDocument, updatedAt: new Date().toISOString() }, documents, settings);
     setCurrentDocument(documentToSave);
     writeDraftDocument(documentToSave);
 
@@ -416,7 +407,7 @@ const QuotesInvoicesPage = () => {
         setCurrentDocument(savedDocument);
         writeDraftDocument(savedDocument);
         setDocuments((previous) => [savedDocument, ...previous.filter((document) => document.id !== savedDocument.id)]);
-        toast({ title: `${kindLabel} opgeslagen`, description: `${documentToSave.number} staat in de admin.` });
+        toast({ title: `${kindLabel} bijgewerkt`, description: `${savedDocument.number} is opgeslagen.` });
         return;
       } catch (error) {
         setStorageMode('local');
@@ -425,18 +416,21 @@ const QuotesInvoicesPage = () => {
     }
 
     persistLocal(documentToSave);
-    toast({ title: `${kindLabel} lokaal opgeslagen`, description: 'Supabase tabel ontbreekt nog; document staat tijdelijk in deze browser.' });
+    toast({ title: `${kindLabel} lokaal bijgewerkt`, description: `${documentToSave.number} is opgeslagen in deze browser.` });
   };
 
   const createNewDocument = (kind) => {
     const nextDocument = createDefaultDocument(kind, documents, settings);
     setCurrentDocument(nextDocument);
     writeDraftDocument(nextDocument);
+    editorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const loadDocument = (document) => {
-    const nextDocument = normalizeDocument(document, documents, settings);
+  const loadDocument = (documentToOpen) => {
+    const nextDocument = normalizeDocument(documentToOpen, documents, settings);
     setCurrentDocument(nextDocument);
     writeDraftDocument(nextDocument);
+    editorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toast({ title: `${nextDocument.kind === 'invoice' ? 'Factuur' : 'Offerte'} geopend`, description: `${nextDocument.number} staat klaar om te bewerken.` });
   };
   const duplicateDocument = () => {
     const duplicate = { ...normalizeDocument(currentDocument, documents, settings), id: createId(), number: nextDocumentNumber(currentDocument.kind, documents), status: 'concept', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
@@ -492,24 +486,24 @@ const QuotesInvoicesPage = () => {
         <style>{`@media print { body * { visibility: hidden !important; } .document-print-area, .document-print-area * { visibility: visible !important; } .document-print-area { position: absolute !important; inset: 0 !important; width: 100% !important; min-height: auto !important; margin: 0 !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; } .no-print { display: none !important; } @page { size: A4; margin: 12mm; } }`}</style>
       </Helmet>
 
-      <div className="space-y-8">
+      <div className="space-y-8" ref={editorRef}>
         <header className="no-print flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[.22em] text-[#38bdf8]">Vos Admin</p>
             <h1 className="mt-3 text-3xl font-black tracking-[-.04em] text-white md:text-5xl">Offertes & facturen</h1>
-            <p className="mt-3 max-w-2xl text-slate-400">Maak professionele A4-documenten met meerdere pakketten, korting, btw per regel en nette print/PDF-layout.</p>
+            <p className="mt-3 max-w-2xl text-slate-400">Open bestaande offertes, pas ze aan, voeg meerdere pakketten toe en sla wijzigingen op hetzelfde document op.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => createNewDocument('quote')} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><FileText size={16} /> Nieuwe offerte</Button>
             <Button onClick={() => createNewDocument('invoice')} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><ReceiptText size={16} /> Nieuwe factuur</Button>
-            <Button onClick={saveDocument} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Save size={16} /> Opslaan</Button>
+            <Button onClick={saveDocument} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Save size={16} /> Wijzigingen opslaan</Button>
           </div>
         </header>
 
         <div className="no-print grid gap-4 md:grid-cols-4">
+          <SummaryCard label="Actief document" value={currentDocument.number || 'Nieuw'} hint={currentDocument.id ? 'Dit document bewerk je nu.' : ''} accent />
           <SummaryCard label="Type" value={kindLabel} />
-          <SummaryCard label="Nummer" value={currentDocument.number} />
-          <SummaryCard label="Totaal incl. btw" value={currency.format(totals.total)} accent />
+          <SummaryCard label="Totaal incl. btw" value={currency.format(totals.total)} />
           <SummaryCard label="Korting" value={totals.discount > 0 ? currency.format(totals.discount) : 'Geen'} hint={currentDocument.discountType === 'percent' && parseMoney(currentDocument.discountValue) > 0 ? `${currentDocument.discountValue}% korting` : ''} />
         </div>
 
@@ -580,17 +574,33 @@ const QuotesInvoicesPage = () => {
 
           <aside className="space-y-6">
             <Card className="no-print border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Acties</CardTitle></CardHeader><CardContent className="grid gap-3">
-              <Button onClick={saveDocument} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Save size={16} /> Opslaan</Button>
+              <Button onClick={saveDocument} className="gap-2 bg-[#38bdf8] text-black hover:bg-[#0ea5e9]"><Save size={16} /> Wijzigingen opslaan</Button>
               {currentDocument.kind === 'quote' && <Button onClick={convertQuoteToInvoice} variant="outline" className="gap-2 border-emerald-400/30 text-emerald-100 hover:bg-emerald-400/10"><ReceiptText size={16} /> Maak factuur van offerte</Button>}
               <Button onClick={() => window.print()} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><Printer size={16} /> Print / opslaan als PDF</Button>
               <Button onClick={duplicateDocument} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><Copy size={16} /> Kopiëren</Button>
               <Button onClick={exportJson} variant="ghost" className="gap-2 text-slate-300 hover:bg-white/10 hover:text-white"><Download size={16} /> JSON export</Button>
             </CardContent></Card>
 
-            <Card className="no-print border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Opgeslagen documenten</CardTitle></CardHeader><CardContent className="space-y-3 max-h-[460px] overflow-y-auto">
+            <Card className="no-print border-white/10 bg-[#111827]"><CardHeader><CardTitle className="text-white">Opgeslagen documenten</CardTitle></CardHeader><CardContent className="space-y-3 max-h-[520px] overflow-y-auto">
               {loading && <p className="text-sm text-slate-500">Documenten laden...</p>}
               {!loading && documents.length === 0 && <p className="text-sm text-slate-500">Nog niets opgeslagen.</p>}
-              {documents.map((document) => <div key={document.id} className="rounded-2xl border border-white/10 bg-black/20 p-4"><div className="flex items-start justify-between gap-3"><button type="button" onClick={() => loadDocument(document)} className="text-left"><p className="font-black text-white">{document.number}</p><p className="mt-1 text-sm text-slate-400">{document.kind === 'invoice' ? 'Factuur' : 'Offerte'} • {document.companyName || document.customerName || 'Geen klantnaam'}</p><p className="mt-1 text-xs text-slate-500">{statusLabelsFor(document.kind)[document.status] || document.status} • {formatDate(document.updatedAt?.slice?.(0, 10) || document.issueDate)}</p></button><button type="button" onClick={() => deleteDocument(document.id)} className="rounded-xl p-2 text-red-300 hover:bg-red-500/10"><Trash2 size={15} /></button></div></div>)}
+              {documents.map((documentItem) => {
+                const active = documentItem.id === currentDocument.id;
+                return (
+                  <div key={documentItem.id} className={`rounded-2xl border p-4 ${active ? 'border-[#38bdf8]/60 bg-[#38bdf8]/10' : 'border-white/10 bg-black/20'}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-black text-white">{documentItem.number}</p>
+                        <p className="mt-1 text-sm text-slate-400">{documentItem.kind === 'invoice' ? 'Factuur' : 'Offerte'} • {documentItem.companyName || documentItem.customerName || 'Geen klantnaam'}</p>
+                        <p className="mt-1 text-xs text-slate-500">{statusLabelsFor(documentItem.kind)[documentItem.status] || documentItem.status} • {formatDate(documentItem.updatedAt?.slice?.(0, 10) || documentItem.issueDate)}</p>
+                        {active && <p className="mt-2 text-xs font-black uppercase tracking-[.16em] text-[#38bdf8]">Nu geopend</p>}
+                      </div>
+                      <button type="button" onClick={() => deleteDocument(documentItem.id)} className="rounded-xl p-2 text-red-300 hover:bg-red-500/10"><Trash2 size={15} /></button>
+                    </div>
+                    <Button type="button" onClick={() => loadDocument(documentItem)} className="mt-4 w-full bg-white text-slate-950 hover:bg-slate-200">Openen / bewerken</Button>
+                  </div>
+                );
+              })}
             </CardContent></Card>
 
             <DocumentPreview company={company} document={currentDocument} totals={totals} kindLabel={kindLabel} customerDisplay={customerDisplay} />
