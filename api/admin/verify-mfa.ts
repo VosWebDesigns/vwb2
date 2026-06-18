@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { wrapHandler, captureException } from '../_sentry.js';
-import { clearMfaCookie, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, mfaCookie, supabaseHeaders } from './mfa-utils.js';
+import { wrapHandler, captureException } from '../../server/api/sentry.js';
+import { clearMfaCookie, getBearerToken, getSupabaseConfig, getUserFromToken, hashCode, isAdminUser, mfaCookie, supabaseHeaders } from '../../server/api/admin/mfa-utils.js';
 
 const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
