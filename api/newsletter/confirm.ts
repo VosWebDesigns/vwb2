@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { wrapHandler, captureException } from '../_sentry.js';
-import { rest, SITE_URL } from './utils.js';
+import { wrapHandler, captureException } from '../../server/api/sentry.js';
+import { rest, SITE_URL } from '../../server/api/newsletter/utils.js';
 
 const handler = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
