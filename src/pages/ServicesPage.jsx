@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
+import supabase from '@/lib/customSupabaseClient';
+import { SERVICE_CATALOG_ID, cloneDefaultServiceCatalog, formatPackagePrice, getPackageDiscount, getPackageNetPrice, normalizeServiceCatalog } from '@/lib/serviceCatalog';
 
-const services = [
-  { icon: <Palette size={32} />, title: 'Webdesign', shortDescription: 'Professioneel design voor starters & kleine bedrijven', description: 'Perfect voor ondernemers die nét beginnen en een sterke, betrouwbare online uitstraling willen zonder hoge instapkosten.', image: '/webde.png', highlightedPackage: 'Groei', highlightLabel: 'Meest gekozen', packages: [{ name: 'Starter', price: '€349', features: ['1–2 pagina’s', 'Modern & responsive design', 'Contactformulier', 'Basis SEO'] }, { name: 'Groei', price: '€649', features: ['Tot 5 pagina’s', 'Conversiegericht ontwerp', 'Subtiele animaties', 'SEO & performance basis'] }, { name: 'Pro', price: '€995', features: ['Volledig maatwerk design', 'Unieke branding look', 'Uitbreidbaar voor groei', 'Persoonlijke begeleiding'] }] },
-  { icon: <Code size={32} />, title: 'Webontwikkeling', shortDescription: 'Betrouwbare techniek zonder onnodige complexiteit', description: 'Voor websites en webapplicaties die stabiel moeten werken en later eenvoudig uit te breiden zijn.', image: '/webon.png', highlightedPackage: 'Groei', highlightLabel: 'Beste balans', packages: [{ name: 'Starter', price: '€595', features: ['Professionele website', 'Snelle laadtijden', 'Eenvoudig beheerbaar'] }, { name: 'Groei', price: '€995', features: ['Uitgebreide pagina’s', 'Formulieren & koppelingen', 'Performance optimalisatie'] }, { name: 'Pro', price: '€1.495', features: ['Custom functionaliteit', 'Database of login systeem', 'Doorontwikkelbaar platform'] }] },
-  { icon: <ShoppingCart size={32} />, title: 'E-commerce', shortDescription: 'Start eenvoudig met online verkopen', description: 'Ideaal voor ondernemers die hun eerste webshop willen starten zonder direct grote investeringen.', image: '/ecom.png', highlightedPackage: 'Starter', highlightLabel: 'Ideaal voor starters', packages: [{ name: 'Starter', price: '€895', features: ['Tot 10 producten', 'iDEAL betalingen', 'Gebruiksvriendelijk beheer'] }, { name: 'Groei', price: '€1.495', features: ['Onbeperkt producten', 'Kortingen & acties', 'Conversiegericht design'] }, { name: 'Pro', price: '€2.495', features: ['Maatwerk webshop', 'Automatiseringen', 'Analytics & optimalisatie'] }] },
-  { icon: <Search size={32} />, title: 'SEO & Marketing', shortDescription: 'Gevonden worden in Google, stap voor stap', description: 'Geen dure contracten, maar duidelijke maandelijkse optimalisatie gericht op zichtbaarheid en groei.', image: '/seo.png', highlightedPackage: 'Starter', highlightLabel: 'Laagdrempelig', packages: [{ name: 'Starter', price: '€149 / maand', features: ['Technische SEO check', 'Basis optimalisatie', 'Maandelijkse rapportage'] }, { name: 'Groei', price: '€299 / maand', features: ['Content optimalisatie', 'Lokale SEO', 'Actieplan per maand'] }, { name: 'Pro', price: '€499 / maand', features: ['Concurrentie analyse', 'Doorlopende optimalisatie', 'Structurele groei'] }] },
-  { icon: <Zap size={32} />, title: 'Performance Optimalisatie', shortDescription: 'Snelle winst voor je website', description: 'Een snellere website zorgt direct voor betere gebruikservaring en hogere conversies.', image: '/performance.png', highlightedPackage: 'Starter', highlightLabel: 'Quick win', packages: [{ name: 'Starter', price: '€295', features: ['Snelheidsanalyse', 'Afbeelding optimalisatie', 'Basis caching'] }, { name: 'Groei', price: '€495', features: ['Core Web Vitals', 'Lazy loading', 'Code optimalisatie'] }, { name: 'Pro', price: '€795', features: ['Geavanceerde optimalisatie', 'Monitoring', 'Advies voor groei'] }] },
-];
+const iconMap = {
+  palette: Palette,
+  code: Code,
+  'shopping-cart': ShoppingCart,
+  search: Search,
+  zap: Zap,
+};
 
 const faq = [
   ['Moet ik vooraf betalen?', 'Nee. Wij werken zonder aanbetaling. We starten pas nadat alles duidelijk is afgestemd.'],
@@ -23,7 +25,24 @@ const faq = [
 const getCTA = (name) => name === 'Starter' ? 'Start eenvoudig' : name === 'Groei' ? 'Beste keuze – start nu' : 'Plan een kennismaking';
 const getDelivery = (name) => name === 'Starter' ? 'Meestal binnen 1–2 weken opgeleverd' : name === 'Groei' ? 'Meestal binnen 2–4 weken opgeleverd' : 'Planning in overleg';
 
-const ServicesPage = () => (
+const ServicesPage = () => {
+  const [services, setServices] = useState(() => cloneDefaultServiceCatalog());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadCatalog = async () => {
+      const { data, error } = await supabase.from('service_catalog').select('catalog').eq('id', SERVICE_CATALOG_ID).maybeSingle();
+      if (!mounted) return;
+      if (error) console.error('SERVICE_CATALOG_PUBLIC_LOAD_FAILED', { code: error.code, message: error.message });
+      setServices(data?.catalog ? normalizeServiceCatalog(data.catalog) : cloneDefaultServiceCatalog());
+      setLoading(false);
+    };
+    loadCatalog();
+    return () => { mounted = false; };
+  }, []);
+
+  return (
   <>
     <Helmet><title>Diensten – Vos Web Designs</title><meta name="description" content="Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs." /></Helmet>
     <main className="cinema-bg pt-24">
@@ -42,11 +61,14 @@ const ServicesPage = () => (
 
       <section className="cinematic-section pt-0">
         <div className="cinematic-container relative z-10 space-y-20">
-          {services.map((service, serviceIndex) => (
+          {loading && <div className="panel cut p-6 text-slate-300">Diensten laden…</div>}
+          {services.map((service, serviceIndex) => {
+            const Icon = iconMap[service.icon] || Palette;
+            return (
             <article key={service.title} className="panel cut overflow-hidden">
               <div className="grid gap-0 lg:grid-cols-[.8fr_1.2fr]">
                 <div className="p-7 md:p-10">
-                  <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-[color:var(--stroke)] text-[color:var(--accent)]">{service.icon}</div>
+                  <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-[color:var(--stroke)] text-[color:var(--accent)]"><Icon size={32} /></div>
                   <p className="eyebrow">0{serviceIndex + 1} / service</p>
                   <h2 className="mt-4 font-heading text-5xl font-black tracking-[-.06em]">{service.title}</h2>
                   <p className="mt-5 text-xl text-white">{service.shortDescription}</p>
@@ -55,11 +77,14 @@ const ServicesPage = () => (
                 </div>
                 <div className="grid gap-4 border-t border-[color:var(--stroke)] p-5 md:p-7 lg:border-l lg:border-t-0">
                   {service.packages.map(pkg => {
-                    const highlighted = pkg.name === service.highlightedPackage;
+                    const fallbackHighlightedId = service.packages.some((item) => item.id === service.highlightedPackageId) ? service.highlightedPackageId : (service.packages[1]?.id || service.packages[0]?.id);
+                    const highlighted = pkg.id === fallbackHighlightedId;
+                    const discount = getPackageDiscount(pkg);
+                    const netPrice = getPackageNetPrice(pkg);
                     return (
-                      <div key={pkg.name} className={`relative rounded-[1.75rem] border p-6 ${highlighted ? 'border-[color:var(--accent2)] bg-[color:var(--accent2)]/10 shadow-[0_0_50px_rgba(214,245,122,.12)]' : 'border-[color:var(--stroke)] bg-white/[.035]'}`}>
-                        {highlighted && <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-[color:var(--accent2)] px-3 py-1 text-xs font-black uppercase tracking-[.14em] text-[#06101c]"><Star size={14} /> {service.highlightLabel}</span>}
-                        <div className="flex flex-wrap items-end justify-between gap-3"><h3 className="font-heading text-3xl font-black">{pkg.name}</h3><p className="text-3xl font-black text-[color:var(--accent)]">{pkg.price}</p></div>
+                      <div key={pkg.id} className={`relative rounded-[1.75rem] border p-6 ${highlighted ? 'border-[color:var(--accent2)] bg-[color:var(--accent2)]/10 shadow-[0_0_50px_rgba(214,245,122,.12)]' : 'border-[color:var(--stroke)] bg-white/[.035]'}`}>
+                        {highlighted && (pkg.badge || service.highlightLabel) && <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-[color:var(--accent2)] px-3 py-1 text-xs font-black uppercase tracking-[.14em] text-[#06101c]"><Star size={14} /> {pkg.badge || service.highlightLabel}</span>}
+                        <div className="flex flex-wrap items-end justify-between gap-3"><h3 className="font-heading text-3xl font-black">{pkg.name}</h3><div className="text-right">{discount > 0 && <p className="text-sm font-bold text-slate-500 line-through">{formatPackagePrice(pkg.price)}</p>}<p className="text-3xl font-black text-[color:var(--accent)]">{formatPackagePrice(netPrice)}{pkg.recurring ? ` ${pkg.recurring}` : ''}</p></div></div>
                         <p className="mt-2 text-sm text-slate-400">{getDelivery(pkg.name)} • Geen aanbetaling nodig</p>
                         <ul className="mt-5 grid gap-3">{pkg.features.map(f => <li key={f} className="flex gap-3 text-slate-300"><CheckCircle size={18} className="mt-1 shrink-0 text-[color:var(--accent2)]" />{f}</li>)}</ul>
                         <Link to="/contact" className={highlighted ? 'cta-link mt-6 w-full' : 'ghost-link mt-6 w-full'}>{getCTA(pkg.name)} <ArrowRight size={16} /></Link>
@@ -69,7 +94,8 @@ const ServicesPage = () => (
                 </div>
               </div>
             </article>
-          ))}
+          );
+          })}
         </div>
       </section>
 
@@ -83,6 +109,7 @@ const ServicesPage = () => (
       <section className="cinematic-section pt-0"><div className="cinematic-container panel cut relative z-10 p-8 text-center md:p-12"><h2 className="display-title text-5xl md:text-7xl">Klaar om professioneel te groeien?</h2><p className="mx-auto mt-5 max-w-2xl text-slate-300">Plan vrijblijvend een kennismaking en ontdek welke oplossing het beste past bij jouw situatie.</p><Link to="/contact" className="cta-link mt-8">Start vandaag nog</Link></div></section>
     </main>
   </>
-);
+  );
+};
 
 export default ServicesPage;
