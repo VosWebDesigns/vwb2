@@ -1,0 +1,50 @@
+@media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body:has(.document-print-area) .grid:has(.document-print-area),
+  body:has(.document-print-area) aside:has(.document-print-area) {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html body .document-print-area {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  html body .document-print-area > div,
+  html body .document-print-area footer {
+    overflow: visible !important;
+  }
+
+  html body .document-print-area section,
+  html body .document-print-area footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  html body .document-print-area thead {
+    display: table-header-group;
+  }
+
+  html body .document-print-area tfoot {
+    display: table-footer-group;
+  }
+}
