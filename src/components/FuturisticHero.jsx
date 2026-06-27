@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ArrowRight, ChevronDown } from 'lucide-react';
-import WebGLScene from '@/components/three/WebGLScene';
 
 const FLOATING_TAGS = [
   { label: 'Three.js / WebGL', x: '8%', y: '28%', delay: 0.2 },
@@ -70,9 +69,7 @@ const FuturisticHero = () => {
   const words = ['Web Design', 'van de', 'Toekomst'];
 
   return (
-    <section ref={containerRef} className="relative isolate min-h-[100svh] overflow-hidden flex flex-col items-center justify-center px-5 pt-24 pb-16 md:px-10">
-      <WebGLScene />
-
+    <section ref={containerRef} className="relative min-h-[100svh] overflow-hidden flex flex-col items-center justify-center px-5 pt-24 pb-16 md:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(14,165,233,.18),transparent)]" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_20%_80%,rgba(214,245,122,.06),transparent)]" aria-hidden="true" />
 

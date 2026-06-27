@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ExternalLink, Layers, TrendingUp } from 'lucide-react';
 import PortfolioGallery from '@/components/portfolio/PortfolioGallery';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useReveal } from '@/hooks/useReveal';
 import { getPortfolioByIdWithImages } from '@/lib/portfolio';
 
 const ProjectDetailPage = () => {
@@ -12,6 +13,8 @@ const ProjectDetailPage = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const { settings } = useSettings();
+  const rootRef = useRef(null);
+  useReveal(rootRef, [loading, project]);
   const siteName = settings.site_name || 'Vos Web Designs';
   const siteUrl = (import.meta.env.NEXT_PUBLIC_SITE_URL || import.meta.env.VITE_SITE_URL || 'https://voswebdesigns.nl').replace(/\/$/, '');
 
@@ -32,11 +35,11 @@ const ProjectDetailPage = () => {
   }, [projectId]);
 
   if (loading) {
-    return <main className="cinema-bg min-h-screen pt-32"><div className="cinematic-container panel cut p-8 text-center text-slate-300">Project laden…</div></main>;
+    return <main className="cinema-bg min-h-screen pt-32"><div className="cinematic-container glass-card rounded-2xl p-8 text-center text-slate-300">Project laden…</div></main>;
   }
 
   if (!project) {
-    return <main className="cinema-bg min-h-screen pt-32"><div className="cinematic-container panel cut p-8 text-center text-slate-300">Project niet gevonden. <Link to="/portfolio" className="text-[color:var(--accent)]">Terug naar portfolio</Link></div></main>;
+    return <main className="cinema-bg min-h-screen pt-32"><div className="cinematic-container glass-card rounded-2xl p-8 text-center text-slate-300">Project niet gevonden. <Link to="/portfolio" className="text-[color:var(--accent)]">Terug naar portfolio</Link></div></main>;
   }
 
   const projectDescription = project.short_description || project.description?.slice(0, 160) || 'Project uitgevoerd door Vos Web Designs';
@@ -65,17 +68,17 @@ const ProjectDetailPage = () => {
         <script type="application/ld+json">{JSON.stringify(projectSchema)}</script>
       </Helmet>
 
-      <main className="cinema-bg min-h-screen pt-24">
+      <main ref={rootRef} className="cinema-bg min-h-screen overflow-hidden pt-24">
         <section className="cinematic-section pb-8">
           <div className="cinematic-container relative z-10">
-            <Link to="/portfolio" className="ghost-link mb-8"><ArrowLeft size={18} /> Terug naar portfolio</Link>
+            <Link to="/portfolio" className="ghost-button mb-8"><ArrowLeft size={16} /> Terug naar portfolio</Link>
             <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
               <div>
-                <p className="eyebrow">{project.categories?.name || 'Project case'}</p>
-                <h1 className="display-title mt-4 text-[clamp(3.6rem,10vw,8rem)]">{project.title}</h1>
-                {project.client && <p className="mt-5 text-xl text-slate-300">Voor {project.client}</p>}
+                <p data-reveal className="section-eyebrow">{project.categories?.name || 'Project case'}</p>
+                <h1 data-reveal className="display-xl mt-4 text-[clamp(3.4rem,9vw,7.5rem)]">{project.title}</h1>
+                {project.client && <p data-reveal className="mt-5 text-xl text-slate-300">Voor {project.client}</p>}
               </div>
-              <div className="panel cut grid gap-4 p-5 sm:grid-cols-3">
+              <div data-reveal className="glass-card grid gap-4 rounded-2xl p-5 sm:grid-cols-3">
                 <InfoBlock label="Client" value={project.client || 'Niet opgegeven'} />
                 <InfoBlock label="Jaar" value={project.year || (project.created_at ? new Date(project.created_at).getFullYear() : '—')} />
                 <InfoBlock label="Projectduur" value={project.duration || 'Niet gespecificeerd'} />
@@ -88,17 +91,17 @@ const ProjectDetailPage = () => {
           <div className="cinematic-container relative z-10">
             <PortfolioGallery title={project.title} images={images} fallbackImage={project.hero_image} />
             <div className="grid gap-10 lg:grid-cols-[320px_1fr]">
-              <aside className="panel cut h-fit p-6">
-                <p className="eyebrow">Projectinfo</p>
+              <aside data-reveal className="glass-card h-fit rounded-2xl p-6">
+                <p className="section-eyebrow">Projectinfo</p>
                 <p className="mt-4 text-2xl font-bold leading-tight">{project.short_description || 'Een maatwerk project van Vos Web Designs.'}</p>
                 <div className="mt-6 grid gap-3">
                   {project.live_url && (
-                    <a href={project.live_url} target="_blank" rel="noreferrer" className="cta-link w-full justify-center">
-                      Bekijk live website <ExternalLink size={18} />
+                    <a href={project.live_url} target="_blank" rel="noreferrer" className="glow-button w-full justify-center">
+                      Bekijk live website <ExternalLink size={16} />
                     </a>
                   )}
                   {project.stack && (
-                    <div className="rounded-2xl border border-[color:var(--stroke)] bg-white/[.035] p-4">
+                    <div className="rounded-2xl border border-[rgba(140,214,255,.14)] bg-[rgba(8,16,30,.5)] p-4">
                       <span className="flex items-center gap-2 text-xs uppercase tracking-[.18em] text-[color:var(--accent)]"><Layers size={14} /> Stack</span>
                       <p className="mt-2 font-bold text-white">{project.stack}</p>
                     </div>
@@ -111,15 +114,15 @@ const ProjectDetailPage = () => {
                   )}
                 </div>
               </aside>
-              <article className="panel cut p-6 md:p-9">
+              <article data-reveal className="glass-card rounded-2xl p-6 md:p-9">
                 <h2 className="font-heading text-4xl font-black tracking-[-.05em]">Projectbeschrijving</h2>
                 {project.description ? <div className="mt-6 whitespace-pre-wrap text-lg leading-9 text-slate-300">{project.description}</div> : <p className="mt-6 text-slate-400">Er is geen projectbeschrijving toegevoegd.</p>}
               </article>
             </div>
 
             <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link to="/portfolio" className="ghost-link"><ArrowLeft size={18} /> Terug naar portfolio</Link>
-              <Link to="/contact" className="cta-link">Start uw project <ArrowRight size={18} /></Link>
+              <Link to="/portfolio" className="ghost-button"><ArrowLeft size={16} /> Terug naar portfolio</Link>
+              <Link to="/contact" className="glow-button">Start uw project <ArrowRight size={16} /></Link>
             </div>
           </div>
         </section>

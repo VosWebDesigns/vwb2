@@ -54,18 +54,18 @@ const PortfolioPage = () => {
         <meta name="description" content="Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten." />
       </Helmet>
 
-      <main className="cinema-bg min-h-screen pt-24">
+      <main className="cinema-bg min-h-screen overflow-hidden pt-24">
         <section className="cinematic-section">
           <div className="cinematic-container relative z-10">
             <div className="grid gap-8 lg:grid-cols-[.85fr_1.15fr] lg:items-end">
               <div>
-                <p className="eyebrow">Portfolio</p>
-                <h1 className="display-title mt-4 text-[clamp(3.6rem,10vw,8rem)]">Case library met live projecten.</h1>
+                <p className="section-eyebrow">Portfolio</p>
+                <h1 className="display-xl mt-4 text-[clamp(3.4rem,9vw,7.5rem)]">Case library met <span className="gradient-text-full">live projecten</span>.</h1>
               </div>
               <p className="max-w-xl text-lg leading-8 text-slate-300 lg:justify-self-end">Een selectie van projecten waar we trots op zijn. Alles komt rechtstreeks uit Supabase en blijft publicatie-vriendelijk.</p>
             </div>
 
-            <div className="mt-10 flex flex-wrap gap-3 border-y border-[color:var(--stroke)] py-5">
+            <div className="mt-10 flex flex-wrap gap-3 border-y border-[rgba(140,214,255,.12)] py-5">
               <button type="button" onClick={() => setActiveFilter('Alle')} className={activeFilter === 'Alle' ? 'cta-link !py-3' : 'ghost-link !py-3'}>Alle</button>
               {categories.map(cat => <button type="button" key={cat.id} onClick={() => setActiveFilter(cat.name)} className={activeFilter === cat.name ? 'cta-link !py-3' : 'ghost-link !py-3'}>{cat.name}</button>)}
             </div>
@@ -75,13 +75,13 @@ const PortfolioPage = () => {
         <section ref={projectsRef} className="cinematic-section pt-0">
           <div className="cinematic-container relative z-10">
             {loading ? (
-              <div className="panel cut p-8 text-center text-slate-300">Projecten laden…</div>
+              <div className="glass-card rounded-2xl p-8 text-center text-slate-300">Projecten laden…</div>
             ) : filteredProjects.length === 0 ? (
-              <div className="panel cut p-8 text-center text-slate-300">Geen projecten gevonden voor deze filter. <Link to="/contact" className="text-[color:var(--accent)]">Start een nieuw project</Link>.</div>
+              <div className="glass-card rounded-2xl p-8 text-center text-slate-300">Geen projecten gevonden voor deze filter. <Link to="/contact" className="text-[color:var(--accent)]">Start een nieuw project</Link>.</div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredProjects.map((project, index) => (
-                  <motion.article key={project.id} initial={{ opacity: 0, y: 30 }} animate={projectsInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: index * 0.06 }} className="panel cut group overflow-hidden">
+                  <motion.article key={project.id} initial={{ opacity: 0, y: 30 }} animate={projectsInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: index * 0.06 }} className="project-card group">
                     <Link to={`/portfolio/${project.id}`} onClick={() => trackAnalyticsEvent('click_portfolio', { project_id: project.id })}>
                       <div className="aspect-[4/3] overflow-hidden bg-slate-950">
                         {project.hero_image ? <SmartImage src={project.hero_image} alt={project.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center text-slate-500">Geen afbeelding</div>}

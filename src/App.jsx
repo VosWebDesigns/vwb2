@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -16,6 +16,9 @@ import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import CookieBanner from '@/components/CookieBanner';
 import ScrollToTop from '@/components/ScrollToTop';
 import { capture } from '@/lib/sentryClient';
+import { useLenis } from '@/hooks/useLenis';
+
+const SceneCanvas = React.lazy(() => import('@/components/three/SceneCanvas'));
 
 import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
@@ -206,15 +209,35 @@ const AdminRouteErrorBoundary = ({ children }) => {
   return <ErrorBoundary resetKey={location.pathname} label="ADMIN_RENDER_ERROR" admin>{children}</ErrorBoundary>;
 };
 
+const PublicAmbience = () => {
+  const location = useLocation();
+  const isAppShell =
+    location.pathname.startsWith('/admin') || location.pathname === '/login';
+
+  // Single, persistent smooth-scroll instance for the whole public experience.
+  useLenis(!isAppShell);
+
+  if (isAppShell) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <SceneCanvas />
+    </Suspense>
+  );
+};
+
 const RootLayout = () => (
   <AuthProvider>
     <SettingsProvider>
-      <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
+      <div className="relative min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
         <GlobalSEO />
         <ScrollToTop />
-        <RouteErrorBoundary>
-          <Outlet />
-        </RouteErrorBoundary>
+        <PublicAmbience />
+        <div className="relative z-10 flex min-h-screen flex-col">
+          <RouteErrorBoundary>
+            <Outlet />
+          </RouteErrorBoundary>
+        </div>
         <CookieBanner />
         <Toaster />
       </div>

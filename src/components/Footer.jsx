@@ -180,7 +180,7 @@ const Footer = () => {
                 <button
                   type="submit"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] px-5 text-sm font-black text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 text-sm font-black text-[#020810] transition hover:shadow-[0_0_30px_rgba(140,214,255,.35)] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <Send size={16} />
                   {newsletterState.status === 'loading' ? 'Versturen...' : 'Inschrijven'}

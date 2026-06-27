@@ -8,7 +8,6 @@ import { supabase } from '@/lib/customSupabaseClient';
 import SmartImage from '@/components/SmartImage';
 import FuturisticHero from '@/components/FuturisticHero';
 import TechMarquee from '@/components/TechMarquee';
-import { useLenis } from '@/hooks/useLenis';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -248,8 +247,6 @@ const SectionLabel = ({ children }) => (
 );
 
 const HomePage = () => {
-  useLenis();
-
   const [projects, setProjects] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -340,7 +337,7 @@ const HomePage = () => {
         />
       </Helmet>
 
-      <main className="overflow-hidden" style={{ background: '#020810' }}>
+      <main className="overflow-hidden">
         {/* ── Hero ── */}
         <FuturisticHero />
 

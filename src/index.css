@@ -387,11 +387,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, 
 
 
 .font-heading { font-family: Sora, Inter, system-ui, sans-serif; }
+/* Transparent so the shared WebGL canvas reads through; only soft colour washes remain. */
 .cinema-bg { position: relative; background:
-  radial-gradient(circle at 12% 8%, rgba(140, 214, 255, .20), transparent 28rem),
-  radial-gradient(circle at 86% 18%, rgba(214, 245, 122, .12), transparent 25rem),
-  radial-gradient(circle at 50% 100%, rgba(44, 82, 130, .28), transparent 38rem),
-  linear-gradient(135deg, #050b14 0%, #081423 50%, #040812 100%); }
+  radial-gradient(circle at 12% 8%, rgba(140, 214, 255, .14), transparent 26rem),
+  radial-gradient(circle at 86% 18%, rgba(214, 245, 122, .08), transparent 24rem),
+  radial-gradient(circle at 50% 100%, rgba(44, 82, 130, .14), transparent 36rem); }
 .cinema-bg::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: var(--grain-opacity); mix-blend-mode: screen; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
 .cinema-bg::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.08) 45%, transparent 58%); transform: translateX(-35%); animation: lightSweep 9s ease-in-out infinite; }
 @keyframes lightSweep { 0%, 55% { transform: translateX(-55%); opacity: 0; } 68% { opacity: .7; } 100% { transform: translateX(55%); opacity: 0; } }
