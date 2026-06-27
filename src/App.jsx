@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -15,6 +15,8 @@ import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import CookieBanner from '@/components/CookieBanner';
 import ScrollToTop from '@/components/ScrollToTop';
+import Cursor from '@/components/Cursor';
+import Preloader from '@/components/Preloader';
 import { capture } from '@/lib/sentryClient';
 import { useLenis } from '@/hooks/useLenis';
 import { StaticBackdrop, CanvasErrorBoundary, isWebGLAvailable } from '@/components/three/AmbientBackdrop';
@@ -238,24 +240,30 @@ const PublicAmbience = () => {
   );
 };
 
-const RootLayout = () => (
-  <AuthProvider>
-    <SettingsProvider>
-      <div className="relative min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
-        <GlobalSEO />
-        <ScrollToTop />
-        <PublicAmbience />
-        <div className="relative z-10 flex min-h-screen flex-col">
-          <RouteErrorBoundary>
-            <Outlet />
-          </RouteErrorBoundary>
+const RootLayout = () => {
+  const [preloaderDone, setPreloaderDone] = useState(false);
+
+  return (
+    <AuthProvider>
+      <SettingsProvider>
+        <div className="relative min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
+          <GlobalSEO />
+          <ScrollToTop />
+          <Cursor />
+          {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
+          <PublicAmbience />
+          <div className="relative z-10 flex min-h-screen flex-col">
+            <RouteErrorBoundary>
+              <Outlet />
+            </RouteErrorBoundary>
+          </div>
+          <CookieBanner />
+          <Toaster />
         </div>
-        <CookieBanner />
-        <Toaster />
-      </div>
-    </SettingsProvider>
-  </AuthProvider>
-);
+      </SettingsProvider>
+    </AuthProvider>
+  );
+};
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<RootLayout />}>

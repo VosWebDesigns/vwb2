@@ -1,323 +1,174 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { ArrowRight, ArrowUpRight, CheckCircle } from 'lucide-react';
-
-const TRUST = [
-  'Geen aanbetaling nodig',
-  'Snelle, persoonlijke oplevering',
-  'Transparante vaste prijzen',
-  'Post-launch ondersteuning',
-];
+import { ArrowRight } from 'lucide-react';
 
 const FuturisticHero = () => {
-  const containerRef = useRef(null);
-  const headlineRef  = useRef(null);
-  const subRef       = useRef(null);
-  const rightRef     = useRef(null);
-  const statsRef     = useRef(null);
-  const scrollRef    = useRef(null);
-  const lineRef      = useRef(null);
-  const eyebrowRef   = useRef(null);
+  const secRef   = useRef(null);
+  const line1Ref = useRef(null);
+  const line2Ref = useRef(null);
+  const line3Ref = useRef(null);
+  const subRef   = useRef(null);
+  const botRef   = useRef(null);
+  const topRef   = useRef(null);
 
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
     const ctx = gsap.context(() => {
-      gsap.set([eyebrowRef.current, lineRef.current], { opacity: 0 });
-
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-
-      /* Vertical line reveal */
-      tl.fromTo(lineRef.current,
-        { scaleY: 0, transformOrigin: 'top center' },
-        { scaleY: 1, opacity: 1, duration: 1.1 }
-      )
-      /* Eyebrow */
-      .fromTo(eyebrowRef.current,
-        { opacity: 0, x: -18 },
-        { opacity: 1, x: 0, duration: 0.7 },
-        '-=0.6'
-      )
-      /* Headline chars */
-      .fromTo(headlineRef.current.querySelectorAll('.char'),
-        isMobile
-          ? { opacity: 0, y: 40 }
-          : { opacity: 0, y: 80, rotateX: 24, filter: 'blur(4px)' },
-        isMobile
-          ? { opacity: 1, y: 0, duration: 1.0, stagger: 0.022 }
-          : { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 1.0, stagger: 0.022 },
-        '-=0.3'
-      )
-      /* Serif accent word */
-      .fromTo('.hero-serif-word',
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.9 },
-        '-=0.6'
-      )
-      /* Sub copy */
-      .fromTo(subRef.current,
-        { opacity: 0, y: 22 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        '-=0.5'
-      )
-      /* CTAs */
-      .fromTo('.hero-cta > *',
-        { opacity: 0, y: 16, scale: 0.94 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.65, stagger: 0.10 },
-        '-=0.45'
-      )
-      /* Right card */
-      .fromTo(rightRef.current,
-        isMobile ? { opacity: 0, y: 28 } : { opacity: 0, x: 42, filter: 'blur(6px)' },
-        { opacity: 1, x: 0, y: 0, filter: 'blur(0px)', duration: 0.95 },
-        '-=0.55'
-      )
-      /* Stats */
-      .fromTo(Array.from(statsRef.current.children),
-        { opacity: 0, y: 22 },
-        { opacity: 1, y: 0, duration: 0.65, stagger: 0.08 },
-        '-=0.4'
-      )
-      /* Scroll indicator */
-      .fromTo(scrollRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.5 },
-        '-=0.3'
-      );
-
-      /* Scroll bounce */
-      gsap.to(scrollRef.current, {
-        y: 8, repeat: -1, yoyo: true, duration: 1.4, ease: 'sine.inOut', delay: 2.0,
+      gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], {
+        yPercent: 115,
+        rotateX: 8,
+        opacity: 0,
       });
+      gsap.set([topRef.current, subRef.current, botRef.current], { opacity: 0, y: 14 });
 
-      /* Magnetic CTAs on desktop */
-      if (!isMobile) {
-        document.querySelectorAll('.glow-button, .ghost-button').forEach((btn) => {
-          btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top  - rect.height / 2;
-            gsap.to(btn, { x: x * 0.18, y: y * 0.18, duration: 0.4, ease: 'power2.out' });
-          });
-          btn.addEventListener('mouseleave', () => {
-            gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1,.6)' });
-          });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+
+      tl.to(topRef.current, { opacity: 1, y: 0, duration: 0.8 })
+        .to(line1Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.4')
+        .to(line2Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.85')
+        .to(line3Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.85')
+        .to(subRef.current,   { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+        .to(botRef.current,   { opacity: 1, y: 0, duration: 0.7 }, '-=0.4');
+
+      /* Subtle vertical parallax on scroll */
+      const onScroll = () => {
+        const y = window.scrollY;
+        if (!line1Ref.current) return;
+        gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], {
+          y: y * -0.14,
         });
-      }
-    }, containerRef);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => window.removeEventListener('scroll', onScroll);
+    }, secRef);
 
     return () => ctx.revert();
   }, []);
 
-  /* Split headline into characters */
-  const line1 = 'Jouw website.';
-  const line2Serif = 'Onze';
-  const line2Sans  = ' visie.';
-
-  const charsLine1 = line1.split('').map((ch, i) => (
-    <span key={i} className="char inline-block" style={{ perspective: '600px' }}>{ch === ' ' ? ' ' : ch}</span>
-  ));
-  const charsLine2 = line2Sans.split('').map((ch, i) => (
-    <span key={i} className="char inline-block" style={{ perspective: '600px' }}>{ch === ' ' ? ' ' : ch}</span>
-  ));
-
   return (
     <section
-      ref={containerRef}
-      className="relative min-h-[100svh] overflow-hidden flex flex-col justify-center px-5 pt-28 pb-16 md:px-10"
+      ref={secRef}
+      className="relative flex h-[100svh] flex-col justify-between overflow-hidden px-5 pt-6 pb-7 md:px-10 md:pt-7 md:pb-10 lg:px-16"
     >
-      {/* Deep atmospheric gradient */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true"
-        style={{
-          background: 'radial-gradient(ellipse 90% 70% at 20% -5%, rgba(201,169,110,.12) 0%, transparent 55%), radial-gradient(ellipse 50% 60% at 85% 90%, rgba(138,92,246,.08) 0%, transparent 50%)',
-        }}
-      />
-
-      {/* Subtle grid (right side only) */}
+      {/* Atmospheric top-left glow */}
       <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(201,169,110,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.04) 1px, transparent 1px)',
-          backgroundSize: '88px 88px',
-          maskImage: 'radial-gradient(ellipse 60% 70% at 72% 38%, black 10%, transparent 68%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 60% 70% at 72% 38%, black 10%, transparent 68%)',
-        }}
+        className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[60vw]"
+        style={{ background: 'radial-gradient(ellipse at 20% 10%, rgba(201,169,110,.08) 0%, transparent 65%)' }}
+        aria-hidden="true"
+      />
+      {/* Bottom-right violet */}
+      <div
+        className="pointer-events-none absolute bottom-0 right-0 h-[50vh] w-[50vw]"
+        style={{ background: 'radial-gradient(ellipse at 80% 90%, rgba(138,92,246,.07) 0%, transparent 60%)' }}
         aria-hidden="true"
       />
 
-      {/* Corner brackets */}
-      <div className="pointer-events-none absolute left-6 top-28 hidden lg:block" aria-hidden="true">
-        <div className="h-6 w-6 border-l border-t" style={{ borderColor: 'rgba(201,169,110,.3)' }} />
-      </div>
-      <div className="pointer-events-none absolute right-6 bottom-16 hidden lg:block" aria-hidden="true">
-        <div className="h-6 w-6 border-b border-r" style={{ borderColor: 'rgba(138,92,246,.3)' }} />
-      </div>
-
-      {/* Vertical accent line */}
-      <div
-        ref={lineRef}
-        className="pointer-events-none absolute left-0 top-0 bottom-0 w-px hidden lg:block"
-        style={{
-          background: 'linear-gradient(to bottom, transparent, rgba(201,169,110,.35) 20%, rgba(138,92,246,.25) 70%, transparent)',
-          left: '2.2rem',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* ── Two-column layout ── */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl grid gap-12 lg:grid-cols-[1fr_.44fr] lg:items-center">
-
-        {/* Left: headline + CTA */}
-        <div>
-          {/* Eyebrow */}
-          <div ref={eyebrowRef} className="mb-7 flex items-center gap-4">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--accent)', boxShadow: '0 0 10px rgba(201,169,110,.8)' }} />
-            <span className="font-mono text-[10px] uppercase tracking-[.36em]" style={{ color: 'rgba(201,169,110,.55)' }}>
-              Studio — Vos Web Designs
-            </span>
-            <span className="hidden sm:block h-px flex-1 max-w-[60px]" style={{ background: 'linear-gradient(to right, rgba(201,169,110,.3), transparent)' }} />
-          </div>
-
-          {/* Headline */}
-          <h1
-            ref={headlineRef}
-            className="font-heading font-black leading-[.84] tracking-[-.072em]"
-            style={{ fontSize: 'clamp(3.4rem,11vw,9.5rem)', perspective: '700px' }}
+      {/* ── Top bar ── */}
+      <div ref={topRef} className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="status-dot" />
+          <span
+            className="font-mono text-[9px] uppercase tracking-[.4em]"
+            style={{ color: 'rgba(201,169,110,.4)' }}
           >
-            <span className="block text-white overflow-hidden">
-              {charsLine1}
-            </span>
-            <span className="block overflow-hidden mt-1">
-              {/* "Onze" in serif italic gold */}
-              <em className="hero-serif-word not-italic" style={{
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontStyle: 'italic',
-                fontWeight: 600,
-                color: 'var(--accent)',
-                fontSize: '1.06em',
-                letterSpacing: '-.03em',
-                marginRight: '0.06em',
-              }}>
-                {line2Serif}
-              </em>
-              {/* " visie." in regular heading */}
-              <span className="text-white">{charsLine2}</span>
-            </span>
-          </h1>
-
-          {/* Sub copy */}
-          <p
-            ref={subRef}
-            className="mt-8 max-w-xl leading-[1.75] text-[.98rem]"
-            style={{ color: 'rgba(240,235,227,.55)' }}
-          >
-            Websites die indruk maken vóór de eerste klik — ontworpen met Three.js, GSAP en precisie-animaties die uw merk op het niveau van een top-100 bureau plaatsen.
-          </p>
-
-          {/* CTAs */}
-          <div className="hero-cta mt-10 flex flex-wrap gap-4">
-            <Link to="/contact" className="glow-button">
-              Start een project <ArrowRight size={15} />
-            </Link>
-            <Link to="/portfolio" className="ghost-button">
-              Bekijk werk <ArrowUpRight size={15} />
-            </Link>
-          </div>
-
-          {/* Trust micro-copy */}
-          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-            {TRUST.map((item) => (
-              <span key={item} className="flex items-center gap-2 text-[.72rem] font-mono uppercase tracking-[.12em]" style={{ color: 'rgba(201,169,110,.38)' }}>
-                <span style={{ color: 'var(--accent)' }}>✓</span>
-                {item}
-              </span>
-            ))}
-          </div>
+            Studio — beschikbaar
+          </span>
         </div>
-
-        {/* Right: premium glass card */}
-        <div
-          ref={rightRef}
-          className="glass-card cyber-corner rounded-2xl p-6 md:p-8 flex flex-col gap-5"
+        <span
+          className="font-mono text-[9px] uppercase tracking-[.4em]"
+          style={{ color: 'rgba(201,169,110,.3)' }}
         >
-          {/* Availability indicator */}
-          <div>
-            <span className="hud-label block mb-2.5">Status</span>
-            <div className="flex items-center gap-3">
-              <span className="status-dot" />
-              <p className="font-heading text-lg font-black" style={{ color: 'var(--accent3)' }}>
-                Nieuwe projecten welkom
-              </p>
+          NL · Est. 2019
+        </span>
+      </div>
+
+      {/* ── Headline (fills viewport width) ── */}
+      <div className="relative z-10 select-none" style={{ perspective: '900px' }}>
+        <h1 className="m-0 p-0">
+          {/* Line 1: WIJ BOUWEN */}
+          <div className="overflow-hidden">
+            <div
+              ref={line1Ref}
+              className="font-heading font-black uppercase leading-none"
+              style={{
+                fontSize: 'clamp(3.2rem, 13.2vw, 15.5rem)',
+                letterSpacing: '-.065em',
+                color: 'var(--accent3)',
+              }}
+            >
+              WIJ BOUWEN
             </div>
           </div>
 
-          <div className="h-px" style={{ background: 'var(--stroke)' }} />
-
-          {/* Checklist */}
-          <ul className="grid gap-3">
-            {TRUST.map((item) => (
-              <li key={item} className="flex items-center gap-3 text-[.82rem]" style={{ color: 'rgba(240,235,227,.6)' }}>
-                <CheckCircle size={13} className="shrink-0" style={{ color: 'var(--accent)' }} />
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <div className="h-px" style={{ background: 'var(--stroke)' }} />
-
-          {/* Delivery times */}
-          <div className="grid gap-1.5">
-            <span className="hud-label block mb-1">Doorlooptijd</span>
-            {[
-              ['Starter', '1–2 weken'],
-              ['Groei',   '2–4 weken'],
-              ['Op maat', 'in overleg'],
-            ].map(([label, time]) => (
-              <p key={label} className="text-[.8rem]" style={{ color: 'rgba(240,235,227,.45)' }}>
-                {label} — <span className="font-bold" style={{ color: 'var(--accent3)' }}>{time}</span>
-              </p>
-            ))}
+          {/* Line 2: digitale (serif italic, gold) */}
+          <div className="overflow-hidden">
+            <div
+              ref={line2Ref}
+              style={{
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: 'clamp(3.6rem, 14.8vw, 17rem)',
+                letterSpacing: '-.03em',
+                lineHeight: 0.88,
+                color: 'var(--accent)',
+              }}
+            >
+              digitale
+            </div>
           </div>
 
-          {/* CTA link */}
-          <Link
-            to="/diensten"
-            className="inline-flex items-center gap-2 text-[.8rem] font-mono uppercase tracking-[.14em] transition-colors mt-1"
-            style={{ color: 'var(--accent)' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent3)'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--accent)'}
+          {/* Line 3: ERVARINGEN. */}
+          <div className="overflow-hidden">
+            <div
+              ref={line3Ref}
+              className="font-heading font-black uppercase leading-none"
+              style={{
+                fontSize: 'clamp(3.2rem, 13.2vw, 15.5rem)',
+                letterSpacing: '-.065em',
+                color: 'var(--accent3)',
+              }}
+            >
+              ERVARINGEN.
+            </div>
+          </div>
+        </h1>
+
+        {/* Sub line */}
+        <p
+          ref={subRef}
+          className="mt-6 font-mono text-[.72rem] uppercase tracking-[.24em] md:mt-8"
+          style={{ color: 'rgba(201,169,110,.38)', maxWidth: '55ch' }}
+        >
+          Three.js&nbsp;·&nbsp;GSAP&nbsp;·&nbsp;WebGL&nbsp;·&nbsp;Spline&nbsp;·&nbsp;Lenis&nbsp;·&nbsp;Premium web studio Nederland
+        </p>
+      </div>
+
+      {/* ── Bottom bar ── */}
+      <div ref={botRef} className="relative z-10 flex items-end justify-between">
+        {/* Scroll cue */}
+        <div className="flex flex-col items-start gap-2">
+          <div
+            className="h-14 w-px"
+            style={{ background: 'linear-gradient(to bottom, transparent, rgba(201,169,110,.38))' }}
+          />
+          <span
+            className="font-mono text-[8px] uppercase tracking-[.44em]"
+            style={{ color: 'rgba(201,169,110,.3)' }}
           >
-            Bekijk pakketten <ArrowRight size={13} />
+            Scroll
+          </span>
+        </div>
+
+        {/* CTAs */}
+        <div className="flex items-center gap-3">
+          <Link to="/contact" className="glow-button">
+            Start project <ArrowRight size={14} />
+          </Link>
+          <Link to="/portfolio" className="ghost-button hidden md:inline-flex">
+            Werk bekijken
           </Link>
         </div>
-      </div>
-
-      {/* ── Stats strip ── */}
-      <div
-        ref={statsRef}
-        className="relative z-10 mx-auto mt-14 w-full max-w-7xl grid grid-cols-3 gap-px overflow-hidden rounded-2xl"
-        style={{ border: '1px solid rgba(201,169,110,.10)', background: 'rgba(201,169,110,.06)' }}
-      >
-        {[
-          ['48u',  'Gemiddelde design doorlooptijd'],
-          ['3×',   'Meer conversies vs templates'],
-          ['<2s',  'Gemiddelde laadtijd'],
-        ].map(([val, label]) => (
-          <div key={label} className="px-4 py-5 text-center md:px-6" style={{ background: 'rgba(6,6,12,.88)' }}>
-            <p className="font-heading text-xl font-black md:text-2xl" style={{ color: 'var(--accent)' }}>{val}</p>
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-[.15em] leading-4" style={{ color: 'rgba(201,169,110,.35)' }}>{label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Scroll indicator */}
-      <div
-        ref={scrollRef}
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        style={{ color: 'rgba(201,169,110,.35)' }}
-      >
-        <span className="font-mono text-[8px] uppercase tracking-[.36em]">Scroll</span>
-        <div className="h-8 w-px" style={{ background: 'linear-gradient(to bottom, rgba(201,169,110,.4), transparent)' }} />
       </div>
     </section>
   );
