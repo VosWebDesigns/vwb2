@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap, ArrowUpRight } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
-import { useReveal } from '@/hooks/useReveal';
 import supabase from '@/lib/customSupabaseClient';
 import {
   SERVICE_CATALOG_ID,
@@ -13,6 +14,9 @@ import {
   getPackageNetPrice,
   normalizeServiceCatalog,
 } from '@/lib/serviceCatalog';
+import MagneticButton from '@/components/MagneticButton';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const iconMap = {
   palette: Palette,
@@ -22,16 +26,13 @@ const iconMap = {
   zap: Zap,
 };
 
-const faq = [
+const FAQ_ITEMS = [
   ['Moet ik vooraf betalen?', 'Nee. Wij werken zonder aanbetaling. We starten pas nadat alles duidelijk is afgestemd.'],
   ['Hoe lang duurt een project gemiddeld?', 'Starter-projecten zijn vaak binnen 1–2 weken klaar. Grotere projecten worden vooraf ingepland.'],
   ['Kan ik later uitbreiden?', 'Ja. Alle websites en webshops zijn zo opgebouwd dat uitbreiden altijd mogelijk is.'],
   ['Is support inbegrepen?', 'Ja. Na oplevering kun je altijd bij ons terecht voor vragen of kleine aanpassingen.'],
   ['Blijft de website mijn eigendom?', 'Ja. Na oplevering is de website volledig van jou.'],
 ];
-
-const getCTA      = (name) => name === 'Starter' ? 'Start eenvoudig' : name === 'Groei' ? 'Beste keuze – start nu' : 'Plan een kennismaking';
-const getDelivery = (name) => name === 'Starter' ? 'Meestal binnen 1–2 weken' : name === 'Groei' ? 'Meestal binnen 2–4 weken' : 'Planning in overleg';
 
 const TRUST_ITEMS = [
   { label: 'Transparante prijzen', sub: 'Geen verborgen kosten' },
@@ -40,11 +41,195 @@ const TRUST_ITEMS = [
   { label: 'Persoonlijk contact',  sub: 'Directe communicatie' },
 ];
 
+const getCTA      = (name) => name === 'Starter' ? 'Start eenvoudig' : name === 'Groei' ? 'Beste keuze – start nu' : 'Plan een kennismaking';
+const getDelivery = (name) => name === 'Starter' ? 'Meestal binnen 1–2 weken' : name === 'Groei' ? 'Meestal binnen 2–4 weken' : 'Planning in overleg';
+
+const FaqItem = ({ question, answer, index }) => {
+  const [open, setOpen]   = useState(false);
+  const descRef           = useRef(null);
+  const rowRef            = useRef(null);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+          delay: index * 0.07,
+          scrollTrigger: { trigger: el, start: 'top 88%' },
+        }
+      );
+    });
+    return () => ctx.revert();
+  }, [index]);
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el) return;
+    if (open) {
+      gsap.fromTo(el, { height: 0, opacity: 0 }, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power3.out' });
+    } else {
+      gsap.to(el, { height: 0, opacity: 0, duration: 0.35, ease: 'power3.inOut' });
+    }
+  }, [open]);
+
+  return (
+    <div ref={rowRef} className="border-b" style={{ borderColor: 'rgba(201,169,110,.1)' }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between py-5 text-left transition-colors"
+        style={{ color: open ? 'var(--accent)' : 'var(--accent3)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = open ? 'var(--accent)' : 'var(--accent3)'; }}
+      >
+        <span className="font-heading font-black text-base md:text-lg">{question}</span>
+        <ArrowUpRight
+          size={18}
+          className="shrink-0 transition-all duration-400 ml-4"
+          style={{ color: 'var(--accent)', transform: open ? 'rotate(135deg)' : 'none' }}
+        />
+      </button>
+      <div ref={descRef} style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
+        <p
+          className="pb-6 text-sm leading-[1.85]"
+          style={{ color: 'rgba(240,235,227,.48)' }}
+        >
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const PricingCard = ({ pkg, highlighted, serviceHighlightLabel }) => {
+  const cardRef = useRef(null);
+  const discount  = getPackageDiscount(pkg);
+  const netPrice  = getPackageNetPrice(pkg);
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top)  / rect.height - 0.5;
+    gsap.to(card, {
+      rotateY: x * 8,
+      rotateX: -y * 8,
+      duration: 0.5,
+      ease: 'power2.out',
+      transformPerspective: 1000,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(cardRef.current, {
+      rotateX: 0, rotateY: 0,
+      duration: 0.8,
+      ease: 'elastic.out(1, 0.5)',
+    });
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className="relative overflow-hidden transition-all duration-300"
+      style={{
+        border: `1px solid ${highlighted ? 'rgba(138,92,246,.45)' : 'rgba(201,169,110,.12)'}`,
+        background: highlighted ? 'rgba(138,92,246,.06)' : 'rgba(8,8,16,.6)',
+        padding: 'clamp(1.25rem, 2.5vw, 2rem)',
+        boxShadow: highlighted ? '0 0 50px rgba(138,92,246,.12)' : 'none',
+        backdropFilter: 'blur(20px)',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {highlighted && (pkg.badge || serviceHighlightLabel) && (
+        <span
+          className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[.6rem] font-black uppercase tracking-[.16em]"
+          style={{ background: 'var(--accent2)', color: '#06060c' }}
+        >
+          <Star size={10} />
+          {pkg.badge || serviceHighlightLabel}
+        </span>
+      )}
+
+      <div className="flex items-start justify-between gap-3">
+        <h3
+          className="font-heading font-black uppercase leading-none"
+          style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', letterSpacing: '-.04em', color: 'var(--accent3)' }}
+        >
+          {pkg.name}
+        </h3>
+        <div className="text-right shrink-0">
+          {discount > 0 && (
+            <p
+              className="font-mono text-[.6rem] line-through"
+              style={{ color: 'rgba(240,235,227,.3)' }}
+            >
+              {formatPackagePrice(pkg.price)}
+            </p>
+          )}
+          <p
+            className="font-heading font-black leading-none"
+            style={{
+              fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+              letterSpacing: '-.05em',
+              color: highlighted ? 'var(--accent2)' : 'var(--accent)',
+            }}
+          >
+            {formatPackagePrice(netPrice)}
+            {pkg.recurring && (
+              <span style={{ fontSize: '.5em', letterSpacing: '0' }}>{pkg.recurring}</span>
+            )}
+          </p>
+        </div>
+      </div>
+
+      <p
+        className="mt-2 font-mono text-[.55rem] uppercase tracking-[.25em]"
+        style={{ color: 'rgba(201,169,110,.35)' }}
+      >
+        {getDelivery(pkg.name)} · Geen aanbetaling
+      </p>
+
+      <div className="mt-5 h-px" style={{ background: 'rgba(201,169,110,.08)' }} />
+
+      <ul className="mt-5 grid gap-2.5">
+        {pkg.features.map((f) => (
+          <li
+            key={f}
+            className="flex items-start gap-3 text-sm"
+            style={{ color: 'rgba(240,235,227,.55)' }}
+          >
+            <CheckCircle
+              size={13}
+              className="mt-0.5 shrink-0"
+              style={{ color: highlighted ? 'var(--accent2)' : 'var(--accent)' }}
+            />
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      <Link
+        to="/contact"
+        className={highlighted ? 'glow-button mt-6 w-full justify-center' : 'ghost-button mt-6 w-full justify-center'}
+        style={{ fontSize: '.72rem' }}
+      >
+        {getCTA(pkg.name)} <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+};
+
 const ServicesPage = () => {
+  const heroRef    = useRef(null);
+  const titleRef   = useRef(null);
   const [services, setServices] = useState(() => cloneDefaultServiceCatalog());
   const [loading,  setLoading]  = useState(true);
-  const rootRef = useRef(null);
-  useReveal(rootRef, [loading, services]);
 
   useEffect(() => {
     let mounted = true;
@@ -63,6 +248,21 @@ const ServicesPage = () => {
     return () => { mounted = false; };
   }, []);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (titleRef.current) {
+        gsap.set(titleRef.current, { clipPath: 'inset(0 100% 0 0)' });
+        gsap.to(titleRef.current, {
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 1.1,
+          ease: 'power4.out',
+          delay: 0.25,
+        });
+      }
+    }, heroRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -70,65 +270,103 @@ const ServicesPage = () => {
         <meta name="description" content="Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs." />
       </Helmet>
 
-      <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
+      <main className="overflow-hidden" style={{ background: '#03030a' }}>
 
-        {/* ── Hero ── */}
-        <section className="cinematic-section relative overflow-hidden">
+        {/* ── Cinematic Hero ── */}
+        <section
+          ref={heroRef}
+          className="relative flex min-h-[80vh] flex-col justify-end overflow-hidden px-5 pt-32 pb-16 md:px-10 lg:px-16"
+        >
           <div
-            className="pointer-events-none absolute inset-0 opacity-20"
+            className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.035) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
-              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
+              maskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, black, transparent)',
             }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10">
-            <div className="max-w-4xl">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="status-dot" />
-                <p data-reveal className="section-eyebrow">Diensten & pakketten</p>
-              </div>
+          <div
+            className="pointer-events-none absolute top-0 right-0 h-[60vh] w-[55vw]"
+            style={{ background: 'radial-gradient(ellipse at 90% 5%, rgba(201,169,110,.07), transparent 60%)' }}
+            aria-hidden="true"
+          />
+
+          <div className="relative z-10 max-w-[1400px] mx-auto w-full">
+            <p
+              className="font-mono text-[.62rem] uppercase tracking-[.45em] mb-8"
+              style={{ color: 'rgba(201,169,110,.38)' }}
+            >
+              — Diensten & pakketten
+            </p>
+            <div ref={titleRef}>
               <h1
-                data-reveal
-                className="display-xl mt-0 text-[clamp(3rem,8vw,7rem)]"
+                className="font-heading font-black uppercase leading-[.88]"
+                style={{
+                  fontSize: 'clamp(3.5rem, 11vw, 13rem)',
+                  letterSpacing: '-.07em',
+                  color: 'var(--accent3)',
+                }}
               >
-                Professionele websites{' '}
-                <span className="gradient-text-full">die écht voor je werken</span>.
+                DIEN
+                <em
+                  style={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontStyle: 'italic',
+                    fontWeight: 600,
+                    color: 'var(--accent)',
+                    fontSize: '.9em',
+                    letterSpacing: '-.03em',
+                  }}
+                >
+                  sten
+                </em>
+                .
               </h1>
-              <p data-reveal className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-                Van eerste website tot schaalbare online oplossing. Transparant, betaalbaar en zonder technische zorgen.
-              </p>
             </div>
+            <p
+              className="mt-8 max-w-xl text-base leading-[1.9]"
+              style={{ color: 'rgba(240,235,227,.42)' }}
+            >
+              Van eerste website tot schaalbare online oplossing. Transparant, betaalbaar en zonder technische zorgen.
+            </p>
           </div>
         </section>
 
         {/* ── Trust strip ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10 grid gap-3 grid-cols-2 md:grid-cols-4">
-            {TRUST_ITEMS.map(({ label, sub }, i) => (
+        <section className="relative px-5 py-16 md:px-10 lg:px-16">
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.12), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="max-w-[1400px] mx-auto grid gap-3 grid-cols-2 md:grid-cols-4">
+            {TRUST_ITEMS.map(({ label, sub }) => (
               <div
                 key={label}
-                data-reveal
-                data-reveal-delay={i * 0.07}
-                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(201,169,110,.1)]"
+                className="flex flex-col gap-1.5 p-5 transition-all duration-300"
+                style={{ border: '1px solid rgba(201,169,110,.1)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(201,169,110,.28)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(201,169,110,.1)'; }}
               >
-                <CheckCircle className="text-[var(--accent2)]" size={18} />
-                <p className="font-bold text-white text-sm mt-1">{label}</p>
-                <p className="text-xs text-slate-500">{sub}</p>
+                <CheckCircle size={16} style={{ color: 'var(--accent)' }} />
+                <p className="font-heading font-bold text-sm mt-1" style={{ color: 'var(--accent3)' }}>{label}</p>
+                <p className="font-mono text-[.55rem] uppercase tracking-[.2em]" style={{ color: 'rgba(201,169,110,.38)' }}>{sub}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── Services ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10 space-y-16">
+        <section className="relative px-5 py-16 md:px-10 lg:px-16">
+          <div className="max-w-[1400px] mx-auto space-y-16">
             {loading && (
-              <div className="glass-card rounded-2xl p-8 text-center">
-                <span className="status-dot mx-auto mb-4 block" />
-                <p className="font-mono text-xs uppercase tracking-widest text-slate-500 animate-pulse">
+              <div className="py-20 text-center">
+                <p
+                  className="font-mono text-[.62rem] uppercase tracking-[.4em] animate-pulse"
+                  style={{ color: 'rgba(201,169,110,.3)' }}
+                >
                   Diensten laden…
                 </p>
               </div>
@@ -137,106 +375,103 @@ const ServicesPage = () => {
             {services.map((service, serviceIndex) => {
               const Icon = iconMap[service.icon] || Palette;
               return (
-                <article key={service.title} data-reveal className="relative overflow-hidden rounded-3xl border border-[var(--stroke)]">
+                <article
+                  key={service.title}
+                  className="relative overflow-hidden"
+                  style={{ border: '1px solid rgba(201,169,110,.1)' }}
+                >
                   {/* Top accent line */}
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-60" aria-hidden="true" />
+                  <div
+                    className="absolute inset-x-0 top-0 h-px"
+                    style={{ background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.45 }}
+                    aria-hidden="true"
+                  />
 
                   {/* Service header */}
-                  <div className="bg-[rgba(8,16,30,.6)] backdrop-blur-sm px-7 py-6 md:px-10 md:py-8 border-b border-[var(--stroke)] grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
-                    <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
-                      <Icon size={28} />
+                  <div
+                    className="px-7 py-7 md:px-10 md:py-9 grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+                    style={{
+                      background: 'rgba(8,8,16,.6)',
+                      backdropFilter: 'blur(20px)',
+                      borderBottom: '1px solid rgba(201,169,110,.08)',
+                    }}
+                  >
+                    <div
+                      className="grid h-14 w-14 place-items-center rounded-full"
+                      style={{ border: '1px solid rgba(201,169,110,.18)', background: 'rgba(201,169,110,.06)', color: 'var(--accent)' }}
+                    >
+                      <Icon size={26} />
                     </div>
                     <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="status-dot status-dot-cyan" />
-                        <p className="eyebrow">0{serviceIndex + 1} / dienst</p>
-                      </div>
-                      <h2 className="font-heading text-[clamp(2rem,4vw,3.2rem)] font-black tracking-[-.06em] leading-none text-white">
+                      <p
+                        className="font-mono text-[.58rem] uppercase tracking-[.35em] mb-3"
+                        style={{ color: 'rgba(201,169,110,.38)' }}
+                      >
+                        0{serviceIndex + 1} / dienst
+                      </p>
+                      <h2
+                        className="font-heading font-black uppercase leading-none"
+                        style={{
+                          fontSize: 'clamp(1.8rem, 4vw, 4rem)',
+                          letterSpacing: '-.06em',
+                          color: 'var(--accent3)',
+                        }}
+                      >
                         {service.title}
                       </h2>
                     </div>
-                    <div className="hidden sm:block overflow-hidden rounded-xl border border-[var(--stroke)]">
-                      <SmartImage src={service.image} alt={service.title} className="h-24 w-40 object-cover" />
+                    <div className="hidden sm:block overflow-hidden" style={{ borderRadius: 0 }}>
+                      <SmartImage src={service.image} alt={service.title} className="h-24 w-44 object-cover" />
                     </div>
                   </div>
 
                   {/* Description + packages */}
                   <div className="grid gap-0 lg:grid-cols-[.9fr_1.1fr]">
-                    {/* Left: description */}
-                    <div className="p-7 md:p-10 border-b border-[var(--stroke)] lg:border-b-0 lg:border-r">
-                      <p className="text-xl text-white font-medium leading-8">{service.shortDescription}</p>
-                      <p className="mt-4 leading-8 text-slate-300">{service.description}</p>
-                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl border border-[var(--stroke)]">
+                    <div
+                      className="p-7 md:p-10"
+                      style={{ borderRight: '1px solid rgba(201,169,110,.08)' }}
+                    >
+                      <p
+                        className="text-base font-semibold leading-[1.85]"
+                        style={{ color: 'var(--accent3)' }}
+                      >
+                        {service.shortDescription}
+                      </p>
+                      <p
+                        className="mt-4 text-sm leading-[1.9]"
+                        style={{ color: 'rgba(240,235,227,.45)' }}
+                      >
+                        {service.description}
+                      </p>
+                      <div className="mt-6 block sm:hidden overflow-hidden">
                         <SmartImage src={service.image} alt={service.title} className="h-44 w-full object-cover" />
                       </div>
-                      <Link to="/contact" className="ghost-link mt-7 inline-flex text-sm">
-                        Vraag een offerte aan <ArrowRight size={14} />
+                      <Link
+                        to="/contact"
+                        className="inline-flex items-center gap-2 mt-7 font-mono text-[.65rem] uppercase tracking-[.22em] transition-colors"
+                        style={{ color: 'rgba(201,169,110,.5)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(201,169,110,.5)'; }}
+                      >
+                        Vraag een offerte aan <ArrowRight size={12} />
                       </Link>
                     </div>
 
-                    {/* Right: packages */}
                     <div className="grid gap-3 p-5 md:p-7 content-start">
                       {service.packages.map((pkg) => {
                         const fallbackHighlightedId = service.packages.some(
                           (item) => item.id === service.highlightedPackageId
-                        )
-                          ? service.highlightedPackageId
+                        ) ? service.highlightedPackageId
                           : service.packages[1]?.id || service.packages[0]?.id;
                         const highlighted = pkg.id === fallbackHighlightedId;
-                        const discount    = getPackageDiscount(pkg);
-                        const netPrice    = getPackageNetPrice(pkg);
 
                         return (
-                          <div
+                          <PricingCard
                             key={pkg.id}
-                            className={`relative rounded-[1.5rem] border p-5 transition-all duration-300 ${
-                              highlighted
-                                ? 'border-[var(--accent2)] bg-[rgba(138,92,246,.06)] shadow-[0_0_40px_rgba(138,92,246,.1)]'
-                                : 'border-[var(--stroke)] bg-white/[.02] hover:border-[rgba(201,169,110,.3)]'
-                            }`}
-                          >
-                            {highlighted && (pkg.badge || service.highlightLabel) && (
-                              <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-[var(--accent2)] px-3 py-1 text-xs font-black uppercase tracking-[.14em] text-[#06101c]">
-                                <Star size={11} />
-                                {pkg.badge || service.highlightLabel}
-                              </span>
-                            )}
-
-                            <div className="flex flex-wrap items-start justify-between gap-3">
-                              <h3 className="font-heading text-xl font-black text-white">{pkg.name}</h3>
-                              <div className="text-right">
-                                {discount > 0 && (
-                                  <p className="text-xs font-bold text-slate-500 line-through">
-                                    {formatPackagePrice(pkg.price)}
-                                  </p>
-                                )}
-                                <p className={`text-xl font-black ${highlighted ? 'text-[var(--accent2)]' : 'text-[var(--accent)]'}`}>
-                                  {formatPackagePrice(netPrice)}
-                                  {pkg.recurring ? ` ${pkg.recurring}` : ''}
-                                </p>
-                              </div>
-                            </div>
-
-                            <p className="mt-1 text-[11px] font-mono uppercase tracking-[.12em] text-slate-500">
-                              {getDelivery(pkg.name)} · Geen aanbetaling
-                            </p>
-
-                            <ul className="mt-4 grid gap-2">
-                              {pkg.features.map((f) => (
-                                <li key={f} className="flex gap-2.5 text-sm text-slate-300">
-                                  <CheckCircle size={14} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
-                                  {f}
-                                </li>
-                              ))}
-                            </ul>
-
-                            <Link
-                              to="/contact"
-                              className={highlighted ? 'cta-link mt-5 w-full text-sm' : 'ghost-link mt-5 w-full text-sm'}
-                            >
-                              {getCTA(pkg.name)} <ArrowUpRight size={14} />
-                            </Link>
-                          </div>
+                            pkg={pkg}
+                            highlighted={highlighted}
+                            serviceHighlightLabel={service.highlightLabel}
+                          />
                         );
                       })}
                     </div>
@@ -248,73 +483,108 @@ const ServicesPage = () => {
         </section>
 
         {/* ── FAQ ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <div className="grid gap-12 lg:grid-cols-[.6fr_1fr] lg:items-start">
-              <div>
-                <div className="flex items-center gap-3 mb-5">
-                  <span className="status-dot" />
-                  <p data-reveal className="section-eyebrow">FAQ</p>
-                </div>
-                <h2 data-reveal className="display-xl text-[clamp(2.4rem,5vw,4.5rem)]">
-                  Veelgestelde <span className="gradient-text-cyan">vragen</span>.
-                </h2>
-                <p className="mt-5 text-slate-400 leading-7">
-                  Staat jouw vraag er niet bij? Neem dan gerust contact op.
-                </p>
-                <Link to="/contact" className="ghost-link mt-6 inline-flex text-sm">
-                  Stel je vraag <ArrowRight size={14} />
-                </Link>
-              </div>
+        <section className="relative py-24 md:py-36 px-5 md:px-10 lg:px-16">
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.12), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="max-w-[1400px] mx-auto grid gap-16 lg:grid-cols-[.55fr_1fr] lg:items-start">
+            <div className="lg:sticky lg:top-28">
+              <p
+                className="font-mono text-[.62rem] uppercase tracking-[.45em] mb-8"
+                style={{ color: 'rgba(201,169,110,.38)' }}
+              >
+                — FAQ
+              </p>
+              <h2
+                className="font-heading font-black uppercase leading-[.9]"
+                style={{ fontSize: 'clamp(2rem, 5vw, 5rem)', letterSpacing: '-.055em', color: 'var(--accent3)' }}
+              >
+                VEEL
+                <br />
+                <em
+                  style={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontStyle: 'italic',
+                    fontWeight: 600,
+                    color: 'var(--accent)',
+                    fontSize: '1.06em',
+                    letterSpacing: '-.02em',
+                  }}
+                >
+                  gestelde
+                </em>
+                <br />
+                VRAGEN
+              </h2>
+              <p
+                className="mt-7 text-sm leading-[1.85]"
+                style={{ color: 'rgba(240,235,227,.42)' }}
+              >
+                Staat uw vraag er niet bij? Neem dan gerust contact op.
+              </p>
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 mt-6 font-mono text-[.65rem] uppercase tracking-[.22em] transition-colors"
+                style={{ color: 'rgba(201,169,110,.5)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(201,169,110,.5)'; }}
+              >
+                Stel uw vraag <ArrowRight size={12} />
+              </Link>
+            </div>
 
-              <div className="grid gap-2.5">
-                {faq.map(([q, a]) => (
-                  <details
-                    key={q}
-                    data-reveal
-                    className="glass-card group rounded-2xl overflow-hidden transition-all duration-300"
-                  >
-                    <summary className="flex items-center justify-between cursor-pointer list-none p-5 font-heading text-base font-black tracking-[-.03em] transition group-open:text-[var(--accent)]">
-                      {q}
-                      <ChevronDown
-                        size={16}
-                        className="shrink-0 text-[var(--accent)] transition-transform duration-300 group-open:rotate-180"
-                      />
-                    </summary>
-                    <div className="border-t border-[var(--stroke)] px-5 pb-5 pt-4">
-                      <p className="leading-7 text-slate-300 text-sm">{a}</p>
-                    </div>
-                  </details>
-                ))}
-              </div>
+            <div style={{ borderTop: '1px solid rgba(201,169,110,.1)' }}>
+              {FAQ_ITEMS.map(([q, a], i) => (
+                <FaqItem key={q} question={q} answer={a} index={i} />
+              ))}
             </div>
           </div>
         </section>
 
         {/* ── CTA ── */}
-        <section className="cinematic-section pt-0">
+        <section className="relative py-24 md:py-36 px-5 md:px-10 lg:px-16">
           <div
-            data-reveal
-            className="cinematic-container glass-card cyber-corner relative z-10 rounded-3xl p-8 text-center md:p-12 overflow-hidden"
-            style={{ animation: 'glow-pulse 4s ease-in-out infinite' }}
-          >
-            <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-30" aria-hidden="true" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-center gap-2.5 mb-6">
-                <span className="status-dot" />
-                <span className="hud-label">Beschikbaar voor nieuwe projecten</span>
-                <span className="status-dot" />
-              </div>
-              <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)]">
-                Klaar om{' '}
-                <span className="gradient-text-full">professioneel te groeien</span>?
-              </h2>
-              <p className="mx-auto mt-5 max-w-2xl text-slate-300">
-                Plan vrijblijvend een kennismaking en ontdek welke oplossing het beste past bij jouw situatie.
-              </p>
-              <Link to="/contact" className="glow-button mt-8">
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.14), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="max-w-[1400px] mx-auto text-center">
+            <div className="inline-flex items-center gap-2.5 mb-10">
+              <span className="status-dot" />
+              <span
+                className="font-mono text-[.62rem] uppercase tracking-[.38em]"
+                style={{ color: 'rgba(201,169,110,.45)' }}
+              >
+                Beschikbaar voor nieuwe projecten
+              </span>
+            </div>
+            <h2
+              className="font-heading font-black uppercase leading-[.9]"
+              style={{ fontSize: 'clamp(3rem, 10vw, 10rem)', letterSpacing: '-.06em', color: 'var(--accent3)' }}
+            >
+              KLAAR OM
+              <br />
+              <em
+                style={{
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontSize: '1.06em',
+                  letterSpacing: '-.02em',
+                }}
+              >
+                professioneel
+              </em>
+              <br />
+              TE GROEIEN?
+            </h2>
+            <div className="mt-12">
+              <MagneticButton to="/contact" className="glow-button">
                 Start vandaag nog <ArrowRight size={16} />
-              </Link>
+              </MagneticButton>
             </div>
           </div>
         </section>

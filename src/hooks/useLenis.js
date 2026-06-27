@@ -16,12 +16,14 @@ export function useLenis(enabled = true) {
     if (!enabled) return undefined;
 
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 1.8,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.8,
+      infinite: false,
+      syncTouch: false,
     });
 
     lenisInstance = lenis;

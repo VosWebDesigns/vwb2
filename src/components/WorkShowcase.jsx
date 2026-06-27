@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,53 +7,53 @@ import SmartImage from '@/components/SmartImage';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ProjectItem = ({ project, index }) => {
-  const ref     = useRef(null);
-  const imgRef  = useRef(null);
-  const infoRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
-
-  const img = project.featured_preview_image || project.hero_image;
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 60 },
-        {
-          opacity: 1, y: 0, duration: 1.0,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 85%' },
-          delay: index * 0.12,
-        }
-      );
-    });
-    return () => ctx.revert();
-  }, [index]);
+const ProjectCard = ({ project, index, cardRef }) => {
+  const imgRef = useRef(null);
+  const num    = String(index + 1).padStart(2, '0');
+  const img    = project.featured_preview_image || project.hero_image;
 
   const handleEnter = () => {
-    setHovered(true);
-    gsap.to(imgRef.current,  { scale: 1.06, duration: 0.85, ease: 'power3.out' });
-    gsap.to(infoRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+    gsap.to(imgRef.current, { scale: 1.06, duration: 0.9, ease: 'power3.out' });
   };
   const handleLeave = () => {
-    setHovered(false);
-    gsap.to(imgRef.current,  { scale: 1, duration: 0.85, ease: 'power3.out' });
-    gsap.to(infoRef.current, { opacity: 0, y: 12, duration: 0.4 });
+    gsap.to(imgRef.current, { scale: 1, duration: 0.9, ease: 'power3.out' });
   };
 
   return (
     <article
-      ref={ref}
-      className="group relative overflow-hidden"
+      ref={cardRef}
+      className="relative flex-shrink-0 overflow-hidden"
+      style={{
+        width: 'clamp(300px, 72vw, 800px)',
+        border: '1px solid rgba(201,169,110,.06)',
+        willChange: 'transform, opacity',
+      }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      style={{ borderRadius: 16 }}
     >
-      <Link to={`/portfolio/${project.id}`} className="block">
+      <Link to={`/portfolio/${project.id}`} className="group block relative h-full" data-cursor="VIEW">
+        {/* Giant number watermark */}
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center select-none z-10"
+          aria-hidden="true"
+        >
+          <span
+            className="font-heading font-black leading-none"
+            style={{
+              fontSize: 'clamp(8rem, 20vw, 22rem)',
+              letterSpacing: '-.09em',
+              color: 'rgba(240,235,227,.04)',
+            }}
+          >
+            {num}
+          </span>
+        </div>
+
         {/* Image */}
-        <div className="overflow-hidden" style={{ aspectRatio: index === 0 ? '16/9' : '4/3' }}>
+        <div
+          className="overflow-hidden"
+          style={{ aspectRatio: '16/10' }}
+        >
           {img ? (
             <div ref={imgRef} className="h-full w-full">
               <SmartImage
@@ -66,7 +66,7 @@ const ProjectItem = ({ project, index }) => {
             <div
               ref={imgRef}
               className="h-full w-full flex items-center justify-center"
-              style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(201,169,110,.12), rgba(6,6,12,.95))' }}
+              style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(201,169,110,.10), rgba(6,6,12,.95))' }}
             >
               <span
                 className="font-mono text-xs uppercase tracking-widest"
@@ -77,34 +77,27 @@ const ProjectItem = ({ project, index }) => {
             </div>
           )}
 
-          {/* Overlay */}
+          {/* Gradient overlay */}
           <div
-            className="absolute inset-0 transition-opacity duration-500"
-            style={{
-              background: 'linear-gradient(to bottom, transparent 35%, rgba(6,6,12,.85) 100%)',
-              opacity: hovered ? 1 : 0.6,
-            }}
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(3,3,9,.88) 100%)' }}
           />
         </div>
 
-        {/* Info overlay */}
-        <div
-          ref={infoRef}
-          className="absolute bottom-0 left-0 right-0 p-6 md:p-8"
-          style={{ opacity: 0, transform: 'translateY(12px)' }}
-        >
-          <div className="flex items-end justify-between">
+        {/* Info */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-20">
+          <div className="flex items-end justify-between gap-4">
             <div>
               <p
-                className="font-mono text-[.6rem] uppercase tracking-[.28em] mb-2"
-                style={{ color: 'rgba(201,169,110,.55)' }}
+                className="font-mono text-[.55rem] uppercase tracking-[.3em] mb-2"
+                style={{ color: 'rgba(201,169,110,.5)' }}
               >
-                {project.categories?.name || 'Web Design'} — {new Date(project.created_at).getFullYear()}
+                {project.categories?.name || 'Web Design'} — {num}
               </p>
               <h3
                 className="font-heading font-black uppercase leading-none"
                 style={{
-                  fontSize: 'clamp(1.4rem, 3vw, 3rem)',
+                  fontSize: 'clamp(1.4rem, 3vw, 2.8rem)',
                   letterSpacing: '-.04em',
                   color: 'var(--accent3)',
                 }}
@@ -114,37 +107,23 @@ const ProjectItem = ({ project, index }) => {
               {project.short_description && (
                 <p
                   className="mt-2 text-sm leading-relaxed max-w-lg line-clamp-2"
-                  style={{ color: 'rgba(240,235,227,.5)' }}
+                  style={{ color: 'rgba(240,235,227,.45)' }}
                 >
                   {project.short_description}
                 </p>
               )}
             </div>
             <div
-              className="ml-4 shrink-0 grid h-12 w-12 place-items-center rounded-full transition-all duration-400"
-              style={{
-                border: '1px solid rgba(201,169,110,.4)',
-                background: hovered ? 'var(--accent)' : 'transparent',
-              }}
+              className="shrink-0 grid h-11 w-11 place-items-center rounded-full transition-all duration-500 group-hover:bg-[var(--accent)]"
+              style={{ border: '1px solid rgba(201,169,110,.38)' }}
             >
               <ArrowUpRight
-                size={18}
-                style={{ color: hovered ? '#06060c' : 'var(--accent)' }}
+                size={16}
+                className="transition-colors duration-500 group-hover:text-[#06060c]"
+                style={{ color: 'var(--accent)' }}
               />
             </div>
           </div>
-        </div>
-
-        {/* Index number (always visible) */}
-        <div
-          className="absolute top-5 left-6"
-        >
-          <span
-            className="font-mono text-[.62rem] uppercase tracking-[.3em]"
-            style={{ color: 'rgba(201,169,110,.35)' }}
-          >
-            {String(index + 1).padStart(2, '0')}
-          </span>
         </div>
       </Link>
     </article>
@@ -152,7 +131,11 @@ const ProjectItem = ({ project, index }) => {
 };
 
 const WorkShowcase = ({ projects = [], loading = false }) => {
-  const headRef = useRef(null);
+  const sectionRef  = useRef(null);
+  const trackRef    = useRef(null);
+  const headRef     = useRef(null);
+  const progressRef = useRef(null);
+  const cardsRef    = useRef([]);
 
   useEffect(() => {
     const el = headRef.current;
@@ -167,11 +150,58 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track   = trackRef.current;
+    const progress = progressRef.current;
+    if (!section || !track || projects.length < 2) return;
+
+    const ctx = gsap.context(() => {
+      const getAmt = () => -(track.scrollWidth - section.offsetWidth + 80);
+
+      const st = ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${Math.abs(getAmt())}`,
+        pin: true,
+        scrub: 1.2,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          gsap.set(track, { x: getAmt() * self.progress });
+          if (progress) progress.style.transform = `scaleX(${self.progress})`;
+
+          // Spotlight: emphasise the card closest to screen centre
+          const cards = cardsRef.current.filter(Boolean);
+          if (cards.length > 1) {
+            const activeIdx = Math.round(self.progress * (cards.length - 1));
+            cards.forEach((card, i) => {
+              const isActive = i === activeIdx;
+              gsap.to(card, {
+                scale: isActive ? 1.02 : 0.97,
+                opacity: isActive ? 1 : 0.65,
+                duration: 0.45,
+                ease: 'power2.out',
+                overwrite: 'auto',
+              });
+              card.style.borderColor = isActive
+                ? 'rgba(201,169,110,.28)'
+                : 'rgba(201,169,110,.06)';
+            });
+          }
+        },
+      });
+
+      return () => st.kill();
+    }, section);
+
+    return () => ctx.revert();
+  }, [projects]);
+
   if (!loading && projects.length === 0) return null;
 
   return (
     <section className="relative py-28 px-5 md:px-10 lg:px-16">
-      {/* Faint gold glow */}
+      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute right-0 top-0 h-[60vh] w-[50vw]"
         style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(201,169,110,.05), transparent 60%)' }}
@@ -206,7 +236,6 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
             </em>
           </h2>
         </div>
-
         <Link
           to="/portfolio"
           className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.24em] pb-2 transition-colors"
@@ -219,34 +248,58 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
       </div>
 
       {loading ? (
-        /* Skeleton */
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="flex gap-5 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="animate-pulse rounded-2xl"
-              style={{
-                aspectRatio: i === 1 ? '16/9' : '4/3',
-                background: 'rgba(201,169,110,.04)',
-                gridColumn: i === 1 ? '1 / -1' : 'auto',
-              }}
+              className="animate-pulse flex-shrink-0"
+              style={{ width: 'clamp(300px, 72vw, 800px)', aspectRatio: '16/10', background: 'rgba(201,169,110,.04)' }}
             />
           ))}
         </div>
+      ) : projects.length < 2 ? (
+        /* Fallback: simple grid when ≤1 project */
+        <div className="grid gap-4">
+          {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
+        </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-          {projects.map((p, i) => (
+        /* Horizontal scroll track */
+        <div ref={sectionRef} className="relative overflow-hidden">
+          <div
+            ref={trackRef}
+            className="flex gap-5 will-change-transform"
+            style={{ paddingRight: '2rem' }}
+          >
+            {projects.map((p, i) => (
+              <ProjectCard
+                key={p.id}
+                project={p}
+                index={i}
+                cardRef={(el) => { cardsRef.current[i] = el; }}
+              />
+            ))}
+          </div>
+
+          {/* Scroll progress bar */}
+          <div
+            className="mt-8 overflow-hidden"
+            style={{ height: 1, background: 'rgba(201,169,110,.10)' }}
+          >
             <div
-              key={p.id}
-              style={{ gridColumn: i === 0 ? '1 / -1' : 'auto' }}
-            >
-              <ProjectItem project={p} index={i} />
-            </div>
-          ))}
+              ref={progressRef}
+              style={{
+                height: '100%',
+                transformOrigin: 'left',
+                transform: 'scaleX(0)',
+                background: 'linear-gradient(to right, var(--accent), var(--accent2))',
+                transition: 'transform 0.05s linear',
+              }}
+            />
+          </div>
         </div>
       )}
 
-      {/* Mobile "all projects" link */}
+      {/* Mobile link */}
       <div className="mt-10 lg:hidden">
         <Link to="/portfolio" className="ghost-button">
           Volledig portfolio <ArrowUpRight size={15} />
