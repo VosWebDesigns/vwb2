@@ -24,7 +24,7 @@ const Clock = () => {
     return () => clearInterval(id);
   }, []);
   return (
-    <span className="hidden xl:inline-block font-mono text-[10px] uppercase tracking-[.26em] text-[rgba(140,214,255,.35)]">
+    <span className="hidden md:inline-block font-mono text-[10px] uppercase tracking-[.26em] text-[rgba(140,214,255,.35)]">
       {time}
     </span>
   );
@@ -109,10 +109,19 @@ const Header = () => {
             ))}
           </div>
 
+          {/* Desktop CTA */}
+          <Link
+            to="/contact"
+            className="glow-button hidden lg:inline-flex"
+            style={{ padding: '0.45rem 1rem', fontSize: '0.75rem' }}
+          >
+            Start project
+          </Link>
+
           {/* Right side: clock + status + menu */}
           <div className="flex items-center gap-3">
             <Clock />
-            <span className="hidden items-center gap-1.5 xl:flex">
+            <span className="hidden items-center gap-1.5 lg:flex">
               <span className="status-dot status-dot-cyan" />
               <span className="font-mono text-[10px] uppercase tracking-[.22em] text-[rgba(140,214,255,.4)]">Online</span>
             </span>
