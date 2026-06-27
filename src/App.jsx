@@ -17,8 +17,14 @@ import CookieBanner from '@/components/CookieBanner';
 import ScrollToTop from '@/components/ScrollToTop';
 import { capture } from '@/lib/sentryClient';
 import { useLenis } from '@/hooks/useLenis';
+import { StaticBackdrop, CanvasErrorBoundary, isWebGLAvailable } from '@/components/three/AmbientBackdrop';
 
 const SceneCanvas = React.lazy(() => import('@/components/three/SceneCanvas'));
+
+const prefersReducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 import PublicShell from '@/components/public/PublicShell';
 import HomePage from '@/pages/HomePage';
@@ -219,10 +225,16 @@ const PublicAmbience = () => {
 
   if (isAppShell) return null;
 
+  // Graceful, animation-free fallback for reduced-motion users and browsers
+  // without WebGL — keeps the aesthetic, zero failure surface.
+  if (prefersReducedMotion || !isWebGLAvailable()) return <StaticBackdrop />;
+
   return (
-    <Suspense fallback={null}>
-      <SceneCanvas />
-    </Suspense>
+    <CanvasErrorBoundary>
+      <Suspense fallback={<StaticBackdrop />}>
+        <SceneCanvas />
+      </Suspense>
+    </CanvasErrorBoundary>
   );
 };
 

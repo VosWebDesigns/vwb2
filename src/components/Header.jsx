@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
+import { getLenis } from '@/hooks/useLenis';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -30,7 +31,18 @@ const Header = () => {
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    // Pause smooth-scroll while the full-screen menu is open so the overlay
+    // scrolls and the page behind it stays put.
+    const lenis = getLenis();
+    if (lenis) {
+      if (open) lenis.stop();
+      else lenis.start();
+    }
+    return () => {
+      document.body.style.overflow = '';
+      const active = getLenis();
+      if (active) active.start();
+    };
   }, [open]);
 
   const siteName = settings?.site_name || 'Vos Web Designs';
