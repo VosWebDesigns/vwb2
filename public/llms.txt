@@ -3,17 +3,17 @@
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/404): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/notfound): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [Admin configuratie ontbreekt - Vos Web Designs](/login): No description available
-- [Admin verificatie - Vos Web Designs](/mfaverify): No description available
 - [Algemene Voorwaarden - Vos Web Designs](/terms): Algemene Voorwaarden van Vos Web Designs. Lees hier onze leveringsvoorwaarden en condities.
 - [Contact - Vos Web Designs | Neem Contact Op](/contact): Klaar om uw project te starten? Neem contact op met Vos Web Designs voor een vrijblijvend gesprek.
 - [Diensten – Vos Web Designs](/services): Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs.
+- [Diensten & prijzen - Vos Admin](/servicepricing): No description available
 - [Geen toegang - Vos Web Designs](/forbidden): No description available
 - [Instellingen - Vos Admin](/settings): No description available
 - [Klanten - Vos Admin](/customers): No description available
 - [Nieuwsbrief afgemeld | Vos Web Designs](/unsubscribed): No description available
 - [Nieuwsbrief bevestigd | Vos Web Designs](/confirmed): No description available
-- [Over Ons - Vos Web Designs](/about): Leer Vos Web Designs kennen. Persoonlijk, resultaatgericht en gebouwd op moderne technologie.
+- [Offertes & facturen - Vos Admin](/quotesinvoices): No description available
 - [Portfolio - Vos Web Designs](/portfolio): Bekijk ons portfolio met recente webdesign-, development- en e-commerce projecten.
 - [Privacybeleid - Vos Web Designs](/privacypolicy): Privacybeleid van Vos Web Designs. Lees hoe wij omgaan met uw gegevens volgens de AVG/GDPR richtlijnen.
-- [Vos Web Designs - Webdesign & Ontwikkeling in Nederland](/home): Luxe webdesign voor ambitieuze bedrijven. Wij creëren websites die converteren en uw merk laten groeien.
+- [Vos Web Designs — Futuristic 3D Web Design Studio Nederland](/home): Premium webdesign bureau met 3D interfaces, cinematische animaties en futuristische UI. Wij bouwen ervaringen die indruk maken.
 - [Werkwijze - Vos Web Designs | Ons Development Process](/process): Ontdek hoe we te werk gaan bij Vos Web Designs. Van strategie tot lancering - een transparant proces met gegarandeerde resultaten.
