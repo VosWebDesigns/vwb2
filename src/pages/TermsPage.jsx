@@ -1,9 +1,21 @@
-
-import React from 'react';
+import React, { useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
+import { useReveal } from '@/hooks/useReveal';
+
+const SECTIONS = [
+  ['Artikel 1. Definities', 'In deze algemene voorwaarden wordt verstaan onder: Vos Web Designs: de gebruiker van deze algemene voorwaarden. Opdrachtgever: de wederpartij van Vos Web Designs.'],
+  ['Artikel 2. Toepasselijkheid', 'Deze voorwaarden zijn van toepassing op alle aanbiedingen en overeenkomsten tussen Vos Web Designs en Opdrachtgever, tenzij schriftelijk anders is overeengekomen.'],
+  ['Artikel 3. Offertes', 'Alle offertes en aanbiedingen van Vos Web Designs zijn vrijblijvend, tenzij in de offerte een termijn voor aanvaarding is gesteld. Een offerte vervalt indien het product waarop de offerte betrekking heeft in de tussentijd niet meer beschikbaar is.'],
+  ['Artikel 4. Uitvoering van de overeenkomst', 'Vos Web Designs zal de overeenkomst naar beste inzicht en vermogen en overeenkomstig de eisen van goed vakmanschap uitvoeren. Indien en voor zover een goede uitvoering van de overeenkomst dit vereist, heeft Vos Web Designs het recht bepaalde werkzaamheden te laten verrichten door derden.'],
+  ['Artikel 5. Betaling', 'Betaling dient te geschieden binnen 14 dagen na factuurdatum, op een door Vos Web Designs aan te geven wijze in de valuta waarin is gefactureerd.'],
+  ['Artikel 6. Aansprakelijkheid', 'Vos Web Designs is niet aansprakelijk voor schade, van welke aard ook, ontstaan doordat Vos Web Designs is uitgegaan van door of namens de Opdrachtgever verstrekte onjuiste en/of onvolledige gegevens.'],
+  ['Artikel 7. Intellectueel eigendom', 'Vos Web Designs behoudt zich de rechten en bevoegdheden voor die hem toekomen op grond van de Auteurswet en andere intellectuele wet- en regelgeving.'],
+];
 
 const TermsPage = () => {
+  const rootRef = useRef(null);
+  useReveal(rootRef);
+
   return (
     <>
       <Helmet>
@@ -11,59 +23,27 @@ const TermsPage = () => {
         <meta name="description" content="Algemene Voorwaarden van Vos Web Designs. Lees hier onze leveringsvoorwaarden en condities." />
       </Helmet>
 
-      <main className="pt-24 pb-16 bg-[#0f172a] min-h-screen">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent">
-              Algemene Voorwaarden
+      <main ref={rootRef} className="cinema-bg min-h-screen overflow-hidden pt-24">
+        <section className="cinematic-section">
+          <div className="cinematic-container relative z-10 max-w-4xl">
+            <p data-reveal className="section-eyebrow">Juridisch</p>
+            <h1 data-reveal className="display-xl mt-4 text-[clamp(2.4rem,7vw,5.5rem)]">
+              <span className="gradient-text-cyan">Algemene Voorwaarden</span>
             </h1>
-            
-            <div className="space-y-8 text-gray-300 leading-relaxed">
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 1. Definities</h2>
-                <p>In deze algemene voorwaarden wordt verstaan onder: Vos Web Designs: de gebruiker van deze algemene voorwaarden. Opdrachtgever: de wederpartij van Vos Web Designs.</p>
-              </section>
 
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 2. Toepasselijkheid</h2>
-                <p>Deze voorwaarden zijn van toepassing op alle aanbiedingen en overeenkomsten tussen Vos Web Designs en Opdrachtgever, tenzij schriftelijk anders is overeengekomen.</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 3. Offertes</h2>
-                <p>Alle offertes en aanbiedingen van Vos Web Designs zijn vrijblijvend, tenzij in de offerte een termijn voor aanvaarding is gesteld. Een offerte vervalt indien het product waarop de offerte betrekking heeft in de tussentijd niet meer beschikbaar is.</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 4. Uitvoering van de overeenkomst</h2>
-                <p>Vos Web Designs zal de overeenkomst naar beste inzicht en vermogen en overeenkomstig de eisen van goed vakmanschap uitvoeren. Indien en voor zover een goede uitvoering van de overeenkomst dit vereist, heeft Vos Web Designs het recht bepaalde werkzaamheden te laten verrichten door derden.</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 5. Betaling</h2>
-                <p>Betaling dient te geschieden binnen 14 dagen na factuurdatum, op een door Vos Web Designs aan te geven wijze in de valuta waarin is gefactureerd.</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 6. Aansprakelijkheid</h2>
-                <p>Vos Web Designs is niet aansprakelijk voor schade, van welke aard ook, ontstaan doordat Vos Web Designs is uitgegaan van door of namens de Opdrachtgever verstrekte onjuiste en/of onvolledige gegevens.</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-4">Artikel 7. Intellectueel eigendom</h2>
-                <p>Vos Web Designs behoudt zich de rechten en bevoegdheden voor die hem toekomen op grond van de Auteurswet en andere intellectuele wet- en regelgeving.</p>
-              </section>
-              
-              <div className="pt-8 text-sm text-gray-500">
+            <div className="mt-10 grid gap-4">
+              {SECTIONS.map(([title, body]) => (
+                <section key={title} data-reveal className="glass-card rounded-2xl p-6 md:p-8">
+                  <h2 className="font-heading text-xl font-bold text-white md:text-2xl">{title}</h2>
+                  <p className="mt-3 leading-8 text-slate-300">{body}</p>
+                </section>
+              ))}
+              <p data-reveal className="mono mt-2 text-xs uppercase tracking-[.2em] text-slate-500">
                 Laatst bijgewerkt: 4 januari 2026
-              </div>
+              </p>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </section>
       </main>
     </>
   );

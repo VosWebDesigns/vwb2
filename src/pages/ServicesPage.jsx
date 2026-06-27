@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
+import { useReveal } from '@/hooks/useReveal';
 import supabase from '@/lib/customSupabaseClient';
 import { SERVICE_CATALOG_ID, cloneDefaultServiceCatalog, formatPackagePrice, getPackageDiscount, getPackageNetPrice, normalizeServiceCatalog } from '@/lib/serviceCatalog';
 
@@ -28,6 +29,8 @@ const getDelivery = (name) => name === 'Starter' ? 'Meestal binnen 1–2 weken o
 const ServicesPage = () => {
   const [services, setServices] = useState(() => cloneDefaultServiceCatalog());
   const [loading, setLoading] = useState(true);
+  const rootRef = useRef(null);
+  useReveal(rootRef, [loading, services]);
 
   useEffect(() => {
     let mounted = true;
@@ -45,17 +48,17 @@ const ServicesPage = () => {
   return (
   <>
     <Helmet><title>Diensten – Vos Web Designs</title><meta name="description" content="Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs." /></Helmet>
-    <main className="cinema-bg pt-24">
+    <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
       <section className="cinematic-section">
         <div className="cinematic-container relative z-10 grid gap-8 lg:grid-cols-[1fr_.7fr] lg:items-end">
-          <div><p className="eyebrow">Diensten & pakketten</p><h1 className="display-title mt-4 text-[clamp(3.6rem,10vw,8rem)]">Professionele websites die écht voor je werken.</h1></div>
-          <div className="panel cut p-6"><p className="text-lg leading-8 text-slate-300">Van eerste website tot schaalbare online oplossing. Transparant, betaalbaar en zonder technische zorgen.</p><Link to="/contact" className="cta-link mt-6">Gratis kennismaking <ArrowRight size={18} /></Link></div>
+          <div><p data-reveal className="section-eyebrow">Diensten & pakketten</p><h1 data-reveal className="display-xl mt-4 text-[clamp(3.4rem,9vw,7.5rem)]">Professionele websites die <span className="gradient-text-full">écht voor je werken</span>.</h1></div>
+          <div data-reveal className="glass-card rounded-2xl p-6"><p className="text-lg leading-8 text-slate-300">Van eerste website tot schaalbare online oplossing. Transparant, betaalbaar en zonder technische zorgen.</p><Link to="/contact" className="glow-button mt-6">Gratis kennismaking <ArrowRight size={16} /></Link></div>
         </div>
       </section>
 
       <section className="cinematic-section pt-0">
         <div className="cinematic-container relative z-10 grid gap-4 md:grid-cols-4">
-          {['Transparante prijzen', 'Geen aanbetaling', 'Snelle oplevering', 'Persoonlijk contact'].map(item => <div key={item} className="panel cut p-5"><CheckCircle className="mb-4 text-[color:var(--accent2)]" /><p className="font-bold">{item}</p></div>)}
+          {['Transparante prijzen', 'Geen aanbetaling', 'Snelle oplevering', 'Persoonlijk contact'].map((item, i) => <div key={item} data-reveal data-reveal-delay={i * 0.06} className="glass-card rounded-2xl p-5"><CheckCircle className="mb-4 text-[color:var(--accent2)]" /><p className="font-bold">{item}</p></div>)}
         </div>
       </section>
 
@@ -65,7 +68,7 @@ const ServicesPage = () => {
           {services.map((service, serviceIndex) => {
             const Icon = iconMap[service.icon] || Palette;
             return (
-            <article key={service.title} className="panel cut overflow-hidden">
+            <article key={service.title} data-reveal className="glass-card overflow-hidden rounded-3xl">
               <div className="grid gap-0 lg:grid-cols-[.8fr_1.2fr]">
                 <div className="p-7 md:p-10">
                   <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-[color:var(--stroke)] text-[color:var(--accent)]"><Icon size={32} /></div>
@@ -101,12 +104,12 @@ const ServicesPage = () => {
 
       <section className="cinematic-section pt-0">
         <div className="cinematic-container relative z-10 max-w-4xl">
-          <p className="eyebrow">FAQ</p><h2 className="display-title mt-4 text-5xl md:text-7xl">Veelgestelde vragen.</h2>
-          <div className="mt-10 grid gap-3">{faq.map(([q, a]) => <details key={q} className="panel cut group p-6"><summary className="cursor-pointer list-none font-heading text-xl font-black tracking-[-.03em] group-open:text-[color:var(--accent)]">{q}</summary><p className="mt-4 leading-7 text-slate-300">{a}</p></details>)}</div>
+          <p data-reveal className="section-eyebrow">FAQ</p><h2 data-reveal className="display-xl mt-4 text-5xl md:text-7xl">Veelgestelde <span className="gradient-text-cyan">vragen</span>.</h2>
+          <div className="mt-10 grid gap-3">{faq.map(([q, a]) => <details key={q} data-reveal className="glass-card group rounded-2xl p-6"><summary className="cursor-pointer list-none font-heading text-xl font-black tracking-[-.03em] group-open:text-[color:var(--accent)]">{q}</summary><p className="mt-4 leading-7 text-slate-300">{a}</p></details>)}</div>
         </div>
       </section>
 
-      <section className="cinematic-section pt-0"><div className="cinematic-container panel cut relative z-10 p-8 text-center md:p-12"><h2 className="display-title text-5xl md:text-7xl">Klaar om professioneel te groeien?</h2><p className="mx-auto mt-5 max-w-2xl text-slate-300">Plan vrijblijvend een kennismaking en ontdek welke oplossing het beste past bij jouw situatie.</p><Link to="/contact" className="cta-link mt-8">Start vandaag nog</Link></div></section>
+      <section className="cinematic-section pt-0"><div data-reveal className="cinematic-container glass-card relative z-10 rounded-3xl p-8 text-center md:p-12"><h2 className="display-xl text-5xl md:text-7xl">Klaar om <span className="gradient-text-full">professioneel te groeien</span>?</h2><p className="mx-auto mt-5 max-w-2xl text-slate-300">Plan vrijblijvend een kennismaking en ontdek welke oplossing het beste past bij jouw situatie.</p><Link to="/contact" className="glow-button mt-8">Start vandaag nog</Link></div></section>
     </main>
   </>
   );

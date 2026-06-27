@@ -1,105 +1,69 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { gsap } from 'gsap';
 import { Home, ArrowLeft } from 'lucide-react';
 
+const QUICK_LINKS = [
+  ['/portfolio', 'Portfolio'],
+  ['/diensten', 'Diensten'],
+  ['/over-ons', 'Over Ons'],
+  ['/contact', 'Contact'],
+];
+
 const NotFoundPage = () => {
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '[data-404]',
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out' }
+      );
+    }, rootRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
       <Helmet>
         <title>404 - Pagina Niet Gevonden | Vos Web Designs</title>
-        <meta
-          name="description"
-          content="Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft."
-        />
+        <meta name="description" content="Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft." />
       </Helmet>
 
-      <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#0f172a] pt-20 px-4">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#38bdf8] rounded-full filter blur-[128px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#38bdf8] rounded-full filter blur-[128px]" />
-        </div>
-
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+      <main ref={rootRef} className="cinema-bg flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24">
+        <div className="relative z-10 mx-auto max-w-2xl text-center">
+          <span
+            data-404
+            className="block font-heading text-[clamp(7rem,26vw,18rem)] font-black leading-none tracking-[-.06em] gradient-text-full"
           >
-            <span className="text-9xl md:text-[200px] font-bold bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] bg-clip-text text-transparent leading-none block mb-4">
-              404
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
-          >
-            Pagina Niet Gevonden
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-xl text-gray-300 mb-8 leading-relaxed"
-          >
+            404
+          </span>
+          <h1 data-404 className="display-xl mt-2 text-3xl md:text-5xl">Pagina niet gevonden</h1>
+          <p data-404 className="mx-auto mt-5 max-w-lg text-base leading-8 text-slate-400">
             De pagina die u zoekt bestaat niet of is verplaatst. Geen zorgen, we helpen u graag verder.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <Link to="/">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-[#38bdf8] to-[#60a5fa] text-black hover:opacity-90 transition-opacity"
-              >
-                <Home className="mr-2" size={20} />
-                Naar Homepage
-              </Button>
+          <div data-404 className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link to="/" className="glow-button">
+              <Home size={16} /> Naar homepage
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-gray-700 text-gray-300 hover:border-[#38bdf8] hover:text-[#38bdf8]"
-              onClick={() => window.history.back()}
-            >
-              <ArrowLeft className="mr-2" size={20} />
-              Ga Terug
-            </Button>
-          </motion.div>
+            <button type="button" onClick={() => window.history.back()} className="ghost-button">
+              <ArrowLeft size={16} /> Ga terug
+            </button>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mt-12 pt-12 border-t border-gray-800"
-          >
-            <p className="text-gray-400 mb-4">Populaire Paginas:</p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/portfolio" className="text-[#38bdf8] hover:underline">
-                Portfolio
-              </Link>
-              <Link to="/diensten" className="text-[#38bdf8] hover:underline">
-                Diensten
-              </Link>
-              <Link to="/over-ons" className="text-[#38bdf8] hover:underline">
-                Over Ons
-              </Link>
-              <Link to="/contact" className="text-[#38bdf8] hover:underline">
-                Contact
-              </Link>
+          <div data-404 className="mt-14 border-t border-[rgba(140,214,255,.12)] pt-10">
+            <p className="mono mb-4 text-xs uppercase tracking-[.24em] text-slate-500">Populaire paginas</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {QUICK_LINKS.map(([href, label]) => (
+                <Link key={href} to={href} className="holo-tag transition hover:border-[var(--accent)]">
+                  {label}
+                </Link>
+              ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </main>
     </>

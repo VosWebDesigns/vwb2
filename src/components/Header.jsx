@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
+import { getLenis } from '@/hooks/useLenis';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -30,30 +31,60 @@ const Header = () => {
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    // Pause smooth-scroll while the full-screen menu is open so the overlay
+    // scrolls and the page behind it stays put.
+    const lenis = getLenis();
+    if (lenis) {
+      if (open) lenis.stop();
+      else lenis.start();
+    }
+    return () => {
+      document.body.style.overflow = '';
+      const active = getLenis();
+      if (active) active.start();
+    };
   }, [open]);
 
   const siteName = settings?.site_name || 'Vos Web Designs';
 
   return (
     <>
-      <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[color:var(--ink)]/86 shadow-[0_16px_60px_rgba(0,0,0,.28)] backdrop-blur-2xl' : 'bg-[color:var(--ink)]/55 backdrop-blur-xl'}`}>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'border-b border-[rgba(140,214,255,.1)] bg-[rgba(2,8,16,.88)] shadow-[0_8px_40px_rgba(0,0,0,.4)] backdrop-blur-2xl'
+            : 'bg-transparent'
+        }`}
+      >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8">
           <Link to="/" className="group flex items-center gap-3" aria-label="Vos Web Designs home">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--panel)] font-heading text-sm font-black text-[color:var(--accent)] shadow-[inset_0_0_25px_rgba(140,214,255,.08)]">V</span>
+            <span className="grid h-9 w-9 place-items-center rounded-xl border border-[rgba(140,214,255,.22)] bg-[rgba(140,214,255,.08)] font-heading text-sm font-black text-[var(--accent)] shadow-[0_0_20px_rgba(140,214,255,.15)] transition-all duration-300 group-hover:border-[rgba(140,214,255,.45)] group-hover:shadow-[0_0_30px_rgba(140,214,255,.3)]">V</span>
             <span className="font-heading text-sm font-black uppercase tracking-[.22em] text-white sm:text-base">{siteName}</span>
           </Link>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-1 lg:flex">
             {navLinks.slice(1, 5).map((link) => (
-              <Link key={link.path} to={link.path} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${location.pathname === link.path ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                  location.pathname === link.path
+                    ? 'bg-[rgba(140,214,255,.1)] text-[var(--accent)]'
+                    : 'text-slate-400 hover:bg-[rgba(140,214,255,.06)] hover:text-white'
+                }`}
+              >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          <button type="button" onClick={() => setOpen(true)} className="group inline-flex items-center gap-3 rounded-full border border-[color:var(--stroke)] bg-white/[.06] px-4 py-2 text-sm font-bold uppercase tracking-[.16em] text-white transition hover:border-[color:var(--accent)]" aria-label="Open menu">
-            Menu <Menu size={18} className="text-[color:var(--accent)] transition group-hover:rotate-6" />
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="group inline-flex items-center gap-2.5 rounded-full border border-[rgba(140,214,255,.2)] bg-[rgba(12,22,40,.7)] px-4 py-2 text-sm font-bold uppercase tracking-[.14em] text-white backdrop-blur-md transition-all duration-300 hover:border-[rgba(140,214,255,.45)] hover:bg-[rgba(140,214,255,.08)] hover:shadow-[0_0_20px_rgba(140,214,255,.15)]"
+            aria-label="Open menu"
+          >
+            Menu <Menu size={16} className="text-[var(--accent)] transition-transform duration-300 group-hover:rotate-90" />
           </button>
         </nav>
       </header>

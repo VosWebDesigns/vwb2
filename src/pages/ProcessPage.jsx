@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Code, Lightbulb, MessageCircle, Palette, Rocket } from 'lucide-react';
+import { useReveal } from '@/hooks/useReveal';
 
 const processSteps = [
   { number: '01', icon: <MessageCircle size={32} />, title: 'Kennismaking & Strategie', duration: '1 week', description: 'We beginnen met een uitgebreid gesprek over uw bedrijf, doelen, en doelgroep. Hierbij analyseren we uw huidige situatie en concurrentie om een solide strategie te ontwikkelen.', activities: ['Intakegesprek en doelen bepalen', 'Doelgroep en persona research', 'Concurrentieanalyse', 'Projectscope en planning opstellen', 'Budget en timeline bespreken'] },
@@ -18,14 +19,18 @@ const afterLaunch = [
   ['Groei & Uitbreidingen', 'Nieuwe features en functionaliteiten wanneer u deze nodig heeft'],
 ];
 
-const ProcessPage = () => (
+const ProcessPage = () => {
+  const rootRef = useRef(null);
+  useReveal(rootRef);
+
+  return (
   <>
     <Helmet><title>Werkwijze - Vos Web Designs | Ons Development Process</title><meta name="description" content="Ontdek hoe we te werk gaan bij Vos Web Designs. Van strategie tot lancering - een transparant proces met gegarandeerde resultaten." /></Helmet>
-    <main className="cinema-bg pt-24">
+    <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
       <section className="cinematic-section">
         <div className="cinematic-container relative z-10 grid gap-8 lg:grid-cols-[1fr_.7fr] lg:items-end">
-          <div><p className="eyebrow">Onze werkwijze</p><h1 className="display-title mt-4 text-[clamp(3.6rem,10vw,8rem)]">Een proces met ritme, focus en momentum.</h1></div>
-          <aside className="panel cut p-6"><p className="text-lg leading-8 text-slate-300">Een bewezen proces dat consistente, hoogwaardige resultaten oplevert voor elk project — van strategie tot lancering.</p></aside>
+          <div><p data-reveal className="section-eyebrow">Onze werkwijze</p><h1 data-reveal className="display-xl mt-4 text-[clamp(3.4rem,9vw,7.5rem)]">Een proces met <span className="gradient-text-full">ritme, focus en momentum</span>.</h1></div>
+          <aside data-reveal className="glass-card rounded-2xl p-6"><p className="text-lg leading-8 text-slate-300">Een bewezen proces dat consistente, hoogwaardige resultaten oplevert voor elk project — van strategie tot lancering.</p></aside>
         </div>
       </section>
 
@@ -33,8 +38,8 @@ const ProcessPage = () => (
         <div className="cinematic-container relative z-10">
           <div className="timeline-spine grid gap-8">
             {processSteps.map((step) => (
-              <article key={step.number} data-step={step.number} className="timeline-step">
-                <div className="panel cut p-6 md:p-8">
+              <article key={step.number} data-step={step.number} data-reveal className="timeline-step">
+                <div className="glass-card rounded-2xl p-6 md:p-8">
                   <div className="grid gap-6 lg:grid-cols-[.75fr_1.25fr]">
                     <div>
                       <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl border border-[color:var(--stroke)] text-[color:var(--accent)]">{step.icon}</div>
@@ -56,16 +61,17 @@ const ProcessPage = () => (
 
       <section className="cinematic-section pt-0">
         <div className="cinematic-container relative z-10">
-          <div className="panel cut p-7 md:p-10">
-            <p className="eyebrow">Na de lancering</p><h2 className="display-title mt-4 text-5xl md:text-7xl">We blijven meekijken waar groei ontstaat.</h2>
+          <div data-reveal className="glass-card rounded-3xl p-7 md:p-10">
+            <p className="section-eyebrow">Na de lancering</p><h2 className="display-xl mt-4 text-5xl md:text-7xl">We blijven <span className="gradient-text-cyan">meekijken</span> waar groei ontstaat.</h2>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">Onze betrokkenheid stopt niet bij de lancering. We bieden continue support, monitoren de prestaties, en staan klaar om uw website te laten groeien met uw bedrijf.</p>
-            <div className="mt-8 grid gap-4 md:grid-cols-2">{afterLaunch.map(([title, text]) => <div key={title} className="rounded-[1.5rem] border border-[color:var(--stroke)] bg-white/[.035] p-5"><h3 className="font-heading text-xl font-black text-[color:var(--accent)]">{title}</h3><p className="mt-2 text-slate-300">{text}</p></div>)}</div>
-            <Link to="/contact" className="cta-link mt-8">Start uw project <ArrowRight size={18} /></Link>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">{afterLaunch.map(([title, text]) => <div key={title} className="rounded-2xl border border-[rgba(140,214,255,.14)] bg-[rgba(8,16,30,.5)] p-5"><h3 className="font-heading text-xl font-black text-[color:var(--accent)]">{title}</h3><p className="mt-2 text-slate-300">{text}</p></div>)}</div>
+            <Link to="/contact" className="glow-button mt-8">Start uw project <ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>
     </main>
   </>
-);
+  );
+};
 
 export default ProcessPage;

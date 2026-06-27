@@ -168,7 +168,7 @@ const ImagePickerModal = ({
       <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-[#07111f] shadow-2xl">
         <div className="flex items-center justify-between gap-4 border-b border-white/10 p-5">
           <div>
-            <p className="text-xs font-black uppercase tracking-[.2em] text-[#38bdf8]">Afbeelding kiezen</p>
+            <p className="text-xs font-black uppercase tracking-[.2em] text-[#8cd6ff]">Afbeelding kiezen</p>
             <h2 className="text-xl font-black text-white">Upload, galerij of URL</h2>
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={onClose} className="text-slate-300 hover:text-white"><X size={18} /></Button>
@@ -176,14 +176,14 @@ const ImagePickerModal = ({
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="p-5">
           <TabsList className="grid h-auto w-full grid-cols-3 bg-black/30 text-slate-300">
-            <TabsTrigger value="upload" className="gap-2 data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black"><Upload size={15} /> Upload</TabsTrigger>
-            <TabsTrigger value="gallery" className="gap-2 data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black"><ImagePlus size={15} /> Galerij</TabsTrigger>
-            <TabsTrigger value="url" className="gap-2 data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black"><Link size={15} /> URL</TabsTrigger>
+            <TabsTrigger value="upload" className="gap-2 data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black"><Upload size={15} /> Upload</TabsTrigger>
+            <TabsTrigger value="gallery" className="gap-2 data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black"><ImagePlus size={15} /> Galerij</TabsTrigger>
+            <TabsTrigger value="url" className="gap-2 data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black"><Link size={15} /> URL</TabsTrigger>
           </TabsList>
 
           <TabsContent value="upload" className="mt-5">
-            <label className="flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/20 p-8 text-center transition hover:border-[#38bdf8]/70">
-              {uploading ? <Loader2 className="mb-3 animate-spin text-[#38bdf8]" /> : <Upload className="mb-3 text-[#38bdf8]" />}
+            <label className="flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/20 p-8 text-center transition hover:border-[#8cd6ff]/70">
+              {uploading ? <Loader2 className="mb-3 animate-spin text-[#8cd6ff]" /> : <Upload className="mb-3 text-[#8cd6ff]" />}
               <span className="font-bold text-white">Upload naar {selectedBucket}</span>
               <span className="mt-2 text-sm text-slate-400">Bestanden worden public-read opgeslagen in de gekozen bucket onder een nette campagne-map.</span>
               <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadFile} />
@@ -210,7 +210,7 @@ const ImagePickerModal = ({
             ) : (
               <div className="grid max-h-[52vh] grid-cols-2 gap-3 overflow-y-auto pr-1 md:grid-cols-3 lg:grid-cols-4">
                 {gallery.map((item) => (
-                  <button key={`${item.bucket}:${item.path}`} type="button" onClick={() => selectImage(item)} className="overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-2 text-left transition hover:border-[#38bdf8]">
+                  <button key={`${item.bucket}:${item.path}`} type="button" onClick={() => selectImage(item)} className="overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-2 text-left transition hover:border-[#8cd6ff]">
                     <img src={item.url} alt={item.alt} className="h-32 w-full rounded-xl object-cover" loading="lazy" />
                     <span className="mt-2 block truncate text-xs text-slate-300">{item.path}</span>
                   </button>
@@ -231,7 +231,7 @@ const ImagePickerModal = ({
               </div>
             </div>
             {isHttpUrl(manualUrl.trim()) && <img src={manualUrl.trim()} alt={manualAlt} className="max-h-72 w-full rounded-2xl border border-white/10 object-contain" />}
-            <Button type="button" onClick={selectManualUrl} className="bg-[#38bdf8] text-black hover:bg-[#7dd3fc]">Selecteer URL</Button>
+            <Button type="button" onClick={selectManualUrl} className="bg-[#8cd6ff] text-black hover:bg-[#7dd3fc]">Selecteer URL</Button>
           </TabsContent>
         </Tabs>
       </div>
