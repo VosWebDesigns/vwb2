@@ -136,25 +136,25 @@ const ProcessPage = () => {
             <div className="relative" ref={timelineRef}>
               {/* Vertical draw line */}
               <div
-                className="timeline-draw-line absolute left-[18px] top-4 bottom-0 w-px md:left-[22px]"
+                className="timeline-draw-line absolute left-[14px] top-4 bottom-0 w-px md:left-[18px] lg:left-[22px]"
                 style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent2), transparent)' }}
                 aria-hidden="true"
               />
 
-              <div className="flex flex-col gap-8 pl-12 md:pl-16">
+              <div className="flex flex-col gap-8 pl-10 md:pl-12 lg:pl-16">
                 {processSteps.map((step, i) => (
                   <article key={step.number} className="timeline-card relative">
                     {/* Step bubble on the line */}
                     <div
-                      className="step-bubble absolute -left-12 top-5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#020810] text-[var(--accent)] shadow-[0_0_20px_rgba(140,214,255,.4)] md:-left-16 md:h-11 md:w-11"
+                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#020810] text-[var(--accent)] shadow-[0_0_20px_rgba(140,214,255,.4)] md:-left-12 md:h-9 md:w-9 lg:-left-16 lg:h-11 lg:w-11"
                       aria-hidden="true"
                     >
-                      <span className="font-mono text-[10px] font-black md:text-[11px]">{step.number}</span>
+                      <span className="font-mono text-[9px] font-black md:text-[10px] lg:text-[11px]">{step.number}</span>
                     </div>
 
                     {/* Connector dot */}
                     <div
-                      className="absolute -left-[1.15rem] top-[1.65rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(214,245,122,.8)] md:-left-[1.45rem]"
+                      className="absolute -left-[1rem] top-[1.5rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(214,245,122,.8)] md:-left-[1.15rem] md:top-[1.65rem] lg:-left-[1.45rem]"
                       aria-hidden="true"
                     />
 

@@ -72,7 +72,7 @@ const AboutPage = () => {
               <span className="status-dot" />
               <p data-reveal className="section-eyebrow">Over Vos Web Designs</p>
             </div>
-            <h1 data-reveal className="display-xl mt-0 text-[clamp(3.2rem,9vw,7.5rem)]">
+            <h1 data-reveal className="display-xl mt-0 text-[clamp(2.4rem,9vw,7.5rem)]">
               Eén specialist.{' '}
               <span className="gradient-text-full">Volledige focus.</span>{' '}
               Geen template-smaak.
@@ -144,7 +144,7 @@ const AboutPage = () => {
             <div className="grid gap-4 md:grid-cols-3">
               {VALUES.map(({ num, label, desc }) => (
                 <div key={num} className="value-card glass-card rounded-2xl p-7 relative overflow-hidden">
-                  <span className="feature-num text-7xl absolute top-2 right-3 select-none">{num}</span>
+                  <span className="feature-num text-6xl sm:text-7xl absolute top-2 right-3 select-none">{num}</span>
                   <div className="relative">
                     <span className="font-mono text-[10px] uppercase tracking-[.28em] text-[var(--accent)]">{num}</span>
                     <h3 className="mt-3 font-heading text-2xl font-black text-white">{label}</h3>

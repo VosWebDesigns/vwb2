@@ -227,7 +227,8 @@ function Rig() {
 }
 
 function Scene() {
-  const count = prefersReducedMotion ? 500 : 1800;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const count = prefersReducedMotion ? 500 : isMobile ? 600 : 1800;
   return (
     <>
       <Stars
@@ -266,14 +267,16 @@ function Scene() {
   );
 }
 
-const SceneCanvas = () => (
+const SceneCanvas = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  return (
   <div
     className="pointer-events-none fixed inset-0 z-0"
     aria-hidden="true"
     style={{ opacity: 0.92 }}
   >
     <Canvas
-      dpr={[1, 2]}
+      dpr={isMobile ? [1, 1.5] : [1, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       camera={{ position: [0, 0, 9.5], fov: 52 }}
       frameloop={prefersReducedMotion ? 'demand' : 'always'}
@@ -283,6 +286,7 @@ const SceneCanvas = () => (
       </Suspense>
     </Canvas>
   </div>
-);
+  );
+};
 
 export default SceneCanvas;

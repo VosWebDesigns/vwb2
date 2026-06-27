@@ -124,7 +124,7 @@ const Footer = () => {
               <span className="status-dot" />
               <p className="eyebrow">{siteName}</p>
             </div>
-            <h2 className="max-w-3xl font-heading text-[clamp(2.6rem,7vw,5.5rem)] font-black uppercase leading-[.84] tracking-[-.08em]">
+            <h2 className="max-w-3xl font-heading text-[clamp(1.6rem,3.5vw,3rem)] font-black uppercase leading-[.9] tracking-[-.06em]">
               Websites met filmische focus en meetbare flow.
             </h2>
             {settings?.site_description && (

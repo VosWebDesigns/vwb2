@@ -342,10 +342,11 @@ const HomePage = () => {
   useEffect(() => {
     const el = missionRef.current;
     if (!el) return;
+    const isMobile = window.innerWidth < 768;
     const ctx = gsap.context(() => {
       const words = el.querySelectorAll('.mission-word');
       gsap.fromTo(words,
-        { opacity: 0, y: 50, rotateX: 25 },
+        isMobile ? { opacity: 0, y: 40 } : { opacity: 0, y: 50, rotateX: 25 },
         {
           opacity: 1, y: 0, rotateX: 0, duration: 1.1, stagger: 0.06, ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 78%' },
@@ -411,7 +412,7 @@ const HomePage = () => {
 
         {/* ── Stats ── */}
         <section
-          className="relative py-28 px-5 md:px-10"
+          className="relative py-16 px-5 md:py-28 md:px-10"
           style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.07) 0%, transparent 70%)' }}
         >
           <div className="mx-auto max-w-6xl">
@@ -452,7 +453,7 @@ const HomePage = () => {
               <span className="status-dot status-dot-cyan" />
             </div>
             <h2
-              className="font-heading text-[clamp(3rem,9vw,8rem)] font-black uppercase leading-[.85] tracking-[-.06em] text-white"
+              className="font-heading text-[clamp(2.2rem,9vw,8rem)] font-black uppercase leading-[.85] tracking-[-.06em] text-white"
               aria-label={missionWords.join(' ')}
             >
               {missionWords.map((w, i) => (
@@ -585,20 +586,20 @@ const HomePage = () => {
             <div className="relative">
               {/* Vertical connector */}
               <div
-                className="process-line absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--accent)] via-[var(--accent2)] to-transparent md:left-7"
+                className="process-line absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--accent)] via-[var(--accent2)] to-transparent md:left-5 lg:left-7"
                 aria-hidden="true"
               />
 
-              <div className="flex flex-col gap-6 pl-14 md:pl-20">
+              <div className="flex flex-col gap-6 pl-10 md:pl-14 lg:pl-20">
                 {PROCESS.map((step, i) => (
                   <div key={step.num} className="process-step glass-card rounded-2xl p-6 md:p-8 relative">
                     {/* Step number bubble */}
-                    <div className="absolute -left-[3.25rem] top-6 flex items-center justify-center w-10 h-10 rounded-full border border-[var(--accent)] bg-[#020810] md:-left-[4.25rem] md:w-12 md:h-12">
+                    <div className="absolute -left-[2.5rem] top-5 flex items-center justify-center w-9 h-9 rounded-full border border-[var(--accent)] bg-[#020810] md:-left-[3.25rem] md:top-6 md:w-10 md:h-10 lg:-left-[4.25rem] lg:w-12 lg:h-12">
                       <span className="font-mono text-[10px] font-black text-[var(--accent)] md:text-xs">{step.num}</span>
                     </div>
                     {/* Connector dot on the line */}
                     <div
-                      className="absolute top-[1.75rem] -left-[2.05rem] w-2.5 h-2.5 rounded-full bg-[var(--accent2)] shadow-[0_0_10px_rgba(214,245,122,.8)] md:-left-[2.45rem]"
+                      className="absolute top-[1.5rem] -left-[1.6rem] w-2.5 h-2.5 rounded-full bg-[var(--accent2)] shadow-[0_0_10px_rgba(214,245,122,.8)] md:top-[1.75rem] md:-left-[2.05rem] lg:-left-[2.45rem]"
                       aria-hidden="true"
                     />
                     <div className="flex items-start gap-4">
@@ -615,7 +616,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="mt-10 flex justify-start pl-14 md:pl-20">
+            <div className="mt-10 flex justify-start pl-10 md:pl-14 lg:pl-20">
               <Link to="/werkwijze" className="ghost-button">
                 Volledige werkwijze <ArrowRight size={15} />
               </Link>
@@ -663,7 +664,7 @@ const HomePage = () => {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.2)] to-transparent" />
 
           <div
-            className="mx-auto max-w-4xl glass-card cyber-corner rounded-3xl p-10 md:p-16 text-center relative overflow-hidden"
+            className="mx-auto max-w-4xl glass-card cyber-corner rounded-3xl p-6 md:p-10 lg:p-16 text-center relative overflow-hidden"
             style={{ animation: 'glow-pulse 4s ease-in-out infinite' }}
           >
             <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-40" aria-hidden="true" />

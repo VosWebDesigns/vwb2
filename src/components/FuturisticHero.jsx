@@ -25,6 +25,7 @@ const FuturisticHero = () => {
 
   /* ── Entrance animation ── */
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
@@ -33,8 +34,8 @@ const FuturisticHero = () => {
         { opacity: 1, y: 0, scale: 1, duration: 0.7 }
       )
       .fromTo(headlineRef.current.querySelectorAll('.word'),
-        { opacity: 0, y: 70, rotateX: 35 },
-        { opacity: 1, y: 0, rotateX: 0, duration: 0.95, stagger: 0.09 },
+        isMobile ? { opacity: 0, y: 50 } : { opacity: 0, y: 70, rotateX: 35 },
+        isMobile ? { opacity: 1, y: 0, duration: 0.95, stagger: 0.09 } : { opacity: 1, y: 0, rotateX: 0, duration: 0.95, stagger: 0.09 },
         '-=0.25'
       )
       .fromTo(subRef.current,
@@ -68,14 +69,16 @@ const FuturisticHero = () => {
         delay: 1.8,
       });
 
-      /* Orbit ring slow spin */
-      gsap.to(orbitRef.current, {
-        rotation: 360,
-        transformOrigin: '50% 50%',
-        repeat: -1,
-        duration: 22,
-        ease: 'none',
-      });
+      /* Orbit ring slow spin — only when element is rendered */
+      if (orbitRef.current) {
+        gsap.to(orbitRef.current, {
+          rotation: 360,
+          transformOrigin: '50% 50%',
+          repeat: -1,
+          duration: 22,
+          ease: 'none',
+        });
+      }
 
       /* Scanline sweep */
       if (scanRef.current) {
@@ -173,7 +176,7 @@ const FuturisticHero = () => {
       {/* Decorative orbit ring */}
       <div
         ref={orbitRef}
-        className="pointer-events-none absolute hidden xl:block"
+        className="pointer-events-none absolute hidden lg:block"
         style={{ right: '8%', top: '20%', width: '200px', height: '200px' }}
         aria-hidden="true"
       >
@@ -188,7 +191,7 @@ const FuturisticHero = () => {
       {/* Coordinate display */}
       <div
         ref={coordRef}
-        className="pointer-events-none absolute left-6 bottom-28 hidden xl:flex flex-col gap-1"
+        className="pointer-events-none absolute left-6 bottom-28 hidden lg:flex flex-col gap-1"
         aria-hidden="true"
       >
         <span className="font-mono text-[10px] uppercase tracking-[.28em] text-[rgba(140,214,255,.3)]">52°22'N  4°54'E</span>
@@ -208,7 +211,7 @@ const FuturisticHero = () => {
 
         <h1
           ref={headlineRef}
-          className="font-heading text-[clamp(3.8rem,11vw,10rem)] font-black leading-[.82] tracking-[-.06em] text-white [perspective:600px]"
+          className="font-heading text-[clamp(2.8rem,11vw,10rem)] font-black leading-[.82] tracking-[-.06em] text-white [perspective:600px]"
           aria-label={words.join(' ')}
         >
           {words.map((w) => (
@@ -237,7 +240,7 @@ const FuturisticHero = () => {
         </div>
 
         {/* Stats strip */}
-        <div className="mx-auto mt-14 hidden max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(140,214,255,.1)] bg-[rgba(140,214,255,.08)] sm:grid">
+        <div className="mx-auto mt-10 max-w-2xl grid grid-cols-1 sm:grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(140,214,255,.1)] bg-[rgba(140,214,255,.08)]">
           {[
             ['48u', 'Avg. design doorlooptijd'],
             ['3×', 'Meer conversies vs templates'],

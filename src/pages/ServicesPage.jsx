@@ -113,7 +113,7 @@ const ServicesPage = () => {
 
         {/* ── Trust strip ── */}
         <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10 grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+          <div className="cinematic-container relative z-10 grid gap-3 grid-cols-2 md:grid-cols-4">
             {TRUST_ITEMS.map(({ label }, i) => (
               <div
                 key={label}
@@ -163,7 +163,7 @@ const ServicesPage = () => {
                       <p className="mt-5 text-xl text-white font-medium">{service.shortDescription}</p>
                       <p className="mt-4 leading-8 text-slate-300">{service.description}</p>
                       <div className="mt-8 overflow-hidden rounded-2xl border border-[var(--stroke)] bg-slate-950">
-                        <SmartImage src={service.image} alt={service.title} className="h-64 w-full object-cover" />
+                        <SmartImage src={service.image} alt={service.title} className="h-48 sm:h-56 md:h-64 lg:h-72 w-full object-cover" />
                       </div>
                     </div>
 
