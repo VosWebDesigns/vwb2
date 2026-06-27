@@ -118,7 +118,7 @@ const ProjectDetailPage = () => {
           {/* Background glow */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,169,110,.1), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(204,255,0,.07), transparent)' }}
             aria-hidden="true"
           />
           <div className="cinematic-container relative z-10">
@@ -183,7 +183,7 @@ const ProjectDetailPage = () => {
                     </a>
                   )}
                   {project.stack && (
-                    <div className="rounded-xl border border-[rgba(201,169,110,.14)] bg-[rgba(8,16,30,.5)] p-4">
+                    <div className="rounded-xl border border-[rgba(204,255,0,.10)] bg-[rgba(8,16,30,.5)] p-4">
                       <span className="flex items-center gap-2 hud-label">
                         <Layers size={12} /> Stack
                       </span>

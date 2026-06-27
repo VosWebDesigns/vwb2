@@ -77,7 +77,7 @@ const ServicesPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.05) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
@@ -112,9 +112,10 @@ const ServicesPage = () => {
                 key={label}
                 data-reveal
                 data-reveal-delay={i * 0.07}
-                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(201,169,110,.1)]"
+                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5"
+                style={{ '--hover-shadow': '0 12px 40px rgba(204,255,0,.08)' }}
               >
-                <CheckCircle className="text-[var(--accent2)]" size={18} />
+                <CheckCircle size={18} style={{ color: 'var(--accent)' }} />
                 <p className="font-bold text-white text-sm mt-1">{label}</p>
                 <p className="text-xs text-slate-500">{sub}</p>
               </div>
@@ -137,13 +138,35 @@ const ServicesPage = () => {
             {services.map((service, serviceIndex) => {
               const Icon = iconMap[service.icon] || Palette;
               return (
-                <article key={service.title} data-reveal className="relative overflow-hidden rounded-3xl border border-[var(--stroke)]">
+                <article
+                  key={service.title}
+                  data-reveal
+                  className="relative overflow-hidden rounded-3xl"
+                  style={{ border: '1px solid var(--stroke)' }}
+                >
                   {/* Top accent line */}
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-60" aria-hidden="true" />
+                  <div
+                    className="absolute inset-x-0 top-0 h-px"
+                    style={{ background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.5 }}
+                    aria-hidden="true"
+                  />
 
                   {/* Service header */}
-                  <div className="bg-[rgba(8,16,30,.6)] backdrop-blur-sm px-7 py-6 md:px-10 md:py-8 border-b border-[var(--stroke)] grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
-                    <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
+                  <div
+                    className="backdrop-blur-sm px-7 py-6 md:px-10 md:py-8 grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+                    style={{
+                      background: 'rgba(8,8,12,.65)',
+                      borderBottom: '1px solid var(--stroke)',
+                    }}
+                  >
+                    <div
+                      className="grid h-14 w-14 place-items-center rounded-2xl"
+                      style={{
+                        border: '1px solid var(--stroke)',
+                        background: 'rgba(204,255,0,.04)',
+                        color: 'var(--accent)',
+                      }}
+                    >
                       <Icon size={28} />
                     </div>
                     <div>
@@ -151,11 +174,17 @@ const ServicesPage = () => {
                         <span className="status-dot status-dot-cyan" />
                         <p className="eyebrow">0{serviceIndex + 1} / dienst</p>
                       </div>
-                      <h2 className="font-heading text-[clamp(2rem,4vw,3.2rem)] font-black tracking-[-.06em] leading-none text-white">
+                      <h2
+                        className="font-heading font-bold tracking-[-.05em] leading-none text-white"
+                        style={{
+                          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                          fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                        }}
+                      >
                         {service.title}
                       </h2>
                     </div>
-                    <div className="hidden sm:block overflow-hidden rounded-xl border border-[var(--stroke)]">
+                    <div className="hidden sm:block overflow-hidden rounded-xl" style={{ border: '1px solid var(--stroke)' }}>
                       <SmartImage src={service.image} alt={service.title} className="h-24 w-40 object-cover" />
                     </div>
                   </div>
@@ -163,10 +192,13 @@ const ServicesPage = () => {
                   {/* Description + packages */}
                   <div className="grid gap-0 lg:grid-cols-[.9fr_1.1fr]">
                     {/* Left: description */}
-                    <div className="p-7 md:p-10 border-b border-[var(--stroke)] lg:border-b-0 lg:border-r">
+                    <div
+                      className="p-7 md:p-10"
+                      style={{ borderBottom: '1px solid var(--stroke)' }}
+                    >
                       <p className="text-xl text-white font-medium leading-8">{service.shortDescription}</p>
                       <p className="mt-4 leading-8 text-slate-300">{service.description}</p>
-                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl border border-[var(--stroke)]">
+                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl" style={{ border: '1px solid var(--stroke)' }}>
                         <SmartImage src={service.image} alt={service.title} className="h-44 w-full object-cover" />
                       </div>
                       <Link to="/contact" className="ghost-link mt-7 inline-flex text-sm">
@@ -189,42 +221,51 @@ const ServicesPage = () => {
                         return (
                           <div
                             key={pkg.id}
-                            className={`relative rounded-[1.5rem] border p-5 transition-all duration-300 ${
-                              highlighted
-                                ? 'border-[var(--accent2)] bg-[rgba(138,92,246,.06)] shadow-[0_0_40px_rgba(138,92,246,.1)]'
-                                : 'border-[var(--stroke)] bg-white/[.02] hover:border-[rgba(201,169,110,.3)]'
-                            }`}
+                            className="relative rounded-[1.5rem] p-5 transition-all duration-300"
+                            style={{
+                              border: `1px solid ${highlighted ? 'var(--accent2)' : 'var(--stroke)'}`,
+                              background: highlighted ? 'rgba(255,63,0,.05)' : 'rgba(255,255,255,.02)',
+                              boxShadow: highlighted ? '0 0 40px rgba(255,63,0,.08)' : 'none',
+                            }}
                           >
                             {highlighted && (pkg.badge || service.highlightLabel) && (
-                              <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-[var(--accent2)] px-3 py-1 text-xs font-black uppercase tracking-[.14em] text-[#06101c]">
+                              <span
+                                className="mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-[.12em]"
+                                style={{ background: 'var(--accent2)', color: '#060608' }}
+                              >
                                 <Star size={11} />
                                 {pkg.badge || service.highlightLabel}
                               </span>
                             )}
 
                             <div className="flex flex-wrap items-start justify-between gap-3">
-                              <h3 className="font-heading text-xl font-black text-white">{pkg.name}</h3>
+                              <h3 className="font-heading text-xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
+                                {pkg.name}
+                              </h3>
                               <div className="text-right">
                                 {discount > 0 && (
                                   <p className="text-xs font-bold text-slate-500 line-through">
                                     {formatPackagePrice(pkg.price)}
                                   </p>
                                 )}
-                                <p className={`text-xl font-black ${highlighted ? 'text-[var(--accent2)]' : 'text-[var(--accent)]'}`}>
+                                <p
+                                  className="text-xl font-black"
+                                  style={{ color: highlighted ? 'var(--accent2)' : 'var(--accent)' }}
+                                >
                                   {formatPackagePrice(netPrice)}
                                   {pkg.recurring ? ` ${pkg.recurring}` : ''}
                                 </p>
                               </div>
                             </div>
 
-                            <p className="mt-1 text-[11px] font-mono uppercase tracking-[.12em] text-slate-500">
+                            <p className="mt-1 text-[11px] font-mono uppercase tracking-[.10em] text-slate-500">
                               {getDelivery(pkg.name)} · Geen aanbetaling
                             </p>
 
                             <ul className="mt-4 grid gap-2">
                               {pkg.features.map((f) => (
                                 <li key={f} className="flex gap-2.5 text-sm text-slate-300">
-                                  <CheckCircle size={14} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
+                                  <CheckCircle size={14} className="mt-0.5 shrink-0" style={{ color: highlighted ? 'var(--accent2)' : 'var(--accent)' }} />
                                   {f}
                                 </li>
                               ))}
@@ -274,14 +315,18 @@ const ServicesPage = () => {
                     data-reveal
                     className="glass-card group rounded-2xl overflow-hidden transition-all duration-300"
                   >
-                    <summary className="flex items-center justify-between cursor-pointer list-none p-5 font-heading text-base font-black tracking-[-.03em] transition group-open:text-[var(--accent)]">
+                    <summary
+                      className="flex items-center justify-between cursor-pointer list-none p-5 font-heading text-base font-bold tracking-[-.03em] transition group-open:text-[var(--accent)]"
+                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                    >
                       {q}
                       <ChevronDown
                         size={16}
-                        className="shrink-0 text-[var(--accent)] transition-transform duration-300 group-open:rotate-180"
+                        className="shrink-0 transition-transform duration-300 group-open:rotate-180"
+                        style={{ color: 'var(--accent)' }}
                       />
                     </summary>
-                    <div className="border-t border-[var(--stroke)] px-5 pb-5 pt-4">
+                    <div style={{ borderTop: '1px solid var(--stroke)' }} className="px-5 pb-5 pt-4">
                       <p className="leading-7 text-slate-300 text-sm">{a}</p>
                     </div>
                   </details>
@@ -295,10 +340,14 @@ const ServicesPage = () => {
         <section className="cinematic-section pt-0">
           <div
             data-reveal
-            className="cinematic-container glass-card cyber-corner relative z-10 rounded-3xl p-8 text-center md:p-12 overflow-hidden"
-            style={{ animation: 'glow-pulse 4s ease-in-out infinite' }}
+            className="cinematic-container cyber-corner relative z-10 rounded-3xl p-8 text-center md:p-12 overflow-hidden"
+            style={{
+              border: '1px solid var(--stroke)',
+              background: 'rgba(8,8,12,.85)',
+              animation: 'glow-pulse 4s ease-in-out infinite',
+            }}
           >
-            <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-30" aria-hidden="true" />
+            <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-25" aria-hidden="true" />
             <div className="relative z-10">
               <div className="flex items-center justify-center gap-2.5 mb-6">
                 <span className="status-dot" />

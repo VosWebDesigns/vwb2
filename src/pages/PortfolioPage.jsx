@@ -67,7 +67,7 @@ const PortfolioPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.05) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -95,7 +95,7 @@ const PortfolioPage = () => {
             </div>
 
             {/* Filter bar */}
-            <div className="mt-10 flex flex-wrap items-center gap-3 border-y border-[rgba(201,169,110,.12)] py-5">
+            <div className="mt-10 flex flex-wrap items-center gap-3 border-y border-[rgba(204,255,0,.10)] py-5">
               <span className="hud-label mr-2 hidden sm:inline">Filter:</span>
               <button
                 type="button"

@@ -4,9 +4,9 @@ import { Float, Stars, MeshDistortMaterial, Sphere } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-const GOLD   = '#c9a96e';
-const VIOLET = '#8a5cf6';
-const CREAM  = '#f0ebe3';
+const GOLD   = '#ccff00';
+const VIOLET = '#ff3f00';
+const CREAM  = '#e8ffb3';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
@@ -29,13 +29,13 @@ function GoldOrb() {
         <MeshDistortMaterial
           color={GOLD}
           emissive={GOLD}
-          emissiveIntensity={0.18}
+          emissiveIntensity={0.12}
           distort={0.32}
           speed={1.8}
-          roughness={0.35}
-          metalness={0.92}
+          roughness={0.28}
+          metalness={0.85}
           transparent
-          opacity={0.85}
+          opacity={0.80}
         />
       </Sphere>
     </Float>
@@ -257,12 +257,12 @@ function Scene() {
     <>
       <Stars radius={90} depth={55} count={prefersReducedMotion ? 200 : 700} factor={3.5} saturation={0} fade />
 
-      {/* Warm ambient + gold key + violet fill */}
-      <ambientLight intensity={0.22} />
-      <pointLight position={[8, 6, 6]}   intensity={60}  color={GOLD}   />
-      <pointLight position={[-10, -5, 4]} intensity={35}  color={VIOLET} />
-      <pointLight position={[0, 14, 2]}   intensity={20}  color="#fff8f0" />
-      <pointLight position={[4, -2, 10]}  intensity={14}  color={GOLD}   />
+      {/* Lime key + signal red fill */}
+      <ambientLight intensity={0.18} />
+      <pointLight position={[8, 6, 6]}   intensity={55}  color={GOLD}   />
+      <pointLight position={[-10, -5, 4]} intensity={30}  color={VIOLET} />
+      <pointLight position={[0, 14, 2]}   intensity={18}  color="#f0ffe0" />
+      <pointLight position={[4, -2, 10]}  intensity={12}  color={GOLD}   />
 
       <ParticleField count={count} />
       <GoldOrb />

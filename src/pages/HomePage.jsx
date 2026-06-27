@@ -45,27 +45,38 @@ const StatementSection = () => {
 
   return (
     <section className="relative py-36 px-5 md:px-10 lg:px-16 overflow-hidden">
+      {/* Architectural grid */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(201,169,110,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.025) 1px, transparent 1px)',
+            'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
           backgroundSize: '100px 100px',
           maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
           WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
         }}
         aria-hidden="true"
       />
+      {/* Subtle lime glow */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[40vh] w-[60vw]"
+        style={{ background: 'radial-gradient(ellipse, rgba(204,255,0,.05), transparent 70%)' }}
+        aria-hidden="true"
+      />
       <div ref={ref} className="relative mx-auto text-center" style={{ perspective: '900px' }}>
         <p
-          className="font-mono text-[.62rem] uppercase tracking-[.45em] mb-10"
-          style={{ color: 'rgba(201,169,110,.38)' }}
+          className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
+          style={{ color: 'rgba(204,255,0,.35)' }}
         >
           — Studio Statement
         </p>
         <h2
-          className="font-heading font-black uppercase leading-[.88] tracking-[-0.06em]"
-          style={{ fontSize: 'clamp(3rem, 11vw, 11rem)', color: 'var(--accent3)' }}
+          className="font-heading font-bold uppercase leading-[.88] tracking-[-0.06em]"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 'clamp(3rem, 11vw, 11rem)',
+            color: 'var(--accent3)',
+          }}
           aria-label={WORDS.join(' ')}
         >
           {WORDS.map((word, i) => (
@@ -87,7 +98,7 @@ const StatementSection = () => {
         </h2>
         <p
           className="mx-auto mt-10 max-w-xl text-base leading-8"
-          style={{ color: 'rgba(240,235,227,.4)' }}
+          style={{ color: 'rgba(240,237,230,.38)' }}
         >
           Wij geloven dat elk bedrijf een website verdient die voelt als de toekomst —
           niet als een gratis theme. Maatwerk van A tot Z, zonder tussenlaag.
@@ -120,16 +131,21 @@ const StatItem = ({ value, suffix, prefix, label, index }) => {
   return (
     <div ref={ref} className="flex flex-col items-center gap-3 py-10">
       <p
-        className="font-heading font-black leading-none tabular-nums"
-        style={{ fontSize: 'clamp(2.8rem, 6.5vw, 6rem)', letterSpacing: '-.05em', color: 'var(--accent3)' }}
+        className="font-heading font-bold leading-none tabular-nums"
+        style={{
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+          fontSize: 'clamp(2.8rem, 6.5vw, 6rem)',
+          letterSpacing: '-.05em',
+          color: 'var(--accent3)',
+        }}
       >
-        <span style={{ color: 'rgba(201,169,110,.5)' }}>{prefix}</span>
+        <span style={{ color: 'rgba(204,255,0,.45)' }}>{prefix}</span>
         <span ref={numRef}>{value}</span>
         <span style={{ color: 'var(--accent)', fontSize: '.68em' }}>{suffix}</span>
       </p>
       <p
-        className="font-mono text-[.6rem] uppercase tracking-[.25em] text-center"
-        style={{ color: 'rgba(201,169,110,.35)' }}
+        className="font-mono text-[.6rem] uppercase tracking-[.24em] text-center"
+        style={{ color: 'rgba(204,255,0,.30)' }}
       >
         {label}
       </p>
@@ -160,36 +176,45 @@ const TestimonialFeature = ({ testimonial }) => {
     <section className="relative py-28 px-5 md:px-10 lg:px-16 overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(201,169,110,.04), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(204,255,0,.04), transparent)' }}
         aria-hidden="true"
       />
       <div
         className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.1), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
         aria-hidden="true"
       />
       <figure ref={ref} className="relative mx-auto max-w-4xl text-center">
         <p
-          className="font-mono text-[.62rem] uppercase tracking-[.45em] mb-10"
-          style={{ color: 'rgba(201,169,110,.38)' }}
+          className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
+          style={{ color: 'rgba(204,255,0,.35)' }}
         >
           — Klantreacties
         </p>
         <div
-          className="font-heading font-black leading-none mb-4 select-none pointer-events-none"
-          style={{ fontSize: '9rem', color: 'rgba(201,169,110,.07)', lineHeight: 0.55 }}
+          className="font-heading font-bold leading-none mb-4 select-none pointer-events-none"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: '9rem',
+            color: 'rgba(204,255,0,.06)',
+            lineHeight: 0.55,
+          }}
           aria-hidden="true"
         >
           "
         </div>
         <blockquote
-          className="font-heading font-black uppercase leading-[.9] tracking-[-0.04em]"
-          style={{ fontSize: 'clamp(1.8rem, 4.5vw, 4rem)', color: 'var(--accent3)' }}
+          className="font-heading font-bold uppercase leading-[.9] tracking-[-0.04em]"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 'clamp(1.8rem, 4.5vw, 4rem)',
+            color: 'var(--accent3)',
+          }}
         >
           {testimonial.text}
         </blockquote>
         <figcaption
-          className="mt-8 font-mono text-[.7rem] uppercase tracking-[.28em]"
+          className="mt-8 font-mono text-[.7rem] uppercase tracking-[.26em]"
           style={{ color: 'var(--accent)' }}
         >
           {testimonial.name}{testimonial.company ? ` — ${testimonial.company}` : ''}
@@ -220,12 +245,12 @@ const CtaSection = () => {
     <section className="relative py-36 px-5 md:px-10 lg:px-16 overflow-hidden">
       <div
         className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.28), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.28), transparent)' }}
         aria-hidden="true"
       />
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(201,169,110,.07), transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.07), transparent 60%)' }}
         aria-hidden="true"
       />
 
@@ -233,15 +258,19 @@ const CtaSection = () => {
         <div className="inline-flex items-center gap-2.5 mb-10">
           <span className="status-dot" />
           <span
-            className="font-mono text-[.62rem] uppercase tracking-[.38em]"
-            style={{ color: 'rgba(201,169,110,.45)' }}
+            className="font-mono text-[.62rem] uppercase tracking-[.36em]"
+            style={{ color: 'rgba(204,255,0,.40)' }}
           >
             Beschikbaar voor nieuwe projecten
           </span>
         </div>
         <h2
-          className="font-heading font-black uppercase leading-[.88] tracking-[-0.055em]"
-          style={{ fontSize: 'clamp(3rem, 10vw, 10rem)', color: 'var(--accent3)' }}
+          className="font-heading font-bold uppercase leading-[.88] tracking-[-0.055em]"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 'clamp(3rem, 10vw, 10rem)',
+            color: 'var(--accent3)',
+          }}
         >
           KLAAR OM<br />
           <em
@@ -260,7 +289,7 @@ const CtaSection = () => {
         </h2>
         <p
           className="mx-auto mt-8 max-w-xl text-base leading-8"
-          style={{ color: 'rgba(240,235,227,.4)' }}
+          style={{ color: 'rgba(240,237,230,.38)' }}
         >
           Plan een vrijblijvend gesprek en ontdek hoe wij uw digitale aanwezigheid
           transformeren naar een premium ervaring die klanten nooit vergeten.
@@ -346,17 +375,20 @@ const HomePage = () => {
         <section className="relative">
           <div
             className="absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.12), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
             aria-hidden="true"
           />
           <div
             className="absolute inset-x-0 bottom-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.12), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
             aria-hidden="true"
           />
-          <div className="grid grid-cols-2 lg:grid-cols-4" style={{ borderLeft: '1px solid rgba(201,169,110,.06)' }}>
+          <div
+            className="grid grid-cols-2 lg:grid-cols-4"
+            style={{ borderLeft: '1px solid rgba(204,255,0,.05)' }}
+          >
             {STATS.map((s, i) => (
-              <div key={s.label} style={{ borderRight: '1px solid rgba(201,169,110,.06)' }}>
+              <div key={s.label} style={{ borderRight: '1px solid rgba(204,255,0,.05)' }}>
                 <StatItem {...s} index={i} />
               </div>
             ))}

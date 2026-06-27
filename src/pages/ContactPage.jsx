@@ -54,7 +54,7 @@ const ContactPage = () => {
   };
 
   const inputClass =
-    'w-full rounded-xl border border-[rgba(201,169,110,.16)] bg-[rgba(8,16,30,.7)] px-4 py-3.5 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(201,169,110,.15)]';
+    'w-full rounded-xl border border-[rgba(204,255,0,.12)] bg-[rgba(8,16,30,.7)] px-4 py-3.5 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(204,255,0,.12)]';
 
   const labelClass = 'grid gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--accent)]';
 
@@ -74,7 +74,7 @@ const ContactPage = () => {
           {/* Background glow */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 70% 50% at 30% 30%, rgba(201,169,110,.08), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 70% 50% at 30% 30%, rgba(204,255,0,.06), transparent)' }}
             aria-hidden="true"
           />
 
@@ -140,7 +140,7 @@ const ContactPage = () => {
                 <span className="hud-label">Response tijd</span>
                 <div className="flex items-center gap-2">
                   <span className="status-dot status-dot-cyan" />
-                  <span className="font-mono text-[11px] text-[rgba(138,92,246,.65)]">Reactie binnen 24 uur</span>
+                  <span className="font-mono text-[11px] text-[rgba(204,255,0,.55)]">Reactie binnen 24 uur</span>
                 </div>
               </div>
             </aside>

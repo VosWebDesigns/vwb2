@@ -80,11 +80,34 @@ const ServiceItem = ({ service, index }) => {
   }, [open]);
 
   return (
-    <div ref={rowRef} className="border-b" style={{ borderColor: 'rgba(201,169,110,.10)' }}>
+    <div
+      ref={rowRef}
+      className="group/row relative border-b"
+      style={{ borderColor: 'rgba(204,255,0,.08)' }}
+    >
+      {/* Ghost number in background */}
+      <div
+        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 select-none overflow-hidden"
+        aria-hidden="true"
+        style={{
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+          fontWeight: 700,
+          fontSize: 'clamp(5rem, 12vw, 12rem)',
+          letterSpacing: '-.06em',
+          lineHeight: 1,
+          color: 'transparent',
+          WebkitTextStroke: `1px rgba(204,255,0,${open ? '.10' : '.04'})`,
+          transition: 'all .5s ease',
+          opacity: 0.9,
+        }}
+      >
+        {service.num}
+      </div>
+
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="group flex w-full items-center justify-between py-7 text-left md:py-9 transition-colors"
+        className="flex w-full items-center justify-between py-7 text-left md:py-9 transition-colors"
         onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--accent3)'; }}
         style={{ color: 'var(--accent3)' }}
@@ -93,13 +116,20 @@ const ServiceItem = ({ service, index }) => {
         <div className="flex items-baseline gap-5 md:gap-8">
           <span
             className="font-mono shrink-0"
-            style={{ fontSize: 'clamp(.6rem, 1vw, .75rem)', letterSpacing: '.28em', color: 'rgba(201,169,110,.4)' }}
+            style={{
+              fontSize: 'clamp(.6rem, 1vw, .75rem)',
+              letterSpacing: '.26em',
+              color: 'rgba(204,255,0,.36)',
+            }}
           >
             {service.num}
           </span>
           <span
-            className="font-heading font-black uppercase leading-none tracking-[-0.05em] transition-colors duration-300"
-            style={{ fontSize: 'clamp(1.6rem, 4.5vw, 5rem)' }}
+            className="font-heading font-bold uppercase leading-none tracking-[-0.055em] transition-colors duration-300"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontSize: 'clamp(1.6rem, 4.5vw, 5rem)',
+            }}
           >
             {service.name}
           </span>
@@ -108,32 +138,42 @@ const ServiceItem = ({ service, index }) => {
         {/* Right: tag + arrow */}
         <div className="flex items-center gap-4 shrink-0 ml-4">
           <span
-            className="hidden font-mono text-[.6rem] uppercase tracking-[.22em] lg:block"
-            style={{ color: 'rgba(201,169,110,.35)' }}
+            className="hidden font-mono text-[.6rem] uppercase tracking-[.20em] lg:block"
+            style={{ color: 'rgba(204,255,0,.30)' }}
           >
             {service.short}
           </span>
-          <ArrowUpRight
-            size={20}
-            className="transition-all duration-400"
+          <div
+            className="grid h-10 w-10 place-items-center rounded-full transition-all duration-400"
             style={{
-              color: 'var(--accent)',
-              transform: open ? 'rotate(135deg)' : 'rotate(0deg)',
+              border: `1px solid ${open ? 'var(--accent)' : 'rgba(204,255,0,.18)'}`,
+              background: open ? 'var(--accent)' : 'transparent',
             }}
-          />
+          >
+            <ArrowUpRight
+              size={17}
+              style={{
+                color: open ? '#060608' : 'var(--accent)',
+                transform: open ? 'rotate(135deg)' : 'rotate(0deg)',
+                transition: 'transform .4s ease',
+              }}
+            />
+          </div>
         </div>
       </button>
 
       {/* Expandable description */}
       <div ref={descRef} style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
-        <div className="pb-8 pl-[calc(clamp(.6rem,1vw,.75rem)+1.25rem+2rem)] md:pl-[calc(clamp(.6rem,1vw,.75rem)+2rem+2.5rem)] flex items-start justify-between gap-8">
+        <div
+          className="pb-8 pl-[calc(clamp(.6rem,1vw,.75rem)+1.25rem+2rem)] md:pl-[calc(clamp(.6rem,1vw,.75rem)+2rem+2.5rem)] flex items-start justify-between gap-8"
+        >
           <div className="max-w-2xl">
-            <p className="text-base leading-[1.85]" style={{ color: 'rgba(240,235,227,.5)' }}>
+            <p className="text-base leading-[1.85]" style={{ color: 'rgba(240,237,230,.46)' }}>
               {service.desc}
             </p>
             <Link
               to={service.link}
-              className="inline-flex items-center gap-2 mt-6 font-mono text-[.72rem] uppercase tracking-[.2em] transition-colors"
+              className="inline-flex items-center gap-2 mt-6 font-mono text-[.72rem] uppercase tracking-[.18em] transition-colors"
               style={{ color: 'var(--accent)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent3)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
@@ -142,8 +182,8 @@ const ServiceItem = ({ service, index }) => {
             </Link>
           </div>
           <span
-            className="hidden shrink-0 font-mono text-[.6rem] uppercase tracking-[.22em] lg:block"
-            style={{ color: 'rgba(201,169,110,.3)' }}
+            className="hidden shrink-0 font-mono text-[.6rem] uppercase tracking-[.20em] lg:block"
+            style={{ color: 'rgba(204,255,0,.25)' }}
           >
             {service.short}
           </span>
@@ -175,14 +215,18 @@ const ServicesSection = () => {
       <div ref={headRef} className="mb-16 flex items-end justify-between">
         <div>
           <p
-            className="font-mono text-[.65rem] uppercase tracking-[.4em] mb-4"
+            className="font-mono text-[.65rem] uppercase tracking-[.38em] mb-4"
             style={{ color: 'var(--accent)' }}
           >
             — Wat wij bouwen
           </p>
           <h2
-            className="font-heading font-black uppercase leading-none tracking-[-0.055em]"
-            style={{ fontSize: 'clamp(2.8rem, 7vw, 7.5rem)', color: 'var(--accent3)' }}
+            className="font-heading font-bold uppercase leading-none tracking-[-0.055em]"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontSize: 'clamp(2.8rem, 7vw, 7.5rem)',
+              color: 'var(--accent3)',
+            }}
           >
             ONZE<br />
             <em
@@ -201,20 +245,20 @@ const ServicesSection = () => {
         </div>
         <Link
           to="/diensten"
-          className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.24em] pb-2 transition-colors"
+          className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.22em] pb-2 transition-colors"
           style={{
-            color: 'rgba(201,169,110,.4)',
-            borderBottom: '1px solid rgba(201,169,110,.2)',
+            color: 'rgba(204,255,0,.36)',
+            borderBottom: '1px solid rgba(204,255,0,.16)',
           }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(201,169,110,.4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(204,255,0,.36)'; }}
         >
           Alle diensten <ArrowUpRight size={12} />
         </Link>
       </div>
 
       {/* Top divider */}
-      <div style={{ height: 1, background: 'rgba(201,169,110,.10)', marginBottom: 0 }} />
+      <div style={{ height: 1, background: 'rgba(204,255,0,.08)', marginBottom: 0 }} />
 
       {/* Service list */}
       {SERVICES.map((s, i) => (

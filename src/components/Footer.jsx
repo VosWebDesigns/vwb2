@@ -96,23 +96,32 @@ const Footer = () => {
   ].filter(({ href }) => href?.trim());
 
   return (
-    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#04040a] px-5 py-14 md:px-8 md:py-16">
+    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#040406] px-5 py-14 md:px-8 md:py-16">
       {/* Top glow line */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--accent)] to-transparent opacity-55" />
-
-      {/* Background sci-fi grid (very subtle) */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-20"
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.45), rgba(255,63,0,.20), transparent)' }}
+      />
+
+      {/* Background architectural grid */}
+      <div
+        className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: 'linear-gradient(rgba(201,169,110,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.04) 1px, transparent 1px)',
-          backgroundSize: '64px 64px',
-          maskImage: 'radial-gradient(ellipse at 50% 0%, black 30%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, black 30%, transparent 80%)',
+          backgroundImage: 'linear-gradient(rgba(204,255,0,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.03) 1px, transparent 1px)',
+          backgroundSize: '80px 80px',
+          maskImage: 'radial-gradient(ellipse at 50% 0%, black 20%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, black 20%, transparent 75%)',
+          opacity: 0.6,
         }}
       />
 
-      {/* Radial glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(201,169,110,.06),transparent)]" />
+      {/* Radial glows */}
+      <div className="pointer-events-none absolute inset-0"
+        style={{ background: 'radial-gradient(ellipse 55% 35% at 50% 0%, rgba(204,255,0,.05), transparent)' }}
+      />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-[30vh] w-[30vw]"
+        style={{ background: 'radial-gradient(ellipse at 80% 100%, rgba(255,63,0,.04), transparent)' }}
+      />
 
       <div className="relative mx-auto max-w-7xl">
         {/* Main grid */}
@@ -124,7 +133,13 @@ const Footer = () => {
               <span className="status-dot" />
               <p className="eyebrow">{siteName}</p>
             </div>
-            <h2 className="max-w-3xl font-heading text-[clamp(1.6rem,3.5vw,3rem)] font-black uppercase leading-[.9] tracking-[-.06em]">
+            <h2
+              className="max-w-3xl font-heading font-bold uppercase leading-[.9] tracking-[-.06em]"
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontSize: 'clamp(1.6rem, 3.5vw, 3rem)',
+              }}
+            >
               Websites met filmische focus en meetbare flow.
             </h2>
             {settings?.site_description && (
@@ -137,44 +152,68 @@ const Footer = () => {
               <span className="hud-label">Systeem status</span>
               <div className="flex items-center gap-2">
                 <span className="status-dot" />
-                <span className="font-mono text-[11px] text-[rgba(201,169,110,.55)]">Alle systemen operationeel</span>
+                <span className="font-mono text-[11px]" style={{ color: 'rgba(204,255,0,.50)' }}>
+                  Alle systemen operationeel
+                </span>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="grid content-start gap-2.5" aria-label="Navigatie">
-            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Navigatie</span>
+            <span
+              className="mb-1 text-sm font-bold uppercase tracking-[.16em]"
+              style={{ color: 'var(--accent)' }}
+            >
+              Navigatie
+            </span>
             {quickNav.map(([href, label]) => (
               <Link
                 key={href}
                 to={href}
-                className="group flex items-center justify-between border-b border-white/8 py-2.5 text-slate-300 transition hover:text-white"
+                className="group flex items-center justify-between py-2.5 text-slate-300 transition hover:text-white"
+                style={{ borderBottom: '1px solid rgba(255,255,255,.06)' }}
               >
                 {label}
-                <ArrowUpRight size={15} className="opacity-25 transition group-hover:opacity-100" />
+                <ArrowUpRight size={15} className="opacity-20 transition group-hover:opacity-100" style={{ color: 'var(--accent)' }} />
               </Link>
             ))}
           </nav>
 
           {/* Contact */}
           <div className="grid content-start gap-2.5">
-            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Contact</span>
+            <span
+              className="mb-1 text-sm font-bold uppercase tracking-[.16em]"
+              style={{ color: 'var(--accent)' }}
+            >
+              Contact
+            </span>
             {contactEmail && (
-              <a href={`mailto:${contactEmail}`} className="group flex items-center gap-3 border-b border-white/8 py-2.5 text-slate-300 transition hover:text-white">
-                <Mail size={15} className="shrink-0 text-[color:var(--accent)]" />
+              <a
+                href={`mailto:${contactEmail}`}
+                className="group flex items-center gap-3 py-2.5 text-slate-300 transition hover:text-white"
+                style={{ borderBottom: '1px solid rgba(255,255,255,.06)' }}
+              >
+                <Mail size={15} className="shrink-0" style={{ color: 'var(--accent)' }} />
                 <span className="truncate">{contactEmail}</span>
               </a>
             )}
             {contactPhone && (
-              <a href={`tel:${telHref}`} className="group flex items-center gap-3 border-b border-white/8 py-2.5 text-slate-300 transition hover:text-white">
-                <Phone size={15} className="shrink-0 text-[color:var(--accent)]" />
+              <a
+                href={`tel:${telHref}`}
+                className="group flex items-center gap-3 py-2.5 text-slate-300 transition hover:text-white"
+                style={{ borderBottom: '1px solid rgba(255,255,255,.06)' }}
+              >
+                <Phone size={15} className="shrink-0" style={{ color: 'var(--accent)' }} />
                 <span>{contactPhone}</span>
               </a>
             )}
             {location && (
-              <p className="flex items-start gap-3 border-b border-white/8 py-2.5 text-slate-300">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-[color:var(--accent)]" />
+              <p
+                className="flex items-start gap-3 py-2.5 text-slate-300"
+                style={{ borderBottom: '1px solid rgba(255,255,255,.06)' }}
+              >
+                <MapPin size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
                 <span>{location}</span>
               </p>
             )}
@@ -183,7 +222,19 @@ const Footer = () => {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-[color:var(--accent)]/35 px-4 py-2 text-sm font-bold text-[color:var(--accent)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-black"
+                className="mt-3 inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition"
+                style={{
+                  border: '1px solid rgba(204,255,0,.28)',
+                  color: 'var(--accent)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--accent)';
+                  e.currentTarget.style.color = '#060608';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--accent)';
+                }}
                 aria-label="Stuur Vos Web Designs een WhatsApp bericht"
               >
                 <MessageCircle size={15} />
@@ -197,8 +248,19 @@ const Footer = () => {
 
           {/* Newsletter + social */}
           <div className="grid content-start gap-7">
-            <div className="cyber-corner rounded-3xl border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/4 p-5 shadow-[0_20px_80px_rgba(56,189,248,.07)]">
-              <span className="mb-1 block text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Nieuwsbrief</span>
+            <div
+              className="cyber-corner rounded-3xl p-5"
+              style={{
+                border: '1px solid rgba(204,255,0,.14)',
+                background: 'rgba(204,255,0,.03)',
+              }}
+            >
+              <span
+                className="mb-1 block text-sm font-bold uppercase tracking-[.16em]"
+                style={{ color: 'var(--accent)' }}
+              >
+                Nieuwsbrief
+              </span>
               <p className="mt-2 text-sm leading-6 text-slate-400">1× per maand tips, cases en updates.</p>
               <form onSubmit={handleNewsletterSubmit} className="mt-4 grid gap-3">
                 <label className="sr-only" htmlFor="newsletter-email">E-mailadres</label>
@@ -209,7 +271,13 @@ const Footer = () => {
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="uw@email.nl"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="min-h-11 rounded-2xl border border-white/8 bg-[#08080e] px-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/18 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="min-h-11 rounded-2xl border px-4 text-sm text-white outline-none transition placeholder:text-slate-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  style={{
+                    borderColor: 'rgba(255,255,255,.08)',
+                    background: '#08080c',
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)'; }}
                 />
                 <input
                   type="text"
@@ -224,7 +292,13 @@ const Footer = () => {
                 <button
                   type="submit"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 text-sm font-black text-[#06060c] transition hover:shadow-[0_0_30px_rgba(201,169,110,.35)] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-black text-[#060608] transition disabled:cursor-not-allowed disabled:opacity-70"
+                  style={{
+                    background: 'var(--accent)',
+                    boxShadow: '0 0 0 rgba(204,255,0,0)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 30px rgba(204,255,0,.30)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 rgba(204,255,0,0)'; }}
                 >
                   <Send size={15} />
                   {newsletterState.status === 'loading' ? 'Versturen…' : 'Inschrijven'}
@@ -237,13 +311,20 @@ const Footer = () => {
               )}
               <p className="mt-3 text-xs leading-5 text-slate-500">
                 Afmelden kan altijd. Lees ons{' '}
-                <Link to="/privacy" className="text-[color:var(--accent)] underline-offset-4 hover:underline">privacybeleid</Link>.
+                <Link to="/privacy" style={{ color: 'var(--accent)' }} className="underline-offset-4 hover:underline">
+                  privacybeleid
+                </Link>.
               </p>
             </div>
 
             {socialLinks.length > 0 && (
               <div className="grid gap-3">
-                <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Volg ons</span>
+                <span
+                  className="text-sm font-bold uppercase tracking-[.16em]"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  Volg ons
+                </span>
                 <div className="flex flex-wrap gap-2.5">
                   {socialLinks.map(({ label, href, icon: Icon }) => (
                     <a
@@ -252,7 +333,18 @@ const Footer = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Volg ${siteName} op ${label}`}
-                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-white/10 px-4 text-sm font-bold text-slate-300 transition hover:border-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-black"
+                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold text-slate-300 transition"
+                      style={{ border: '1px solid rgba(255,255,255,.08)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--accent)';
+                        e.currentTarget.style.background = 'var(--accent)';
+                        e.currentTarget.style.color = '#060608';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)';
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = 'rgb(203 213 225)';
+                      }}
                     >
                       {Icon ? <Icon size={17} aria-hidden="true" /> : <span aria-hidden="true">TikTok</span>}
                       <span className="sr-only md:not-sr-only">{label}</span>
@@ -265,7 +357,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 flex flex-col gap-4 border-t border-[color:var(--stroke)] pt-5 text-xs uppercase tracking-[.16em] text-slate-500 md:mt-16 md:flex-row md:items-center md:justify-between">
+        <div
+          className="mt-14 flex flex-col gap-4 pt-5 text-xs uppercase tracking-[.14em] text-slate-500 md:mt-16 md:flex-row md:items-center md:justify-between"
+          style={{ borderTop: '1px solid var(--stroke)' }}
+        >
           <p>© {currentYear} {siteName}. Alle rechten voorbehouden.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             <Link to="/privacy"     className="transition hover:text-white">Privacybeleid</Link>

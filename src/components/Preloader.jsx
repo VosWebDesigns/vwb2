@@ -45,12 +45,15 @@ const Preloader = ({ onComplete }) => {
     <div
       ref={ref}
       className="fixed inset-0 z-[10000] flex flex-col items-center justify-center"
-      style={{ background: '#06060c' }}
+      style={{ background: '#060608' }}
     >
       {/* Brand mark */}
       <p
-        className="font-heading font-black uppercase tracking-[.35em] text-[var(--accent3)]"
-        style={{ fontSize: 'clamp(1rem, 3vw, 1.6rem)' }}
+        className="font-heading font-bold uppercase tracking-[.32em] text-[var(--accent3)]"
+        style={{
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+          fontSize: 'clamp(1rem, 3vw, 1.6rem)',
+        }}
       >
         Vos Web Designs
       </p>
@@ -58,8 +61,13 @@ const Preloader = ({ onComplete }) => {
       {/* Progress number */}
       <p
         ref={numRef}
-        className="mt-10 font-mono text-[var(--accent)] tabular-nums"
-        style={{ fontSize: 'clamp(4rem, 12vw, 10rem)', letterSpacing: '-.04em', lineHeight: 1 }}
+        className="mt-10 font-mono tabular-nums"
+        style={{
+          color: 'var(--accent)',
+          fontSize: 'clamp(4rem, 12vw, 10rem)',
+          letterSpacing: '-.04em',
+          lineHeight: 1,
+        }}
       >
         000
       </p>
@@ -67,7 +75,7 @@ const Preloader = ({ onComplete }) => {
       {/* Bar */}
       <div
         className="mt-10 w-[min(400px,80vw)] overflow-hidden"
-        style={{ height: 1, background: 'rgba(201,169,110,.15)' }}
+        style={{ height: 1, background: 'rgba(204,255,0,.12)' }}
       >
         <div
           ref={barRef}
@@ -78,8 +86,8 @@ const Preloader = ({ onComplete }) => {
 
       {/* Sub */}
       <p
-        className="mt-5 font-mono text-[.6rem] uppercase tracking-[.4em]"
-        style={{ color: 'rgba(201,169,110,.3)' }}
+        className="mt-5 font-mono text-[.6rem] uppercase tracking-[.38em]"
+        style={{ color: 'rgba(204,255,0,.28)' }}
       >
         Premium web studio
       </p>

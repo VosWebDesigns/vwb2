@@ -9,7 +9,6 @@ const Cursor = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    /* Only on pointer devices */
     if (typeof window === 'undefined' || window.matchMedia('(pointer: coarse)').matches) return;
 
     const dot  = dotRef.current;
@@ -72,20 +71,20 @@ const Cursor = () => {
 
   return (
     <div style={{ opacity: visible ? 1 : 0 }} className="transition-opacity duration-300">
-      {/* Dot — follows cursor directly */}
+      {/* Dot */}
       <div
         ref={dotRef}
         className="pointer-events-none fixed left-0 top-0 z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{ width: 6, height: 6, background: 'var(--accent)' }}
       />
-      {/* Ring — follows with lerp */}
+      {/* Ring */}
       <div
         ref={ringRef}
         className="pointer-events-none fixed left-0 top-0 z-[9998] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           width: 36,
           height: 36,
-          border: '1px solid rgba(201,169,110,.45)',
+          border: '1px solid rgba(204,255,0,.42)',
           mixBlendMode: 'difference',
         }}
       />

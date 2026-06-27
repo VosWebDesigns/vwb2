@@ -49,7 +49,7 @@ const ProjectItem = ({ project, index }) => {
       className="group relative overflow-hidden"
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      style={{ borderRadius: 16 }}
+      style={{ borderRadius: 14 }}
     >
       <Link to={`/portfolio/${project.id}`} className="block">
         {/* Image */}
@@ -66,28 +66,28 @@ const ProjectItem = ({ project, index }) => {
             <div
               ref={imgRef}
               className="h-full w-full flex items-center justify-center"
-              style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(201,169,110,.12), rgba(6,6,12,.95))' }}
+              style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(204,255,0,.10), rgba(6,6,8,.95))' }}
             >
               <span
                 className="font-mono text-xs uppercase tracking-widest"
-                style={{ color: 'rgba(201,169,110,.3)' }}
+                style={{ color: 'rgba(204,255,0,.28)' }}
               >
                 {project.title}
               </span>
             </div>
           )}
 
-          {/* Overlay */}
+          {/* Overlay gradient */}
           <div
             className="absolute inset-0 transition-opacity duration-500"
             style={{
-              background: 'linear-gradient(to bottom, transparent 35%, rgba(6,6,12,.85) 100%)',
-              opacity: hovered ? 1 : 0.6,
+              background: 'linear-gradient(to bottom, transparent 35%, rgba(6,6,8,.88) 100%)',
+              opacity: hovered ? 1 : 0.55,
             }}
           />
         </div>
 
-        {/* Info overlay */}
+        {/* Info overlay on hover */}
         <div
           ref={infoRef}
           className="absolute bottom-0 left-0 right-0 p-6 md:p-8"
@@ -96,14 +96,15 @@ const ProjectItem = ({ project, index }) => {
           <div className="flex items-end justify-between">
             <div>
               <p
-                className="font-mono text-[.6rem] uppercase tracking-[.28em] mb-2"
-                style={{ color: 'rgba(201,169,110,.55)' }}
+                className="font-mono text-[.6rem] uppercase tracking-[.26em] mb-2"
+                style={{ color: 'rgba(204,255,0,.55)' }}
               >
                 {project.categories?.name || 'Web Design'} — {new Date(project.created_at).getFullYear()}
               </p>
               <h3
-                className="font-heading font-black uppercase leading-none"
+                className="font-heading font-bold uppercase leading-none"
                 style={{
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
                   fontSize: 'clamp(1.4rem, 3vw, 3rem)',
                   letterSpacing: '-.04em',
                   color: 'var(--accent3)',
@@ -114,7 +115,7 @@ const ProjectItem = ({ project, index }) => {
               {project.short_description && (
                 <p
                   className="mt-2 text-sm leading-relaxed max-w-lg line-clamp-2"
-                  style={{ color: 'rgba(240,235,227,.5)' }}
+                  style={{ color: 'rgba(240,237,230,.46)' }}
                 >
                   {project.short_description}
                 </p>
@@ -123,25 +124,23 @@ const ProjectItem = ({ project, index }) => {
             <div
               className="ml-4 shrink-0 grid h-12 w-12 place-items-center rounded-full transition-all duration-400"
               style={{
-                border: '1px solid rgba(201,169,110,.4)',
+                border: '1px solid rgba(204,255,0,.4)',
                 background: hovered ? 'var(--accent)' : 'transparent',
               }}
             >
               <ArrowUpRight
                 size={18}
-                style={{ color: hovered ? '#06060c' : 'var(--accent)' }}
+                style={{ color: hovered ? '#060608' : 'var(--accent)' }}
               />
             </div>
           </div>
         </div>
 
         {/* Index number (always visible) */}
-        <div
-          className="absolute top-5 left-6"
-        >
+        <div className="absolute top-5 left-6">
           <span
-            className="font-mono text-[.62rem] uppercase tracking-[.3em]"
-            style={{ color: 'rgba(201,169,110,.35)' }}
+            className="font-mono text-[.62rem] uppercase tracking-[.28em]"
+            style={{ color: 'rgba(204,255,0,.32)' }}
           >
             {String(index + 1).padStart(2, '0')}
           </span>
@@ -171,10 +170,10 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
 
   return (
     <section className="relative py-28 px-5 md:px-10 lg:px-16">
-      {/* Faint gold glow */}
+      {/* Faint lime glow */}
       <div
         className="pointer-events-none absolute right-0 top-0 h-[60vh] w-[50vw]"
-        style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(201,169,110,.05), transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(204,255,0,.04), transparent 60%)' }}
         aria-hidden="true"
       />
 
@@ -182,14 +181,18 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
       <div ref={headRef} className="mb-16 flex items-end justify-between">
         <div>
           <p
-            className="font-mono text-[.65rem] uppercase tracking-[.4em] mb-4"
+            className="font-mono text-[.65rem] uppercase tracking-[.38em] mb-4"
             style={{ color: 'var(--accent)' }}
           >
             — Geselecteerd werk
           </p>
           <h2
-            className="font-heading font-black uppercase leading-none tracking-[-0.055em]"
-            style={{ fontSize: 'clamp(2.8rem, 7vw, 7.5rem)', color: 'var(--accent3)' }}
+            className="font-heading font-bold uppercase leading-none tracking-[-0.055em]"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontSize: 'clamp(2.8rem, 7vw, 7.5rem)',
+              color: 'var(--accent3)',
+            }}
           >
             RECENTE<br />
             <em
@@ -209,17 +212,16 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
 
         <Link
           to="/portfolio"
-          className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.24em] pb-2 transition-colors"
-          style={{ color: 'rgba(201,169,110,.4)', borderBottom: '1px solid rgba(201,169,110,.2)' }}
+          className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.22em] pb-2 transition-colors"
+          style={{ color: 'rgba(204,255,0,.36)', borderBottom: '1px solid rgba(204,255,0,.16)' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(201,169,110,.4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(204,255,0,.36)'; }}
         >
           Volledig portfolio <ArrowUpRight size={12} />
         </Link>
       </div>
 
       {loading ? (
-        /* Skeleton */
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           {[1, 2, 3].map((i) => (
             <div
@@ -227,7 +229,7 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
               className="animate-pulse rounded-2xl"
               style={{
                 aspectRatio: i === 1 ? '16/9' : '4/3',
-                background: 'rgba(201,169,110,.04)',
+                background: 'rgba(204,255,0,.03)',
                 gridColumn: i === 1 ? '1 / -1' : 'auto',
               }}
             />
@@ -246,7 +248,7 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
         </div>
       )}
 
-      {/* Mobile "all projects" link */}
+      {/* Mobile link */}
       <div className="mt-10 lg:hidden">
         <Link to="/portfolio" className="ghost-button">
           Volledig portfolio <ArrowUpRight size={15} />
