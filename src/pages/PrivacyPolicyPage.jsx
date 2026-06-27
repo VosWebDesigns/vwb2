@@ -25,8 +25,11 @@ const PrivacyPolicyPage = () => {
       <main ref={rootRef} className="cinema-bg min-h-screen overflow-hidden pt-24">
         <section className="cinematic-section">
           <div className="cinematic-container relative z-10 max-w-4xl">
-            <p data-reveal className="section-eyebrow">Juridisch</p>
-            <h1 data-reveal className="display-xl mt-4 text-[clamp(2.8rem,8vw,6rem)]">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="status-dot" />
+              <p data-reveal className="section-eyebrow">Juridisch</p>
+            </div>
+            <h1 data-reveal className="display-xl mt-0 text-[clamp(2.8rem,8vw,6rem)]">
               <span className="gradient-text-cyan">Privacybeleid</span>
             </h1>
 

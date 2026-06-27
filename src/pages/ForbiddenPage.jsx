@@ -14,7 +14,11 @@ const ForbiddenPage = () => {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
-      <section className="glass-card relative z-10 max-w-lg rounded-3xl p-8 md:p-10">
+      <section className="glass-card cyber-corner relative z-10 max-w-lg rounded-3xl p-8 md:p-10">
+        <div className="flex items-center justify-center gap-2.5 mb-6">
+          <span className="status-dot" style={{ background: 'rgba(248,113,113,1)', boxShadow: '0 0 8px rgba(248,113,113,.6)' }} />
+          <span className="hud-label text-red-400">Toegang geweigerd</span>
+        </div>
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-red-400/30 bg-red-500/10 text-red-300">
           <ShieldAlert size={32} />
         </div>
