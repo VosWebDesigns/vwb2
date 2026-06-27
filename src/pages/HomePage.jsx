@@ -97,38 +97,45 @@ const StatementSection = () => {
   );
 };
 
-/* ── Animated stat counter ── */
+/* ── Animated stat counter — giant numbers ── */
 const StatItem = ({ value, suffix, prefix, label, index }) => {
   const ref    = useRef(null);
   const numRef = useRef(null);
+  const wrapRef = useRef(null);
 
   useEffect(() => {
     const el    = ref.current;
     const numEl = numRef.current;
+    const wrap  = wrapRef.current;
     if (!el || !numEl) return;
     const ctx = gsap.context(() => {
-      gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } })
-        .fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, delay: index * 0.1, ease: 'power3.out' })
-        .fromTo({ n: 0 }, { n: 0 }, {
-          n: value, duration: 1.4, ease: 'power2.out',
-          onUpdate: function () { numEl.textContent = Math.round(this.targets()[0].n); },
-        }, '<0.3');
+      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } });
+      if (wrap) {
+        gsap.set(wrap, { clipPath: 'inset(0 100% 0 0)' });
+        tl.to(wrap, { clipPath: 'inset(0 0% 0 0)', duration: 1.0, ease: 'power4.out', delay: index * 0.1 });
+      }
+      tl.fromTo({ n: 0 }, { n: 0 }, {
+        n: value, duration: 1.6, ease: 'power2.out',
+        onUpdate: function () { numEl.textContent = Math.round(this.targets()[0].n); },
+      }, index === 0 ? '<0.2' : '<0');
     });
     return () => ctx.revert();
   }, [index, value]);
 
   return (
-    <div ref={ref} className="flex flex-col items-center gap-3 py-10">
+    <div ref={ref} className="flex flex-col items-center gap-2 py-10 md:py-14 overflow-hidden">
+      <div ref={wrapRef} style={{ clipPath: 'inset(0 0% 0 0)' }}>
+        <p
+          className="font-heading font-black leading-none tabular-nums"
+          style={{ fontSize: 'clamp(4rem, 11vw, 11rem)', letterSpacing: '-.06em', color: 'var(--accent3)' }}
+        >
+          <span style={{ color: 'rgba(201,169,110,.5)', fontSize: '.7em' }}>{prefix}</span>
+          <span ref={numRef}>{value}</span>
+          <span style={{ color: 'var(--accent)', fontSize: '.55em' }}>{suffix}</span>
+        </p>
+      </div>
       <p
-        className="font-heading font-black leading-none tabular-nums"
-        style={{ fontSize: 'clamp(2.8rem, 6.5vw, 6rem)', letterSpacing: '-.05em', color: 'var(--accent3)' }}
-      >
-        <span style={{ color: 'rgba(201,169,110,.5)' }}>{prefix}</span>
-        <span ref={numRef}>{value}</span>
-        <span style={{ color: 'var(--accent)', fontSize: '.68em' }}>{suffix}</span>
-      </p>
-      <p
-        className="font-mono text-[.6rem] uppercase tracking-[.25em] text-center"
+        className="font-mono text-[.55rem] uppercase tracking-[.28em] text-center px-2"
         style={{ color: 'rgba(201,169,110,.35)' }}
       >
         {label}
@@ -199,9 +206,13 @@ const TestimonialFeature = ({ testimonial }) => {
   );
 };
 
-/* ── Full-width CTA ── */
+/* ── Full-width CTA with animated gradient ── */
+const CTA_WORDS = ['jouw', 'samen', 'vandaag'];
+
 const CtaSection = () => {
-  const ref = useRef(null);
+  const ref      = useRef(null);
+  const tickerRef = useRef(null);
+  const [wordIdx, setWordIdx] = useState(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -216,16 +227,24 @@ const CtaSection = () => {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => setWordIdx((i) => (i + 1) % CTA_WORDS.length), 2200);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <section className="relative py-36 px-5 md:px-10 lg:px-16 overflow-hidden">
+      {/* Animated gradient background */}
       <div
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.28), transparent)' }}
+        className="pointer-events-none absolute inset-0 animate-[gradient-drift_8s_ease_infinite]"
+        style={{
+          background: 'radial-gradient(ellipse 80% 55% at 50% 50%, rgba(201,169,110,.06) 0%, rgba(138,92,246,.04) 50%, transparent 100%)',
+        }}
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(201,169,110,.07), transparent 60%)' }}
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.28), transparent)' }}
         aria-hidden="true"
       />
 
@@ -244,7 +263,8 @@ const CtaSection = () => {
           style={{ fontSize: 'clamp(3rem, 10vw, 10rem)', color: 'var(--accent3)' }}
         >
           KLAAR OM<br />
-          <em
+          <span
+            className="inline-block overflow-hidden align-bottom"
             style={{
               fontFamily: '"Cormorant Garamond", serif',
               fontStyle: 'italic',
@@ -252,10 +272,19 @@ const CtaSection = () => {
               color: 'var(--accent)',
               fontSize: '1.06em',
               letterSpacing: '-.02em',
+              height: '1.05em',
+              verticalAlign: 'bottom',
             }}
           >
-            samen
-          </em>
+            <span
+              className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{ transform: `translateY(-${wordIdx * 100}%)` }}
+            >
+              {CTA_WORDS.map((w) => (
+                <span key={w} className="block">{w}</span>
+              ))}
+            </span>
+          </span>
           {' '}TE BOUWEN?
         </h2>
         <p
@@ -266,7 +295,7 @@ const CtaSection = () => {
           transformeren naar een premium ervaring die klanten nooit vergeten.
         </p>
         <div className="mt-12 flex flex-wrap gap-4 justify-center">
-          <Link to="/contact" className="glow-button">
+          <Link to="/contact" className="glow-button" data-magnetic="">
             Start een project <ArrowRight size={16} />
           </Link>
           <Link to="/portfolio" className="ghost-button hidden md:inline-flex">

@@ -1,89 +1,247 @@
 import React, { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Stars, MeshDistortMaterial, Sphere } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
+import { Float, Stars } from '@react-three/drei';
+import { EffectComposer, Bloom, Vignette, ChromaticAberration, Noise } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 
 const GOLD   = '#c9a96e';
 const VIOLET = '#8a5cf6';
 const CREAM  = '#f0ebe3';
+const DEEP   = '#0d0820';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── Morphing gold orb at center ── */
-function GoldOrb() {
-  const meshRef = useRef();
+/* ── Data Lattice — neural network node-edge visualization ── */
+function DataLattice({ count = 60 }) {
+  const nodesRef   = useRef();
+  const edgesRef   = useRef();
+  const pulseRef   = useRef([]);
+  const timeRef    = useRef(0);
 
-  useFrame((state) => {
-    if (!meshRef.current) return;
-    meshRef.current.rotation.z += 0.003;
-    meshRef.current.rotation.y += 0.006;
+  const { nodePositions, edgePositions, edgeColors } = useMemo(() => {
+    const positions = [];
+    const spread = 12;
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi   = Math.acos(Math.random() * 2 - 1);
+      const r     = spread * (0.3 + Math.random() * 0.7);
+      positions.push([
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.sin(phi) * Math.sin(theta) * 0.6,
+        r * Math.cos(phi) - 14,
+      ]);
+    }
+
+    const maxEdgeDist = 6.5;
+    const ep = [];
+    const ec = [];
+    const gC = new THREE.Color(GOLD);
+    const vC = new THREE.Color(VIOLET);
+
+    for (let i = 0; i < positions.length; i++) {
+      for (let j = i + 1; j < positions.length; j++) {
+        const dx = positions[i][0] - positions[j][0];
+        const dy = positions[i][1] - positions[j][1];
+        const dz = positions[i][2] - positions[j][2];
+        const d  = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (d < maxEdgeDist) {
+          ep.push(...positions[i], ...positions[j]);
+          const c = Math.random() > 0.5 ? gC : vC;
+          ec.push(c.r, c.g, c.b, c.r, c.g, c.b);
+        }
+      }
+    }
+
+    return {
+      nodePositions: new Float32Array(positions.flat()),
+      edgePositions:  new Float32Array(ep),
+      edgeColors:     new Float32Array(ec),
+    };
+  }, [count]);
+
+  useFrame((state, dt) => {
+    if (prefersReducedMotion) return;
+    timeRef.current += dt;
+    const t = timeRef.current;
+    if (nodesRef.current) {
+      nodesRef.current.rotation.y += dt * 0.018;
+      nodesRef.current.rotation.x = Math.sin(t * 0.12) * 0.06;
+    }
+    if (edgesRef.current) {
+      edgesRef.current.rotation.y += dt * 0.018;
+      edgesRef.current.rotation.x = Math.sin(t * 0.12) * 0.06;
+      if (edgesRef.current.material) {
+        edgesRef.current.material.opacity = 0.18 + Math.sin(t * 0.4) * 0.06;
+      }
+    }
   });
 
   return (
-    <Float speed={0.4} rotationIntensity={0.08} floatIntensity={0.28}>
-      <Sphere ref={meshRef} args={[2.2, 64, 64]} position={[0.5, 0.2, -14]}>
-        <MeshDistortMaterial
-          color={GOLD}
-          emissive={GOLD}
-          emissiveIntensity={0.18}
-          distort={0.32}
-          speed={1.8}
-          roughness={0.35}
-          metalness={0.92}
+    <group>
+      {/* Edge lines */}
+      <lineSegments ref={edgesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={edgePositions.length / 3}
+            array={edgePositions}
+            itemSize={3}
+          />
+          <bufferAttribute
+            attach="attributes-color"
+            count={edgeColors.length / 3}
+            array={edgeColors}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial
+          vertexColors
           transparent
-          opacity={0.85}
+          opacity={0.20}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
         />
-      </Sphere>
-    </Float>
-  );
-}
+      </lineSegments>
 
-/* ── Orbital rings around the orb ── */
-function OrbitalRings() {
-  const r1 = useRef();
-  const r2 = useRef();
-  const r3 = useRef();
-
-  useFrame((_, dt) => {
-    if (r1.current) r1.current.rotation.z += dt * 0.18;
-    if (r2.current) r2.current.rotation.x += dt * 0.13;
-    if (r3.current) r3.current.rotation.y += dt * 0.10;
-  });
-
-  return (
-    <group position={[0.5, 0.2, -14]}>
-      <mesh ref={r1} rotation={[Math.PI / 3.5, 0, 0]}>
-        <torusGeometry args={[3.6, 0.018, 8, 120]} />
-        <meshBasicMaterial color={GOLD} transparent opacity={0.28} blending={THREE.AdditiveBlending} />
-      </mesh>
-      <mesh ref={r2} rotation={[0, Math.PI / 5, Math.PI / 4]}>
-        <torusGeometry args={[4.4, 0.012, 8, 100]} />
-        <meshBasicMaterial color={VIOLET} transparent opacity={0.18} blending={THREE.AdditiveBlending} />
-      </mesh>
-      <mesh ref={r3} rotation={[Math.PI / 2, 0.4, 0]}>
-        <torusGeometry args={[2.8, 0.009, 8, 80]} />
-        <meshBasicMaterial color={CREAM} transparent opacity={0.10} blending={THREE.AdditiveBlending} />
-      </mesh>
+      {/* Node points */}
+      <points ref={nodesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={nodePositions.length / 3}
+            array={nodePositions}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.12}
+          sizeAttenuation
+          color={GOLD}
+          transparent
+          opacity={0.75}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </points>
     </group>
   );
 }
 
-/* ── Elegant particle field (gold + violet + cream) ── */
+/* ── Abstract data stream — rising particle ribbon ── */
+function DataStream({ count = 200 }) {
+  const ref  = useRef();
+  const time = useRef(0);
+
+  const { positions, colors } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const gC  = new THREE.Color(GOLD);
+    const vC  = new THREE.Color(VIOLET);
+    for (let i = 0; i < count; i++) {
+      const t  = i / count;
+      pos[i * 3]     = (Math.random() - 0.5) * 2.5 + 3;
+      pos[i * 3 + 1] = -10 + t * 22;
+      pos[i * 3 + 2] = -18;
+      const c = Math.random() > 0.6 ? gC : vC;
+      col[i * 3]     = c.r;
+      col[i * 3 + 1] = c.g;
+      col[i * 3 + 2] = c.b;
+    }
+    return { positions: pos, colors: col };
+  }, [count]);
+
+  const posRef = useRef(positions.slice());
+
+  useFrame((_, dt) => {
+    if (prefersReducedMotion || !ref.current) return;
+    time.current += dt;
+    const attr = ref.current.geometry.attributes.position;
+    for (let i = 0; i < count; i++) {
+      const t = i / count;
+      const y = posRef.current[i * 3 + 1] + dt * (1.2 + t * 0.4);
+      if (y > 12) posRef.current[i * 3 + 1] = -10;
+      else        posRef.current[i * 3 + 1] = y;
+      posRef.current[i * 3] = (Math.random() - 0.5) * 0.008 + posRef.current[i * 3];
+      attr.array[i * 3]     = posRef.current[i * 3];
+      attr.array[i * 3 + 1] = posRef.current[i * 3 + 1];
+    }
+    attr.needsUpdate = true;
+  });
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-color"
+          count={count}
+          array={colors}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.06}
+        sizeAttenuation
+        vertexColors
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+/* ── Glowing hex grid floor ── */
+function HexGrid() {
+  const ref    = useRef();
+  const pulseT = useRef(0);
+
+  useFrame((_, dt) => {
+    if (!ref.current || prefersReducedMotion) return;
+    pulseT.current += dt;
+    ref.current.position.z = ((pulseT.current * 0.18) % 2);
+    if (ref.current.material) {
+      ref.current.material.opacity = 0.08 + Math.sin(pulseT.current * 0.6) * 0.03;
+    }
+  });
+
+  const grid = useMemo(() => {
+    const g = new THREE.GridHelper(
+      120, 60,
+      new THREE.Color(GOLD).multiplyScalar(0.22),
+      new THREE.Color(GOLD).multiplyScalar(0.07)
+    );
+    g.material.transparent = true;
+    g.material.opacity = 0.10;
+    g.material.blending = THREE.AdditiveBlending;
+    g.material.depthWrite = false;
+    return g;
+  }, []);
+
+  return <primitive ref={ref} object={grid} position={[0, -6, -12]} />;
+}
+
+/* ── Premium particle field ── */
 function ParticleField({ count = 1400 }) {
   const ref = useRef();
 
-  const { positions, colors, sizes } = useMemo(() => {
-    const pos  = new Float32Array(count * 3);
-    const col  = new Float32Array(count * 3);
-    const sz   = new Float32Array(count);
-    const gC   = new THREE.Color(GOLD);
-    const vC   = new THREE.Color(VIOLET);
-    const wC   = new THREE.Color(CREAM);
-    const r    = 20;
+  const { positions, colors } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const gC  = new THREE.Color(GOLD);
+    const vC  = new THREE.Color(VIOLET);
+    const wC  = new THREE.Color(CREAM);
+    const r   = 24;
 
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
@@ -97,15 +255,14 @@ function ParticleField({ count = 1400 }) {
       col[i * 3]     = c.r;
       col[i * 3 + 1] = c.g;
       col[i * 3 + 2] = c.b;
-      sz[i] = Math.random() * 0.06 + 0.02;
     }
-    return { positions: pos, colors: col, sizes: sz };
+    return { positions: pos, colors: col };
   }, [count]);
 
   useFrame((_, dt) => {
-    if (!ref.current) return;
-    ref.current.rotation.y += dt * 0.009;
-    ref.current.rotation.x += dt * 0.004;
+    if (!ref.current || prefersReducedMotion) return;
+    ref.current.rotation.y += dt * 0.007;
+    ref.current.rotation.x += dt * 0.003;
   });
 
   return (
@@ -115,11 +272,11 @@ function ParticleField({ count = 1400 }) {
         <bufferAttribute attach="attributes-color"    count={count} array={colors}    itemSize={3} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.05}
+        size={0.045}
         sizeAttenuation
         vertexColors
         transparent
-        opacity={0.65}
+        opacity={0.55}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
       />
@@ -127,43 +284,26 @@ function ParticleField({ count = 1400 }) {
   );
 }
 
-/* ── Minimal grid floor (barely visible) ── */
-function GridFloor() {
-  const grid = useMemo(() => {
-    return new THREE.GridHelper(
-      100, 50,
-      new THREE.Color(GOLD).multiplyScalar(0.15),
-      new THREE.Color(GOLD).multiplyScalar(0.05)
-    );
-  }, []);
-
-  useFrame((state) => {
-    grid.position.z = (state.clock.elapsedTime * 0.22) % 2;
-  });
-
-  return <primitive object={grid} position={[0, -5.5, -12]} />;
-}
-
-/* ── Premium floating geometry ── */
-function WireShape({ geometry, position, rotation, color = GOLD, emissive = GOLD, speed = 0.2, opacity = 0.16 }) {
+/* ── Glowing wireframe geometry ── */
+function WireShape({ geometry, position, rotation = [0,0,0], color = GOLD, speed = 0.2, opacity = 0.16 }) {
   const meshRef = useRef();
 
   useFrame((_, dt) => {
-    if (meshRef.current) {
+    if (meshRef.current && !prefersReducedMotion) {
       meshRef.current.rotation.x += dt * speed * 0.35;
       meshRef.current.rotation.y += dt * speed * 0.55;
     }
   });
 
   return (
-    <Float speed={0.9} rotationIntensity={0.28} floatIntensity={0.75}>
+    <Float speed={0.9} rotationIntensity={0.22} floatIntensity={0.7}>
       <group position={position} rotation={rotation}>
         <mesh ref={meshRef}>
           {geometry}
           <meshStandardMaterial
             color={color}
-            emissive={emissive}
-            emissiveIntensity={0.4}
+            emissive={color}
+            emissiveIntensity={0.55}
             wireframe
             transparent
             opacity={opacity}
@@ -174,125 +314,120 @@ function WireShape({ geometry, position, rotation, color = GOLD, emissive = GOLD
   );
 }
 
-/* ── Floating glass UI panels (more refined) ── */
-function FloatingPanel({ position, rotation, scale = 1, variant = 0 }) {
-  const groupRef = useRef();
-  const accent   = variant === 0 ? GOLD : VIOLET;
-  const w = 2.6, h = 1.75;
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    const t = state.clock.elapsedTime;
-    groupRef.current.children.forEach((child, i) => {
-      if (child.material && i > 3) {
-        child.material.opacity = 0.12 + Math.sin(t * 0.55 + i * 1.2) * 0.06;
-      }
-    });
-  });
-
-  const lines = variant === 0
-    ? [[0.38, w - 0.4], [0.14, w - 0.75], [-0.08, w - 0.55], [-0.32, w - 0.9]]
-    : [[0.32, 1.4], [0.06, 0.9], [-0.2, 1.85], [-0.46, 1.2]];
-
-  return (
-    <Float speed={0.7} rotationIntensity={0.18} floatIntensity={0.85}>
-      <group ref={groupRef} position={position} rotation={rotation} scale={scale}>
-        <mesh>
-          <planeGeometry args={[w, h]} />
-          <meshBasicMaterial color="#04040a" transparent opacity={0.50} side={THREE.DoubleSide} />
-        </mesh>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.PlaneGeometry(w, h)]} />
-          <lineBasicMaterial color={accent} transparent opacity={0.42} />
-        </lineSegments>
-        <mesh position={[0, h / 2 - 0.13, 0.01]}>
-          <planeGeometry args={[w, 0.25]} />
-          <meshBasicMaterial color={accent} transparent opacity={0.14} side={THREE.DoubleSide} />
-        </mesh>
-        {[-1.1, -0.95, -0.80].map((x, i) => (
-          <mesh key={i} position={[x, h / 2 - 0.13, 0.02]}>
-            <circleGeometry args={[0.038, 16]} />
-            <meshBasicMaterial color={accent} transparent opacity={0.80} />
-          </mesh>
-        ))}
-        {lines.map(([y, lineW], i) => (
-          <mesh key={i} position={[0, y, 0.02]}>
-            <planeGeometry args={[lineW, 0.038]} />
-            <meshBasicMaterial color={accent} transparent opacity={0.15} side={THREE.DoubleSide} />
-          </mesh>
-        ))}
-      </group>
-    </Float>
-  );
-}
-
-/* ── Camera parallax ── */
+/* ── Camera rig with scroll parallax ── */
 function Rig() {
-  const scrollRef = useRef(0);
+  const scrollNorm = useRef(0);
 
   useFrame((state, dt) => {
     if (typeof window !== 'undefined') {
       const max = document.body.scrollHeight - window.innerHeight;
-      scrollRef.current = max > 0 ? window.scrollY / max : 0;
+      scrollNorm.current = max > 0 ? window.scrollY / max : 0;
     }
+    const s  = scrollNorm.current;
     const px = prefersReducedMotion ? 0 : state.pointer.x;
     const py = prefersReducedMotion ? 0 : state.pointer.y;
-    const targetX = px * 1.25;
-    const targetY = py * 0.75 + scrollRef.current * 1.8;
-    const targetZ = 9.5 - scrollRef.current * 2.5;
-    const damp    = 1 - Math.pow(0.001, dt);
+
+    const targetX = px * 1.4;
+    const targetY = py * 0.8 + s * 1.6;
+    const targetZ = 9.5 - s * 3.2;
+
+    const damp = 1 - Math.pow(0.001, dt);
     state.camera.position.x += (targetX - state.camera.position.x) * damp;
     state.camera.position.y += (targetY - state.camera.position.y) * damp;
     state.camera.position.z += (targetZ - state.camera.position.z) * damp;
-    state.camera.lookAt(0, scrollRef.current * 1.2, 0);
+    state.camera.lookAt(0, s * 1.0, 0);
   });
+
   return null;
 }
 
+/* ── Full scene ── */
 function Scene() {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const count    = prefersReducedMotion ? 300 : isMobile ? 500 : 1400;
+  const count    = prefersReducedMotion ? 200 : isMobile ? 400 : 1400;
 
   return (
     <>
-      <Stars radius={90} depth={55} count={prefersReducedMotion ? 200 : 700} factor={3.5} saturation={0} fade />
+      <Stars radius={100} depth={60} count={prefersReducedMotion ? 150 : 600} factor={3.2} saturation={0} fade />
 
-      {/* Warm ambient + gold key + violet fill */}
-      <ambientLight intensity={0.22} />
-      <pointLight position={[8, 6, 6]}   intensity={60}  color={GOLD}   />
-      <pointLight position={[-10, -5, 4]} intensity={35}  color={VIOLET} />
-      <pointLight position={[0, 14, 2]}   intensity={20}  color="#fff8f0" />
-      <pointLight position={[4, -2, 10]}  intensity={14}  color={GOLD}   />
+      <ambientLight intensity={0.18} />
+      <pointLight position={[10, 8, 6]}   intensity={80}  color={GOLD}   />
+      <pointLight position={[-12, -6, 4]} intensity={45}  color={VIOLET} />
+      <pointLight position={[0, 16, 2]}   intensity={25}  color="#fff8f0" />
+      <pointLight position={[5, -3, 12]}  intensity={18}  color={GOLD}   />
+      <pointLight position={[-5, 8, -8]}  intensity={20}  color={VIOLET} />
 
       <ParticleField count={count} />
-      <GoldOrb />
-      <OrbitalRings />
-      <GridFloor />
+      <DataLattice count={isMobile ? 30 : 55} />
+      <DataStream count={isMobile ? 80 : 180} />
+      <HexGrid />
 
-      {/* Premium wireframe geometry */}
-      <WireShape geometry={<icosahedronGeometry args={[1.7, 0]} />}  position={[-5.5, 1.5, -3]}   rotation={[0.4, 0.2, 0]}   color={GOLD}   emissive={GOLD}   speed={0.20} opacity={0.18} />
-      <WireShape geometry={<torusKnotGeometry args={[1, 0.3, 90, 8]} />} position={[5.5, -1.8, -4]} rotation={[1, 0.4, 0]}  color={VIOLET} emissive={VIOLET} speed={0.14} opacity={0.14} />
-      <WireShape geometry={<octahedronGeometry args={[1.8, 0]} />}   position={[3.2, 3.4, -6]}    rotation={[0.2, 0.6, 0]}   color={GOLD}   emissive={GOLD}   speed={0.26} opacity={0.16} />
-      <WireShape geometry={<dodecahedronGeometry args={[1.4, 0]} />} position={[-6.5, -2.6, -5]}  rotation={[0.3, 0, 0.4]}   color={VIOLET} emissive={VIOLET} speed={0.18} opacity={0.12} />
-      <WireShape geometry={<boxGeometry args={[2, 2, 2, 3, 3, 3]} />} position={[0, -4.5, -8]}   rotation={[0.3, 0.3, 0]}   color={GOLD}   emissive={GOLD}   speed={0.11} opacity={0.14} />
-      <WireShape geometry={<tetrahedronGeometry args={[1.6, 0]} />}  position={[-2.2, 4.2, -9]}   rotation={[0.1, 0.5, 0.2]} color={VIOLET} emissive={VIOLET} speed={0.16} opacity={0.12} />
+      <WireShape
+        geometry={<icosahedronGeometry args={[1.8, 0]} />}
+        position={[-5.5, 1.8, -3]}
+        rotation={[0.4, 0.2, 0]}
+        color={GOLD}
+        speed={0.20}
+        opacity={0.20}
+      />
+      <WireShape
+        geometry={<torusKnotGeometry args={[1.1, 0.32, 96, 8]} />}
+        position={[5.8, -1.6, -4]}
+        rotation={[1, 0.4, 0]}
+        color={VIOLET}
+        speed={0.13}
+        opacity={0.15}
+      />
+      <WireShape
+        geometry={<octahedronGeometry args={[1.9, 0]} />}
+        position={[3.4, 3.6, -6]}
+        rotation={[0.2, 0.6, 0]}
+        color={GOLD}
+        speed={0.24}
+        opacity={0.18}
+      />
+      <WireShape
+        geometry={<dodecahedronGeometry args={[1.5, 0]} />}
+        position={[-6.2, -2.8, -5]}
+        rotation={[0.3, 0, 0.4]}
+        color={VIOLET}
+        speed={0.17}
+        opacity={0.13}
+      />
+      <WireShape
+        geometry={<torusGeometry args={[2, 0.04, 8, 80]} />}
+        position={[1, 5, -10]}
+        rotation={[Math.PI / 3, 0.3, 0]}
+        color={GOLD}
+        speed={0.09}
+        opacity={0.14}
+      />
+      <WireShape
+        geometry={<tetrahedronGeometry args={[1.7, 0]} />}
+        position={[-2.4, 4.4, -9]}
+        rotation={[0.1, 0.5, 0.2]}
+        color={VIOLET}
+        speed={0.15}
+        opacity={0.13}
+      />
 
-      {/* Floating UI panels */}
-      <FloatingPanel position={[-3.4, 0.4, 0.5]}  rotation={[0, 0.5, 0]}       scale={0.9}  variant={0} />
-      <FloatingPanel position={[3.6, 1.4, -1]}    rotation={[0, -0.5, 0.05]}   scale={0.76} variant={1} />
-      <FloatingPanel position={[2.6, -2.4, 0]}    rotation={[0.05, -0.35, 0]}  scale={0.65} variant={0} />
-      <FloatingPanel position={[-4.2, -1.8, -2]}  rotation={[-0.1, 0.4, 0.05]} scale={0.58} variant={1} />
-
-      {/* Post-processing */}
       {!prefersReducedMotion && (
         <EffectComposer>
           <Bloom
-            luminanceThreshold={0.35}
-            luminanceSmoothing={0.9}
-            intensity={0.8}
+            luminanceThreshold={0.28}
+            luminanceSmoothing={0.85}
+            intensity={1.4}
             mipmapBlur
           />
-          <Vignette eskil={false} offset={0.25} darkness={0.65} />
+          <ChromaticAberration
+            blendFunction={BlendFunction.NORMAL}
+            offset={[0.0008, 0.0006]}
+          />
+          <Noise
+            opacity={0.032}
+            blendFunction={BlendFunction.ADD}
+          />
+          <Vignette eskil={false} offset={0.22} darkness={0.72} />
         </EffectComposer>
       )}
 
@@ -303,15 +438,22 @@ function Scene() {
 
 const SceneCanvas = () => {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
     <div
       className="pointer-events-none fixed inset-0 z-0"
       aria-hidden="true"
-      style={{ opacity: 0.90 }}
+      style={{ opacity: 0.92 }}
     >
       <Canvas
         dpr={isMobile ? [1, 1.5] : [1, 2]}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance',
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.3,
+        }}
         camera={{ position: [0, 0, 9.5], fov: 50 }}
         frameloop={prefersReducedMotion ? 'demand' : 'always'}
       >

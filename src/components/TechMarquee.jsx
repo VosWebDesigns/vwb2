@@ -47,18 +47,36 @@ const TechMarquee = () => (
   >
     {/* Left/right fades */}
     <div
-      className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24"
-      style={{ background: 'linear-gradient(to right, #06060c, transparent)' }}
+      className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32"
+      style={{ background: 'linear-gradient(to right, #06060c 20%, transparent)' }}
     />
     <div
-      className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24"
-      style={{ background: 'linear-gradient(to left, #06060c, transparent)' }}
+      className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32"
+      style={{ background: 'linear-gradient(to left, #06060c 20%, transparent)' }}
     />
 
-    {/* Center divider */}
+    {/* TECH STACK vertical label */}
+    <div
+      className="pointer-events-none absolute left-5 inset-y-0 z-20 flex items-center"
+      aria-hidden="true"
+    >
+      <span
+        className="font-mono text-[.5rem] uppercase tracking-[.4em]"
+        style={{
+          color: 'rgba(201,169,110,.28)',
+          writingMode: 'vertical-rl',
+          transform: 'rotate(180deg)',
+          letterSpacing: '.45em',
+        }}
+      >
+        Tech Stack
+      </span>
+    </div>
+
+    {/* Center divider with gradient */}
     <div
       className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
-      style={{ background: 'rgba(201,169,110,.06)' }}
+      style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.12), transparent)' }}
     />
 
     <MarqueeRow items={ROW_1} />
