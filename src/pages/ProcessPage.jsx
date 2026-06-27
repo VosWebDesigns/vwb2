@@ -99,7 +99,7 @@ const ProcessPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
-              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -148,21 +148,21 @@ const ProcessPage = () => {
                 {processSteps.map((step, i) => (
                   <article key={step.number} className="timeline-card relative">
                     <div
-                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#020810] text-[var(--accent)] shadow-[0_0_20px_rgba(140,214,255,.4)] md:-left-12 md:h-9 md:w-9 lg:-left-16 lg:h-11 lg:w-11"
+                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#06060c] text-[var(--accent)] shadow-[0_0_20px_rgba(201,169,110,.4)] md:-left-12 md:h-9 md:w-9 lg:-left-16 lg:h-11 lg:w-11"
                       aria-hidden="true"
                     >
                       <span className="font-mono text-[9px] font-black md:text-[10px] lg:text-[11px]">{step.number}</span>
                     </div>
 
                     <div
-                      className="absolute -left-[1rem] top-[1.5rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(214,245,122,.8)] md:-left-[1.15rem] md:top-[1.65rem] lg:-left-[1.45rem]"
+                      className="absolute -left-[1rem] top-[1.5rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(138,92,246,.8)] md:-left-[1.15rem] md:top-[1.65rem] lg:-left-[1.45rem]"
                       aria-hidden="true"
                     />
 
                     <div className="glass-card rounded-2xl p-5 md:p-7">
                       <div className="grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
                         <div>
-                          <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(140,214,255,.06)] text-[var(--accent)]">
+                          <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
                             {step.icon}
                           </div>
                           <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[var(--accent2)]">
@@ -179,7 +179,7 @@ const ProcessPage = () => {
                           {step.activities.map((activity) => (
                             <div
                               key={activity}
-                              className="flex gap-2.5 items-start rounded-xl border border-[var(--stroke)] bg-white/[.02] p-3 text-sm text-slate-300 transition hover:border-[rgba(140,214,255,.2)]"
+                              className="flex gap-2.5 items-start rounded-xl border border-[var(--stroke)] bg-white/[.02] p-3 text-sm text-slate-300 transition hover:border-[rgba(201,169,110,.2)]"
                             >
                               <CheckCircle size={14} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
                               {activity}
@@ -222,7 +222,7 @@ const ProcessPage = () => {
                     {afterLaunch.map(([title, text]) => (
                       <div
                         key={title}
-                        className="rounded-2xl border border-[rgba(140,214,255,.14)] bg-[rgba(8,16,30,.5)] p-5 transition hover:border-[rgba(140,214,255,.28)]"
+                        className="rounded-2xl border border-[rgba(201,169,110,.14)] bg-[rgba(8,16,30,.5)] p-5 transition hover:border-[rgba(201,169,110,.28)]"
                       >
                         <h3 className="font-heading text-base font-black text-[var(--accent)]">{title}</h3>
                         <p className="mt-2 text-sm leading-6 text-slate-300">{text}</p>

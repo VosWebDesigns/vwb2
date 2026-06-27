@@ -67,7 +67,7 @@ const PortfolioPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -95,7 +95,7 @@ const PortfolioPage = () => {
             </div>
 
             {/* Filter bar */}
-            <div className="mt-10 flex flex-wrap items-center gap-3 border-y border-[rgba(140,214,255,.12)] py-5">
+            <div className="mt-10 flex flex-wrap items-center gap-3 border-y border-[rgba(201,169,110,.12)] py-5">
               <span className="hud-label mr-2 hidden sm:inline">Filter:</span>
               <button
                 type="button"
@@ -183,7 +183,7 @@ const PortfolioPage = () => {
                         {/* Hover overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(2,8,16,.7)] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true" />
                         {/* Arrow icon */}
-                        <div className="absolute bottom-4 right-4 grid h-9 w-9 place-items-center rounded-full bg-[var(--accent)] text-[#020810] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 scale-75">
+                        <div className="absolute bottom-4 right-4 grid h-9 w-9 place-items-center rounded-full bg-[var(--accent)] text-[#06060c] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 scale-75">
                           <ArrowUpRight size={16} />
                         </div>
                       </div>

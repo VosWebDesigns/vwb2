@@ -96,7 +96,7 @@ const Footer = () => {
   ].filter(({ href }) => href?.trim());
 
   return (
-    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#040b14] px-5 py-14 md:px-8 md:py-16">
+    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#04040a] px-5 py-14 md:px-8 md:py-16">
       {/* Top glow line */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--accent)] to-transparent opacity-55" />
 
@@ -104,7 +104,7 @@ const Footer = () => {
       <div
         className="pointer-events-none absolute inset-0 opacity-20"
         style={{
-          backgroundImage: 'linear-gradient(rgba(140,214,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.05) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(201,169,110,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.04) 1px, transparent 1px)',
           backgroundSize: '64px 64px',
           maskImage: 'radial-gradient(ellipse at 50% 0%, black 30%, transparent 80%)',
           WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, black 30%, transparent 80%)',
@@ -112,7 +112,7 @@ const Footer = () => {
       />
 
       {/* Radial glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(14,165,233,.07),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(201,169,110,.06),transparent)]" />
 
       <div className="relative mx-auto max-w-7xl">
         {/* Main grid */}
@@ -137,14 +137,14 @@ const Footer = () => {
               <span className="hud-label">Systeem status</span>
               <div className="flex items-center gap-2">
                 <span className="status-dot" />
-                <span className="font-mono text-[11px] text-[rgba(214,245,122,.65)]">Alle systemen operationeel</span>
+                <span className="font-mono text-[11px] text-[rgba(201,169,110,.55)]">Alle systemen operationeel</span>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="grid content-start gap-2.5" aria-label="Navigatie">
-            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Navigatie</span>
+            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Navigatie</span>
             {quickNav.map(([href, label]) => (
               <Link
                 key={href}
@@ -159,7 +159,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div className="grid content-start gap-2.5">
-            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Contact</span>
+            <span className="mb-1 text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Contact</span>
             {contactEmail && (
               <a href={`mailto:${contactEmail}`} className="group flex items-center gap-3 border-b border-white/8 py-2.5 text-slate-300 transition hover:text-white">
                 <Mail size={15} className="shrink-0 text-[color:var(--accent)]" />
@@ -198,7 +198,7 @@ const Footer = () => {
           {/* Newsletter + social */}
           <div className="grid content-start gap-7">
             <div className="cyber-corner rounded-3xl border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/4 p-5 shadow-[0_20px_80px_rgba(56,189,248,.07)]">
-              <span className="mb-1 block text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Nieuwsbrief</span>
+              <span className="mb-1 block text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Nieuwsbrief</span>
               <p className="mt-2 text-sm leading-6 text-slate-400">1× per maand tips, cases en updates.</p>
               <form onSubmit={handleNewsletterSubmit} className="mt-4 grid gap-3">
                 <label className="sr-only" htmlFor="newsletter-email">E-mailadres</label>
@@ -209,7 +209,7 @@ const Footer = () => {
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="uw@email.nl"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="min-h-11 rounded-2xl border border-white/10 bg-[#07111f] px-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/18 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="min-h-11 rounded-2xl border border-white/8 bg-[#08080e] px-4 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/18 disabled:cursor-not-allowed disabled:opacity-70"
                 />
                 <input
                   type="text"
@@ -224,7 +224,7 @@ const Footer = () => {
                 <button
                   type="submit"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 text-sm font-black text-[#020810] transition hover:shadow-[0_0_30px_rgba(140,214,255,.35)] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 text-sm font-black text-[#06060c] transition hover:shadow-[0_0_30px_rgba(201,169,110,.35)] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <Send size={15} />
                   {newsletterState.status === 'loading' ? 'Versturen…' : 'Inschrijven'}
@@ -243,7 +243,7 @@ const Footer = () => {
 
             {socialLinks.length > 0 && (
               <div className="grid gap-3">
-                <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent2)]">Volg ons</span>
+                <span className="text-sm font-bold uppercase tracking-[.18em] text-[color:var(--accent)]">Volg ons</span>
                 <div className="flex flex-wrap gap-2.5">
                   {socialLinks.map(({ label, href, icon: Icon }) => (
                     <a

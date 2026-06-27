@@ -11,9 +11,9 @@ export const StaticBackdrop = () => (
       className="absolute inset-0"
       style={{
         background:
-          'radial-gradient(ellipse 70% 50% at 50% -5%, rgba(14,165,233,.16), transparent 60%),' +
-          'radial-gradient(ellipse 50% 50% at 85% 80%, rgba(214,245,122,.07), transparent 60%),' +
-          'radial-gradient(ellipse 60% 60% at 10% 50%, rgba(44,82,130,.16), transparent 60%)',
+          'radial-gradient(ellipse 70% 50% at 50% -5%, rgba(201,169,110,.12), transparent 60%),' +
+          'radial-gradient(ellipse 50% 50% at 85% 80%, rgba(138,92,246,.06), transparent 60%),' +
+          'radial-gradient(ellipse 60% 60% at 10% 50%, rgba(30,20,50,.18), transparent 60%)',
       }}
     />
     <div className="absolute inset-0 sci-fi-grid [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_75%)]" />
