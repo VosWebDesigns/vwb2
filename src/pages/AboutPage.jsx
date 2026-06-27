@@ -3,22 +3,28 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Layers, Smartphone, MessagesSquare, Rocket } from 'lucide-react';
+import { ArrowRight, Layers, Smartphone, MessagesSquare, Rocket, CheckCircle } from 'lucide-react';
 import { useReveal } from '@/hooks/useReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const PILLARS = [
-  { icon: <Layers size={22} />,         title: 'Geen standaard template-flow', text: 'Elke site krijgt een eigen richting en visuele stijl — geen kant-en-klare blokken.' },
-  { icon: <Smartphone size={22} />,     title: 'Snel en mobielvriendelijk',     text: 'Gebouwd voor bezoekers die snel willen begrijpen wat je doet, op elk apparaat.' },
-  { icon: <MessagesSquare size={22} />, title: 'Persoonlijk contact',            text: 'Korte lijnen en duidelijke communicatie zonder tussenpersonen of ruis.' },
-  { icon: <Rocket size={22} />,         title: 'Doorontwikkelbaar',              text: 'Techniek die later uitgebreid kan worden naarmate je bedrijf groeit.' },
+  { icon: <Layers size={20} />,         title: 'Geen standaard template-flow', text: 'Elke site krijgt een eigen richting en visuele stijl — geen kant-en-klare blokken.' },
+  { icon: <Smartphone size={20} />,     title: 'Snel en mobielvriendelijk',     text: 'Gebouwd voor bezoekers die snel willen begrijpen wat je doet, op elk apparaat.' },
+  { icon: <MessagesSquare size={20} />, title: 'Persoonlijk contact',            text: 'Korte lijnen en duidelijke communicatie zonder tussenpersonen of ruis.' },
+  { icon: <Rocket size={20} />,         title: 'Doorontwikkelbaar',              text: 'Techniek die later uitgebreid kan worden naarmate je bedrijf groeit.' },
 ];
 
 const VALUES = [
   { num: '01', label: 'Transparantie', desc: 'Geen verborgen kosten, geen verrassingen. Alles wordt van tevoren afgestemd.' },
   { num: '02', label: 'Kwaliteit',     desc: 'Elk detail telt. Van typografie tot laadtijden — geen enkel compromis.' },
   { num: '03', label: 'Resultaat',     desc: 'Een mooie website is een middel, niet het doel. Jouw groei is het eindpunt.' },
+];
+
+const FACTS = [
+  ['100%', 'Maatwerk'],
+  ['0',    'Templates'],
+  ['1',    'Specialist'],
 ];
 
 const AboutPage = () => {
@@ -56,7 +62,6 @@ const AboutPage = () => {
 
         {/* ── Hero ── */}
         <section className="cinematic-section relative overflow-hidden">
-          {/* Background grid */}
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
@@ -67,37 +72,63 @@ const AboutPage = () => {
             }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="status-dot" />
-              <p data-reveal className="section-eyebrow">Over Vos Web Designs</p>
+          <div className="cinematic-container relative z-10 grid gap-10 lg:grid-cols-[1fr_.55fr] lg:items-end">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="status-dot" />
+                <p data-reveal className="section-eyebrow">Over Vos Web Designs</p>
+              </div>
+              <h1 data-reveal className="display-xl mt-0 text-[clamp(2.4rem,8vw,7rem)]">
+                Eén specialist.{' '}
+                <span className="gradient-text-full">Volledige focus.</span>
+              </h1>
             </div>
-            <h1 data-reveal className="display-xl mt-0 text-[clamp(2.4rem,9vw,7.5rem)]">
-              Eén specialist.{' '}
-              <span className="gradient-text-full">Volledige focus.</span>{' '}
-              Geen template-smaak.
-            </h1>
+            <div data-reveal className="grid gap-4">
+              {FACTS.map(([val, label]) => (
+                <div key={label} className="glass-card rounded-2xl p-5 flex items-center gap-4">
+                  <span className="font-heading text-3xl font-black text-[var(--accent)]">{val}</span>
+                  <span className="font-mono text-xs uppercase tracking-[.2em] text-slate-400">{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* ── Story ── */}
         <section className="cinematic-section pt-0">
           <div className="cinematic-container relative z-10">
-            <article data-reveal className="glass-card cyber-corner rounded-3xl p-7 md:p-12">
-              <div className="flex items-center gap-3 mb-8">
-                <span className="status-dot status-dot-cyan" />
-                <span className="hud-label">Studio verhaal</span>
-              </div>
-              <h2 className="font-heading text-[clamp(1.8rem,4vw,3.2rem)] font-black leading-tight tracking-[-.04em] text-white">
-                Websites gebouwd met aandacht, strategie en techniek.
-              </h2>
-              <div className="mt-8 grid gap-6 md:grid-cols-2">
-                <p className="text-base leading-8 text-slate-300">
-                  Mijn naam is Melvin Vos. Met Vos Web Designs help ik ondernemers aan snelle, professionele websites die vertrouwen wekken en niet voelen als een standaard template.
-                </p>
-                <p className="text-base leading-8 text-slate-400">
-                  Elke website krijgt een eigen concept, eigen uitstraling en een duidelijke opbouw. Geen generieke blokken achter elkaar, maar een website die past bij het bedrijf — en die groeit met de ambities.
-                </p>
+            <article data-reveal className="glass-card cyber-corner rounded-3xl overflow-hidden">
+              <div className="grid lg:grid-cols-[1fr_1px_1fr]">
+                <div className="p-7 md:p-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="status-dot status-dot-cyan" />
+                    <span className="hud-label">Studio verhaal</span>
+                  </div>
+                  <h2 className="font-heading text-[clamp(1.6rem,3.5vw,2.8rem)] font-black leading-tight tracking-[-.04em] text-white">
+                    Websites gebouwd met aandacht, strategie en techniek.
+                  </h2>
+                  <p className="mt-6 text-base leading-8 text-slate-300">
+                    Mijn naam is Melvin Vos. Met Vos Web Designs help ik ondernemers aan snelle, professionele websites die vertrouwen wekken en niet voelen als een standaard template.
+                  </p>
+                </div>
+                <div className="bg-[var(--stroke)] hidden lg:block" aria-hidden="true" />
+                <div className="p-7 md:p-10 border-t border-[var(--stroke)] lg:border-t-0">
+                  <p className="text-base leading-8 text-slate-400">
+                    Elke website krijgt een eigen concept, eigen uitstraling en een duidelijke opbouw. Geen generieke blokken achter elkaar, maar een website die past bij het bedrijf — en die groeit met de ambities.
+                  </p>
+                  <ul className="mt-7 grid gap-3">
+                    {[
+                      'Persoonlijk traject, geen standaard pakket',
+                      'Volledige eigendom na oplevering',
+                      'Doorontwikkelbaar naarmate je groeit',
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                        <CheckCircle size={15} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </article>
           </div>
@@ -106,7 +137,7 @@ const AboutPage = () => {
         {/* ── Pillars ── */}
         <section className="cinematic-section pt-0">
           <div className="cinematic-container relative z-10">
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-10">
               <span className="status-dot" />
               <p className="section-eyebrow">Onze aanpak</p>
             </div>
@@ -118,7 +149,6 @@ const AboutPage = () => {
                   data-reveal-delay={i * 0.08}
                   className="glass-card group rounded-2xl p-6 relative overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(140,214,255,.1)]"
                 >
-                  {/* Hover top line */}
                   <div className="absolute inset-x-0 top-0 h-px scale-x-0 bg-[var(--accent)] transition-transform duration-400 group-hover:scale-x-100" aria-hidden="true" />
                   <div className="capability-icon-wrap text-[var(--accent)]">{pillar.icon}</div>
                   <h3 className="mt-4 font-heading text-base font-bold text-white leading-tight">{pillar.title}</h3>

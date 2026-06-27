@@ -364,26 +364,14 @@ const HomePage = () => {
       const steps = el.querySelectorAll('.process-step');
       steps.forEach((step, i) => {
         gsap.fromTo(step,
-          { opacity: 0, x: -44 },
+          { opacity: 0, y: 30, scale: 0.97 },
           {
-            opacity: 1, x: 0, duration: 0.85, ease: 'power3.out',
-            scrollTrigger: { trigger: step, start: 'top 86%' },
-            delay: i * 0.08,
+            opacity: 1, y: 0, scale: 1, duration: 0.75, ease: 'power3.out',
+            scrollTrigger: { trigger: step, start: 'top 88%' },
+            delay: i * 0.1,
           }
         );
       });
-
-      /* Animate the vertical connector line drawing down */
-      const line = el.querySelector('.process-line');
-      if (line) {
-        gsap.fromTo(line,
-          { scaleY: 0, transformOrigin: 'top center' },
-          {
-            scaleY: 1, duration: 1.8, ease: 'power2.out',
-            scrollTrigger: { trigger: line, start: 'top 85%' },
-          }
-        );
-      }
     });
     return () => ctx.revert();
   }, []);
@@ -412,16 +400,21 @@ const HomePage = () => {
 
         {/* ── Stats ── */}
         <section
-          className="relative py-16 px-5 md:py-28 md:px-10"
+          className="relative py-16 px-5 md:py-24 md:px-10"
           style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.07) 0%, transparent 70%)' }}
         >
           <div className="mx-auto max-w-6xl">
-            <div className="text-center mb-16">
-              <SectionLabel>In cijfers</SectionLabel>
-              <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
-                Resultaten die{' '}
-                <span className="gradient-text-cyan">spreken</span>
-              </h2>
+            <div className="mb-12 grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-end">
+              <div>
+                <SectionLabel>In cijfers</SectionLabel>
+                <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)]">
+                  Resultaten die{' '}
+                  <span className="gradient-text-cyan">spreken</span>
+                </h2>
+              </div>
+              <p className="text-base leading-8 text-slate-400 lg:max-w-sm">
+                Meetbare resultaten voor elke klant — van snelheid en conversie tot tevredenheid.
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               {STATS.map((s, i) => (
@@ -491,26 +484,23 @@ const HomePage = () => {
             aria-hidden="true"
           />
           <div className="relative z-10 mx-auto max-w-6xl">
-            <div className="mb-16 max-w-3xl">
-              <SectionLabel>Wat wij bouwen</SectionLabel>
-              <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
-                De complete{' '}
-                <span className="gradient-text-full">tech stack</span>
-                <br />voor uw toekomst.
-              </h2>
-              <p className="mt-6 max-w-xl text-base leading-8 text-slate-400">
-                Van interactieve 3D interfaces tot snelle backends — wij beheersen de volledige keten van moderne webdevelopment.
-              </p>
+            <div className="mb-14 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <SectionLabel>Wat wij bouwen</SectionLabel>
+                <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)]">
+                  De complete{' '}
+                  <span className="gradient-text-full">tech stack</span>{' '}
+                  voor uw toekomst.
+                </h2>
+              </div>
+              <Link to="/diensten" className="ghost-button shrink-0 self-start sm:self-auto">
+                Alle diensten <ArrowRight size={15} />
+              </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {CAPABILITIES.map((cap, i) => (
                 <CapabilityCard key={cap.title} cap={cap} index={i} />
               ))}
-            </div>
-            <div className="mt-10 flex justify-start">
-              <Link to="/diensten" className="ghost-button">
-                Alle diensten <ArrowRight size={15} />
-              </Link>
             </div>
           </div>
         </section>
@@ -571,52 +561,33 @@ const HomePage = () => {
           style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(214,245,122,.04) 0%, transparent 60%)' }}
         >
           <div className="mx-auto max-w-6xl">
-            <div className="mb-16 max-w-2xl">
-              <SectionLabel>Werkwijze</SectionLabel>
-              <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
-                Vier stappen naar{' '}
-                <span className="gradient-text-full">resultaat</span>
-              </h2>
-              <p className="mt-6 text-base leading-8 text-slate-400">
-                Ons proces is transparant, iteratief en gebouwd voor snelheid. Geen verrassingen, wel verbluffende uitkomsten.
+            <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+              <div>
+                <SectionLabel>Werkwijze</SectionLabel>
+                <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)]">
+                  Van idee naar{' '}
+                  <span className="gradient-text-full">live website</span>
+                </h2>
+              </div>
+              <p className="text-base leading-8 text-slate-400 lg:max-w-md">
+                Ons proces is transparant en gebouwd voor snelheid. Geen verrassingen — wel een verbluffend resultaat.
               </p>
             </div>
 
-            {/* Timeline layout */}
-            <div className="relative">
-              {/* Vertical connector */}
-              <div
-                className="process-line absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--accent)] via-[var(--accent2)] to-transparent md:left-5 lg:left-7"
-                aria-hidden="true"
-              />
-
-              <div className="flex flex-col gap-6 pl-10 md:pl-14 lg:pl-20">
-                {PROCESS.map((step, i) => (
-                  <div key={step.num} className="process-step glass-card rounded-2xl p-6 md:p-8 relative">
-                    {/* Step number bubble */}
-                    <div className="absolute -left-[2.5rem] top-5 flex items-center justify-center w-9 h-9 rounded-full border border-[var(--accent)] bg-[#020810] md:-left-[3.25rem] md:top-6 md:w-10 md:h-10 lg:-left-[4.25rem] lg:w-12 lg:h-12">
-                      <span className="font-mono text-[10px] font-black text-[var(--accent)] md:text-xs">{step.num}</span>
-                    </div>
-                    {/* Connector dot on the line */}
-                    <div
-                      className="absolute top-[1.5rem] -left-[1.6rem] w-2.5 h-2.5 rounded-full bg-[var(--accent2)] shadow-[0_0_10px_rgba(214,245,122,.8)] md:top-[1.75rem] md:-left-[2.05rem] lg:-left-[2.45rem]"
-                      aria-hidden="true"
-                    />
-                    <div className="flex items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="feature-num text-6xl">{step.num}</span>
-                          <h3 className="font-heading text-xl font-bold text-white">{step.title}</h3>
-                        </div>
-                        <p className="text-sm leading-7 text-slate-400">{step.desc}</p>
-                      </div>
-                    </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {PROCESS.map((step, i) => (
+                <div key={step.num} className="process-step glass-card rounded-2xl p-6 relative overflow-hidden">
+                  <span className="feature-num absolute -top-1 right-2 select-none pointer-events-none">{step.num}</span>
+                  <div className="relative">
+                    <span className="font-mono text-[10px] uppercase tracking-[.24em] text-[var(--accent2)]">{step.num}</span>
+                    <h3 className="mt-3 font-heading text-lg font-bold text-white leading-tight">{step.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-slate-400">{step.desc}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-10 flex justify-start pl-10 md:pl-14 lg:pl-20">
+            <div className="mt-10">
               <Link to="/werkwijze" className="ghost-button">
                 Volledige werkwijze <ArrowRight size={15} />
               </Link>

@@ -616,6 +616,30 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, 
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 }
 
+/* Soft card variant — lighter border, less blur (editorial sections) */
+.soft-card {
+  border: 1px solid rgba(140,214,255,.09);
+  background: rgba(8,16,30,.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color .35s ease, box-shadow .35s ease;
+}
+.soft-card:hover {
+  border-color: rgba(140,214,255,.22);
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+
+/* Accent inline bar */
+.accent-bar {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent), var(--accent2));
+  vertical-align: middle;
+  margin-right: .6rem;
+}
+
 /* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
