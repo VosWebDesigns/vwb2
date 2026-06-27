@@ -65,7 +65,7 @@ const AboutPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
-              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -147,7 +147,7 @@ const AboutPage = () => {
                   key={pillar.title}
                   data-reveal
                   data-reveal-delay={i * 0.08}
-                  className="glass-card group rounded-2xl p-6 relative overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(140,214,255,.1)]"
+                  className="glass-card group rounded-2xl p-6 relative overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(201,169,110,.1)]"
                 >
                   <div className="absolute inset-x-0 top-0 h-px scale-x-0 bg-[var(--accent)] transition-transform duration-400 group-hover:scale-x-100" aria-hidden="true" />
                   <div className="capability-icon-wrap text-[var(--accent)]">{pillar.icon}</div>
@@ -163,7 +163,7 @@ const AboutPage = () => {
         <section className="cinematic-section pt-0 relative overflow-hidden">
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 70% at 0% 50%, rgba(214,245,122,.04), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 70% at 0% 50%, rgba(138,92,246,.04), transparent)' }}
             aria-hidden="true"
           />
           <div className="cinematic-container relative z-10" ref={valuesRef}>

@@ -114,13 +114,13 @@ const StatCard = ({ value, suffix, prefix, label, index }) => {
     <div ref={ref} className="glass-card cyber-corner rounded-2xl p-6 text-center relative overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ background: 'radial-gradient(circle at 50% 0%, rgba(140,214,255,.08), transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,169,110,.07), transparent 70%)' }}
         aria-hidden="true"
       />
       <p className="stat-num text-[clamp(2.6rem,5vw,4.5rem)] leading-none tabular-nums">
-        <span className="text-[var(--accent2)]">{prefix}</span>
+        <span className="opacity-60">{prefix}</span>
         <span ref={numRef}>{value}</span>
-        <span className="text-[var(--accent2)]">{suffix}</span>
+        <span className="opacity-60">{suffix}</span>
       </p>
       <p className="mt-3 font-mono text-[10px] uppercase tracking-[.22em] text-slate-500">{label}</p>
     </div>
@@ -150,14 +150,14 @@ const CapabilityCard = ({ cap, index }) => {
   const isCyan = cap.accent === 'cyan';
 
   return (
-    <article ref={ref} className="glass-card group rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(140,214,255,.12)]">
+    <article ref={ref} className="glass-card group rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(201,169,110,.10)]">
       {/* Hover glow */}
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background: isCyan
-            ? 'radial-gradient(circle at 0% 0%, rgba(140,214,255,.07), transparent 65%)'
-            : 'radial-gradient(circle at 0% 0%, rgba(214,245,122,.06), transparent 65%)',
+            ? 'radial-gradient(circle at 0% 0%, rgba(201,169,110,.07), transparent 65%)'
+            : 'radial-gradient(circle at 0% 0%, rgba(138,92,246,.06), transparent 65%)',
         }}
         aria-hidden="true"
       />
@@ -209,7 +209,7 @@ const ProjectCard = ({ project, index }) => {
           {img ? (
             <SmartImage src={img} alt={project.title} className="project-card-img" />
           ) : (
-            <div className="project-card-img bg-[radial-gradient(circle_at_30%_30%,rgba(140,214,255,.15),transparent_50%)] flex items-center justify-center">
+            <div className="project-card-img bg-[radial-gradient(circle_at_30%_30%,rgba(201,169,110,.10),transparent_50%)] flex items-center justify-center">
               <span className="font-mono text-xs uppercase tracking-widest text-slate-600">No preview</span>
             </div>
           )}
@@ -255,10 +255,10 @@ const TestimonialCard = ({ testimonial, featured = false, index = 0 }) => {
     <figure ref={ref} className={`glass-card rounded-2xl relative overflow-hidden ${featured ? 'p-8 md:p-10' : 'p-6'}`}>
       {/* Corner accent */}
       <div className="absolute top-0 left-0 w-12 h-12 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-0 left-0 w-px h-6 bg-[var(--accent2)]" />
-        <div className="absolute top-0 left-0 h-px w-6 bg-[var(--accent2)]" />
+        <div className="absolute top-0 left-0 w-px h-6 bg-[var(--accent)]" />
+        <div className="absolute top-0 left-0 h-px w-6 bg-[var(--accent)]" />
       </div>
-      <Quote className={`${featured ? 'mb-5 h-8 w-8' : 'mb-4 h-6 w-6'} text-[var(--accent2)]`} aria-hidden="true" />
+      <Quote className={`${featured ? 'mb-5 h-8 w-8' : 'mb-4 h-6 w-6'} text-[var(--accent)]`} aria-hidden="true" />
       <blockquote className={`font-heading text-white ${featured ? 'text-xl leading-8 md:text-2xl' : 'text-base leading-7'} ${!featured && 'line-clamp-5'}`}>
         {text}
       </blockquote>
@@ -401,7 +401,7 @@ const HomePage = () => {
         {/* ── Stats ── */}
         <section
           className="relative py-16 px-5 md:py-24 md:px-10"
-          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.07) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201,169,110,.06) 0%, transparent 70%)' }}
         >
           <div className="mx-auto max-w-6xl">
             <div className="mb-12 grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-end">
@@ -432,7 +432,7 @@ const HomePage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
-              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.04) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
@@ -441,9 +441,9 @@ const HomePage = () => {
           />
           <div className="relative mx-auto max-w-5xl text-center" ref={missionRef} style={{ perspective: '700px' }}>
             <div className="flex items-center justify-center gap-3 mb-8">
-              <span className="status-dot status-dot-cyan" />
+              <span className="status-dot status-dot" />
               <span className="hud-label">Studio Statement 2025</span>
-              <span className="status-dot status-dot-cyan" />
+              <span className="status-dot status-dot" />
             </div>
             <h2
               className="font-heading text-[clamp(2.2rem,9vw,8rem)] font-black uppercase leading-[.85] tracking-[-.06em] text-white"
@@ -464,7 +464,7 @@ const HomePage = () => {
             </p>
             <Link
               to="/over-ons"
-              className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-[rgba(140,214,255,.25)] px-6 py-3 text-sm font-bold uppercase tracking-[.14em] text-[var(--accent)] transition hover:bg-[rgba(140,214,255,.08)] hover:border-[rgba(140,214,255,.5)]"
+              className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-[rgba(201,169,110,.22)] px-6 py-3 text-sm font-bold uppercase tracking-[.14em] text-[var(--accent)] transition hover:bg-[rgba(201,169,110,.07)] hover:border-[rgba(201,169,110,.48)]"
             >
               Over ons <ArrowRight size={15} />
             </Link>
@@ -511,7 +511,7 @@ const HomePage = () => {
         <section className="relative py-24 px-5 md:px-10">
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 55% 55% at 80% 40%, rgba(14,165,233,.05), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 55% 55% at 80% 40%, rgba(201,169,110,.05), transparent)' }}
             aria-hidden="true"
           />
           <div className="relative mx-auto max-w-6xl">
@@ -558,7 +558,7 @@ const HomePage = () => {
         <section
           ref={procRef}
           className="relative py-24 px-5 md:px-10"
-          style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(214,245,122,.04) 0%, transparent 60%)' }}
+          style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(138,92,246,.04) 0%, transparent 60%)' }}
         >
           <div className="mx-auto max-w-6xl">
             <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-end">
@@ -579,7 +579,7 @@ const HomePage = () => {
                 <div key={step.num} className="process-step glass-card rounded-2xl p-6 relative overflow-hidden">
                   <span className="feature-num absolute -top-1 right-2 select-none pointer-events-none">{step.num}</span>
                   <div className="relative">
-                    <span className="font-mono text-[10px] uppercase tracking-[.24em] text-[var(--accent2)]">{step.num}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[.24em] text-[var(--accent)]">{step.num}</span>
                     <h3 className="mt-3 font-heading text-lg font-bold text-white leading-tight">{step.title}</h3>
                     <p className="mt-3 text-sm leading-7 text-slate-400">{step.desc}</p>
                   </div>
@@ -602,7 +602,7 @@ const HomePage = () => {
           <section className="relative py-24 px-5 md:px-10">
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(14,165,233,.05), transparent)' }}
+              style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(201,169,110,.05), transparent)' }}
               aria-hidden="true"
             />
             <div className="relative mx-auto max-w-6xl">
@@ -631,8 +631,8 @@ const HomePage = () => {
 
         {/* ── CTA ── */}
         <section className="relative py-28 px-5 md:px-10 cta-section-bg">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.4)] to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.2)] to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(201,169,110,.35)] to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgba(201,169,110,.18)] to-transparent" />
 
           <div
             className="mx-auto max-w-4xl glass-card cyber-corner rounded-3xl p-6 md:p-10 lg:p-16 text-center relative overflow-hidden"

@@ -77,7 +77,7 @@ const ServicesPage = () => {
           <div
             className="pointer-events-none absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(201,169,110,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.06) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
               maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
@@ -112,7 +112,7 @@ const ServicesPage = () => {
                 key={label}
                 data-reveal
                 data-reveal-delay={i * 0.07}
-                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(140,214,255,.1)]"
+                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(201,169,110,.1)]"
               >
                 <CheckCircle className="text-[var(--accent2)]" size={18} />
                 <p className="font-bold text-white text-sm mt-1">{label}</p>
@@ -143,7 +143,7 @@ const ServicesPage = () => {
 
                   {/* Service header */}
                   <div className="bg-[rgba(8,16,30,.6)] backdrop-blur-sm px-7 py-6 md:px-10 md:py-8 border-b border-[var(--stroke)] grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
-                    <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--stroke)] bg-[rgba(140,214,255,.06)] text-[var(--accent)]">
+                    <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
                       <Icon size={28} />
                     </div>
                     <div>
@@ -191,8 +191,8 @@ const ServicesPage = () => {
                             key={pkg.id}
                             className={`relative rounded-[1.5rem] border p-5 transition-all duration-300 ${
                               highlighted
-                                ? 'border-[var(--accent2)] bg-[rgba(214,245,122,.06)] shadow-[0_0_40px_rgba(214,245,122,.1)]'
-                                : 'border-[var(--stroke)] bg-white/[.02] hover:border-[rgba(140,214,255,.3)]'
+                                ? 'border-[var(--accent2)] bg-[rgba(138,92,246,.06)] shadow-[0_0_40px_rgba(138,92,246,.1)]'
+                                : 'border-[var(--stroke)] bg-white/[.02] hover:border-[rgba(201,169,110,.3)]'
                             }`}
                           >
                             {highlighted && (pkg.badge || service.highlightLabel) && (
