@@ -4,7 +4,6 @@
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/notfound): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [Admin configuratie ontbreekt - Vos Web Designs](/login): No description available
 - [Algemene Voorwaarden - Vos Web Designs](/terms): Algemene Voorwaarden van Vos Web Designs. Lees hier onze leveringsvoorwaarden en condities.
-- [Contact - Vos Web Designs | Neem Contact Op](/contact): Klaar om uw project te starten? Neem contact op met Vos Web Designs voor een vrijblijvend gesprek.
 - [Diensten – Vos Web Designs](/services): Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs.
 - [Diensten & prijzen - Vos Admin](/servicepricing): No description available
 - [Geen toegang - Vos Web Designs](/forbidden): No description available
