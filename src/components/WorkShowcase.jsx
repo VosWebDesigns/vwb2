@@ -7,8 +7,7 @@ import SmartImage from '@/components/SmartImage';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ProjectCard = ({ project, index }) => {
-  const ref    = useRef(null);
+const ProjectCard = ({ project, index, cardRef }) => {
   const imgRef = useRef(null);
   const num    = String(index + 1).padStart(2, '0');
   const img    = project.featured_preview_image || project.hero_image;
@@ -22,9 +21,13 @@ const ProjectCard = ({ project, index }) => {
 
   return (
     <article
-      ref={ref}
+      ref={cardRef}
       className="relative flex-shrink-0 overflow-hidden"
-      style={{ width: 'clamp(300px, 72vw, 800px)' }}
+      style={{
+        width: 'clamp(300px, 72vw, 800px)',
+        border: '1px solid rgba(201,169,110,.06)',
+        willChange: 'transform, opacity',
+      }}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
@@ -132,6 +135,7 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
   const trackRef    = useRef(null);
   const headRef     = useRef(null);
   const progressRef = useRef(null);
+  const cardsRef    = useRef([]);
 
   useEffect(() => {
     const el = headRef.current;
@@ -165,6 +169,25 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
         onUpdate: (self) => {
           gsap.set(track, { x: getAmt() * self.progress });
           if (progress) progress.style.transform = `scaleX(${self.progress})`;
+
+          // Spotlight: emphasise the card closest to screen centre
+          const cards = cardsRef.current.filter(Boolean);
+          if (cards.length > 1) {
+            const activeIdx = Math.round(self.progress * (cards.length - 1));
+            cards.forEach((card, i) => {
+              const isActive = i === activeIdx;
+              gsap.to(card, {
+                scale: isActive ? 1.02 : 0.97,
+                opacity: isActive ? 1 : 0.65,
+                duration: 0.45,
+                ease: 'power2.out',
+                overwrite: 'auto',
+              });
+              card.style.borderColor = isActive
+                ? 'rgba(201,169,110,.28)'
+                : 'rgba(201,169,110,.06)';
+            });
+          }
         },
       });
 
@@ -248,7 +271,12 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
             style={{ paddingRight: '2rem' }}
           >
             {projects.map((p, i) => (
-              <ProjectCard key={p.id} project={p} index={i} />
+              <ProjectCard
+                key={p.id}
+                project={p}
+                index={i}
+                cardRef={(el) => { cardsRef.current[i] = el; }}
+              />
             ))}
           </div>
 

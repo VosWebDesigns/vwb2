@@ -15,6 +15,8 @@ import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import CookieBanner from '@/components/CookieBanner';
 import ScrollToTop from '@/components/ScrollToTop';
+import PageTransition from '@/components/PageTransition';
+import NoiseBg from '@/components/NoiseBg';
 import Cursor from '@/components/Cursor';
 import Preloader from '@/components/Preloader';
 import { capture } from '@/lib/sentryClient';
@@ -249,6 +251,8 @@ const RootLayout = () => {
         <div className="relative min-h-screen bg-[color:var(--bg)] text-[color:var(--ink)] flex flex-col">
           <GlobalSEO />
           <ScrollToTop />
+          <PageTransition />
+          <NoiseBg />
           <Cursor />
           {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
           <PublicAmbience />

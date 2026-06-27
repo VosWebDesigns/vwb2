@@ -24,21 +24,26 @@ const STATS = [
 
 /* ── Word-by-word statement reveal ── */
 const StatementSection = () => {
-  const ref = useRef(null);
+  const ref     = useRef(null);
+  const lineRef = useRef(null);
   const WORDS = ['Geen', 'templates.', 'Geen', 'compromissen.', 'Alleen', 'resultaat.'];
 
   useEffect(() => {
-    const el = ref.current;
+    const el   = ref.current;
+    const line = lineRef.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(el.querySelectorAll('.stmt-word'),
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: el, start: 'top 72%' },
+      });
+      tl.fromTo(el.querySelectorAll('.stmt-word'),
         { opacity: 0, y: 60, rotateX: 22 },
-        {
-          opacity: 1, y: 0, rotateX: 0,
-          duration: 1.1, stagger: 0.09, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 72%' },
-        }
+        { opacity: 1, y: 0, rotateX: 0, duration: 1.1, stagger: 0.09, ease: 'power3.out' }
       );
+      if (line) {
+        gsap.set(line, { scaleX: 0, transformOrigin: 'center' });
+        tl.to(line, { scaleX: 1, duration: 1.3, ease: 'power3.out' }, '-=0.4');
+      }
     });
     return () => ctx.revert();
   }, []);
@@ -92,6 +97,18 @@ const StatementSection = () => {
           Wij geloven dat elk bedrijf een website verdient die voelt als de toekomst —
           niet als een gratis theme. Maatwerk van A tot Z, zonder tussenlaag.
         </p>
+        {/* Animated signature line */}
+        <div
+          ref={lineRef}
+          className="mx-auto mt-14"
+          style={{
+            height: 1,
+            maxWidth: '32rem',
+            background: 'linear-gradient(to right, transparent, var(--accent), transparent)',
+            opacity: 0.5,
+          }}
+          aria-hidden="true"
+        />
       </div>
     </section>
   );

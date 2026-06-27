@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ArrowRight } from 'lucide-react';
+import MagneticButton from '@/components/MagneticButton';
 
 const METRICS = [
   { label: 'Lighthouse Score', value: '100', unit: '' },
@@ -19,6 +20,7 @@ const FuturisticHero = () => {
   const hudRef    = useRef(null);
   const botRef    = useRef(null);
   const subRef    = useRef(null);
+  const ruleRef   = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -40,7 +42,13 @@ const FuturisticHero = () => {
         }, i === 0 ? '-=0.3' : `-=0.72`);
       });
 
-      tl.to(subRef.current, { opacity: 1, y: 0, duration: 0.7 }, '-=0.4');
+      // Animated signature rule — draws left→right after last headline line
+      if (ruleRef.current) {
+        gsap.set(ruleRef.current, { scaleX: 0, transformOrigin: 'left' });
+        tl.to(ruleRef.current, { scaleX: 1, duration: 1.1, ease: 'power3.out' }, '-=0.45');
+      }
+
+      tl.to(subRef.current, { opacity: 1, y: 0, duration: 0.7 }, '-=0.7');
 
       if (hudRef.current) {
         tl.to(hudRef.current.children, {
@@ -189,13 +197,26 @@ const FuturisticHero = () => {
           </div>
         </h1>
 
+        {/* Animated signature rule */}
+        <div
+          ref={ruleRef}
+          className="mt-7 md:mt-9"
+          style={{
+            height: 1,
+            background: 'linear-gradient(to right, var(--accent), rgba(201,169,110,.12))',
+            maxWidth: '52ch',
+            transformOrigin: 'left',
+          }}
+          aria-hidden="true"
+        />
+
         {/* Sub label */}
         <p
           ref={subRef}
-          className="mt-7 font-mono text-[.68rem] uppercase tracking-[.26em] md:mt-9"
+          className="mt-4 font-mono text-[.68rem] uppercase tracking-[.26em]"
           style={{ color: 'rgba(201,169,110,.34)', maxWidth: '52ch' }}
         >
-          Three.js&nbsp;·&nbsp;GSAP&nbsp;·&nbsp;WebGL&nbsp;·&nbsp;Lenis&nbsp;·&nbsp;Premium web studio Nederland
+          Van concept tot lancering&nbsp;·&nbsp;Maatwerk digitale ervaringen die converteren.
         </p>
       </div>
 
@@ -242,12 +263,12 @@ const FuturisticHero = () => {
 
         {/* CTAs */}
         <div className="flex items-center gap-3">
-          <Link to="/contact" className="glow-button" data-magnetic="">
+          <MagneticButton to="/contact" className="glow-button">
             Start project <ArrowRight size={14} />
-          </Link>
-          <Link to="/portfolio" className="ghost-button hidden md:inline-flex">
+          </MagneticButton>
+          <MagneticButton to="/portfolio" className="ghost-button hidden md:inline-flex">
             Werk bekijken
-          </Link>
+          </MagneticButton>
         </div>
       </div>
     </section>

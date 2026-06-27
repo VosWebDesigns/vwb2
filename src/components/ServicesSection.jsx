@@ -2,41 +2,41 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Globe, Zap, Layers, Code2, Gauge } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SERVICES = [
   {
-    num: '01',
+    num: '01', Icon: Globe,
     name: '3D Web Experiences',
     short: 'Three.js · WebGL · Spline',
     desc: 'Realtime 3D scènes, particle systems en cinematische scroll-animaties. Wij zetten uw merk neer als marktleider via WebGL-gedreven ervaringen die concurrenten niet kunnen evenaren.',
     link: '/diensten',
   },
   {
-    num: '02',
+    num: '02', Icon: Zap,
     name: 'Motion & GSAP Design',
     short: 'GSAP · ScrollTrigger · Lenis',
     desc: 'Cinematische reveals, parallax en vloeiende pagina-overgangen op Apple-niveau. Elk element beweegt met intentie — animaties die uw verhaal vertellen zonder woorden.',
     link: '/diensten',
   },
   {
-    num: '03',
+    num: '03', Icon: Layers,
     name: 'Premium UI / UX',
     short: 'Figma · Design Systems · Glassmorphism',
     desc: 'Interface systemen die voelen als high-end software. Van typografie tot micro-interacties — wij ontwerpen ervaringen die gebruikers niet meer vergeten.',
     link: '/diensten',
   },
   {
-    num: '04',
+    num: '04', Icon: Code2,
     name: 'Full-Stack Development',
     short: 'React · Supabase · Vercel · TypeScript',
     desc: 'Van design naar live — in één team. Backend, database, serverless APIs en security. Geen externe partijen, geen communicatie-verlies, één verantwoordelijkheid.',
     link: '/diensten',
   },
   {
-    num: '05',
+    num: '05', Icon: Gauge,
     name: 'Performance & Launch',
     short: 'Core Web Vitals · SEO · Analytics',
     desc: 'Sub-2s laadtijden als standaard. Lighthouse 100, structured data, open graph — uw investering begint direct te renderen na elke launch.',
@@ -46,8 +46,10 @@ const SERVICES = [
 
 const ServiceItem = ({ service, index }) => {
   const [open, setOpen] = useState(false);
-  const descRef = useRef(null);
-  const rowRef  = useRef(null);
+  const descRef    = useRef(null);
+  const rowRef     = useRef(null);
+  const borderRef  = useRef(null);
+  const scanRef    = useRef(null);
 
   useEffect(() => {
     const el = rowRef.current;
@@ -67,27 +69,71 @@ const ServiceItem = ({ service, index }) => {
   }, [index]);
 
   useEffect(() => {
-    const el = descRef.current;
-    if (!el) return;
+    const desc   = descRef.current;
+    const border = borderRef.current;
+    if (!desc) return;
+
     if (open) {
-      gsap.fromTo(el,
+      gsap.fromTo(desc,
         { height: 0, opacity: 0 },
         { height: 'auto', opacity: 1, duration: 0.55, ease: 'power3.inOut' }
       );
+      if (border) {
+        gsap.fromTo(border,
+          { scaleY: 0, transformOrigin: 'top' },
+          { scaleY: 1, duration: 0.55, ease: 'power3.out', delay: 0.05 }
+        );
+      }
     } else {
-      gsap.to(el, { height: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut' });
+      gsap.to(desc,   { height: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut' });
+      if (border) gsap.to(border, { scaleY: 0, duration: 0.3, ease: 'power3.inOut' });
     }
   }, [open]);
 
+  const handleEnter = () => {
+    if (scanRef.current) {
+      gsap.fromTo(scanRef.current,
+        { scaleX: 0, transformOrigin: 'left' },
+        { scaleX: 1, duration: 0.55, ease: 'power3.out' }
+      );
+    }
+  };
+
+  const handleLeave = () => {
+    if (scanRef.current) {
+      gsap.to(scanRef.current, { scaleX: 0, transformOrigin: 'right', duration: 0.4, ease: 'power3.inOut' });
+    }
+  };
+
+  const { Icon } = service;
+
   return (
-    <div ref={rowRef} className="border-b" style={{ borderColor: 'rgba(201,169,110,.10)' }}>
+    <div
+      ref={rowRef}
+      className="relative border-b"
+      style={{ borderColor: 'rgba(201,169,110,.10)' }}
+    >
+      {/* Scan-line hover fill */}
+      <div
+        ref={scanRef}
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'linear-gradient(to right, rgba(201,169,110,.035), transparent)',
+          transformOrigin: 'left',
+          transform: 'scaleX(0)',
+        }}
+        aria-hidden="true"
+      />
+
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="group flex w-full items-center justify-between py-7 text-left md:py-9 transition-colors"
-        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--accent3)'; }}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        className="group relative flex w-full items-center justify-between py-7 text-left md:py-9 transition-colors"
         style={{ color: 'var(--accent3)' }}
+        onFocus={handleEnter}
+        onBlur={handleLeave}
       >
         {/* Number + Name */}
         <div className="flex items-baseline gap-5 md:gap-8">
@@ -98,21 +144,23 @@ const ServiceItem = ({ service, index }) => {
             {service.num}
           </span>
           <span
-            className="font-heading font-black uppercase leading-none tracking-[-0.05em] transition-colors duration-300"
+            className="font-heading font-black uppercase leading-none tracking-[-0.05em] transition-colors duration-300 group-hover:text-[var(--accent)]"
             style={{ fontSize: 'clamp(1.6rem, 4.5vw, 5rem)' }}
           >
             {service.name}
           </span>
         </div>
 
-        {/* Right: tag + arrow */}
+        {/* Right: icon + arrow */}
         <div className="flex items-center gap-4 shrink-0 ml-4">
-          <span
-            className="hidden font-mono text-[.6rem] uppercase tracking-[.22em] lg:block"
-            style={{ color: 'rgba(201,169,110,.35)' }}
-          >
-            {service.short}
-          </span>
+          <Icon
+            size={16}
+            className="hidden lg:block transition-all duration-400"
+            style={{
+              color: open ? 'var(--accent3)' : 'rgba(201,169,110,.35)',
+              transform: open ? 'scale(1.2)' : 'scale(1)',
+            }}
+          />
           <ArrowUpRight
             size={20}
             className="transition-all duration-400"
@@ -125,7 +173,19 @@ const ServiceItem = ({ service, index }) => {
       </button>
 
       {/* Expandable description */}
-      <div ref={descRef} style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
+      <div ref={descRef} className="relative" style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
+        {/* Left border that draws downward on expand */}
+        <div
+          ref={borderRef}
+          className="absolute left-0 top-0 bottom-0"
+          style={{
+            width: 2,
+            background: 'linear-gradient(to bottom, var(--accent), transparent)',
+            transformOrigin: 'top',
+            transform: 'scaleY(0)',
+          }}
+          aria-hidden="true"
+        />
         <div className="pb-8 pl-[calc(clamp(.6rem,1vw,.75rem)+1.25rem+2rem)] md:pl-[calc(clamp(.6rem,1vw,.75rem)+2rem+2.5rem)] flex items-start justify-between gap-8">
           <div className="max-w-2xl">
             <p className="text-base leading-[1.85]" style={{ color: 'rgba(240,235,227,.5)' }}>
@@ -220,6 +280,14 @@ const ServicesSection = () => {
       {SERVICES.map((s, i) => (
         <ServiceItem key={s.num} service={s} index={i} />
       ))}
+
+      {/* Footer statement */}
+      <p
+        className="mt-10 font-mono text-[.62rem] uppercase tracking-[.38em]"
+        style={{ color: 'rgba(201,169,110,.22)' }}
+      >
+        — Alles als maatwerk · geen standaard pakketten
+      </p>
     </section>
   );
 };
