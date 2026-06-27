@@ -3,7 +3,9 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, CheckCircle, Cpu, Globe, Layers, Quote, Shield, Zap } from 'lucide-react';
+import {
+  ArrowRight, CheckCircle, Cpu, Globe, Layers, Quote, Shield, Zap, ArrowUpRight,
+} from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import SmartImage from '@/components/SmartImage';
 import FuturisticHero from '@/components/FuturisticHero';
@@ -25,36 +27,42 @@ const CAPABILITIES = [
     title: '3D Web Experiences',
     description: 'Realtime Three.js / WebGL scènes, particle systems en cinematische scroll animaties die bezoekers omhullen.',
     tag: 'Three.js · WebGL',
+    accent: 'cyan',
   },
   {
     icon: <Layers size={22} />,
     title: 'Glassmorphism UI',
     description: 'Interface systemen met backdrop-blur, floating grids en premium glassmorphism panels — als een futuristisch OS.',
     tag: 'Figma · CSS3',
+    accent: 'lime',
   },
   {
     icon: <Zap size={22} />,
     title: 'GSAP Animaties',
     description: 'Cinematische reveals, ScrollTrigger-gedreven parallax en gestaggerde typografie animaties op Apple-niveau.',
     tag: 'GSAP · ScrollTrigger',
+    accent: 'cyan',
   },
   {
     icon: <Cpu size={22} />,
     title: 'Supabase Backend',
     description: 'Realtime database, auth, en opslag — schaalbaar en veilig direct vanuit de browser zonder tussenlaag.',
     tag: 'Supabase · PostgreSQL',
+    accent: 'lime',
   },
   {
     icon: <Shield size={22} />,
     title: 'Performance & SEO',
     description: 'Vite-gebundeld, code-split en geoptimaliseerd voor Core Web Vitals. Sub-2-seconde laadtijden standaard.',
     tag: 'Vite · Lighthouse 100',
+    accent: 'cyan',
   },
   {
     icon: <CheckCircle size={22} />,
     title: 'Full-service Studio',
     description: 'Van strategie en wireframes tot live deployment en groei-analyses. Eén team, geen tussenpersonen.',
     tag: 'End-to-end',
+    accent: 'lime',
   },
 ];
 
@@ -66,46 +74,60 @@ const PROCESS = [
 ];
 
 const STATS = [
-  { value: '48', suffix: 'u', label: 'Gemiddelde doorlooptijd design' },
-  { value: '3×', suffix: '', label: 'Meer conversies vs template-sites' },
-  { value: '99', suffix: '%', label: 'Klant-tevredenheidsscore' },
-  { value: '<2', suffix: 's', label: 'Gemiddelde laadtijd' },
+  { value: 48,   suffix: 'u',  label: 'Gemiddelde doorlooptijd design', prefix: '' },
+  { value: 3,    suffix: '×',  label: 'Meer conversies vs template-sites', prefix: '' },
+  { value: 99,   suffix: '%',  label: 'Klant-tevredenheidsscore', prefix: '' },
+  { value: 2,    suffix: 's',  label: 'Gemiddelde laadtijd', prefix: '<' },
 ];
 
-const StatCard = ({ value, suffix, label, index }) => {
-  const ref = useRef(null);
+/* ── Animated stat counter ── */
+const StatCard = ({ value, suffix, prefix, label, index }) => {
+  const ref    = useRef(null);
+  const numRef = useRef(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const el    = ref.current;
+    const numEl = numRef.current;
+    if (!el || !numEl) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        el,
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: el, start: 'top 85%' },
+      });
+      tl.fromTo(el,
         { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.7, delay: index * 0.12, ease: 'power3.out' }
+      ).fromTo({ n: 0 },
+        { n: 0 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.7,
-          delay: index * 0.1,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 85%' },
-        }
+          n: value,
+          duration: 1.4,
+          ease: 'power2.out',
+          onUpdate: function () { numEl.textContent = Math.round(this.targets()[0].n); },
+        },
+        '<0.3'
       );
     });
     return () => ctx.revert();
-  }, [index]);
+  }, [index, value]);
 
   return (
-    <div ref={ref} className="glass-card rounded-2xl p-6 text-center">
-      <p className="stat-num text-[clamp(2.8rem,6vw,5rem)]">
-        {value}
+    <div ref={ref} className="glass-card cyber-corner rounded-2xl p-6 text-center relative overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: 'radial-gradient(circle at 50% 0%, rgba(140,214,255,.08), transparent 70%)' }}
+        aria-hidden="true"
+      />
+      <p className="stat-num text-[clamp(2.6rem,5vw,4.5rem)] leading-none tabular-nums">
+        <span className="text-[var(--accent2)]">{prefix}</span>
+        <span ref={numRef}>{value}</span>
         <span className="text-[var(--accent2)]">{suffix}</span>
       </p>
-      <p className="mt-2 font-mono text-[11px] uppercase tracking-[.2em] text-slate-400">{label}</p>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[.22em] text-slate-500">{label}</p>
     </div>
   );
 };
 
+/* ── Capability card ── */
 const CapabilityCard = ({ cap, index }) => {
   const ref = useRef(null);
 
@@ -113,16 +135,11 @@ const CapabilityCard = ({ cap, index }) => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        el,
+      gsap.fromTo(el,
         { opacity: 0, y: 36, scale: 0.96 },
         {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.7,
-          delay: (index % 3) * 0.12,
-          ease: 'power3.out',
+          opacity: 1, y: 0, scale: 1, duration: 0.7,
+          delay: (index % 3) * 0.12, ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 88%' },
         }
       );
@@ -130,20 +147,42 @@ const CapabilityCard = ({ cap, index }) => {
     return () => ctx.revert();
   }, [index]);
 
+  const isCyan = cap.accent === 'cyan';
+
   return (
-    <article ref={ref} className="glass-card rounded-2xl p-6 flex flex-col gap-4">
-      <div className="flex items-start gap-4">
-        <div className="capability-icon-wrap text-[var(--accent)]">{cap.icon}</div>
+    <article ref={ref} className="glass-card group rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(140,214,255,.12)]">
+      {/* Hover glow */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background: isCyan
+            ? 'radial-gradient(circle at 0% 0%, rgba(140,214,255,.07), transparent 65%)'
+            : 'radial-gradient(circle at 0% 0%, rgba(214,245,122,.06), transparent 65%)',
+        }}
+        aria-hidden="true"
+      />
+      {/* Top accent line on hover */}
+      <div
+        className={`absolute inset-x-0 top-0 h-px scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${isCyan ? 'bg-[var(--accent)]' : 'bg-[var(--accent2)]'}`}
+        aria-hidden="true"
+      />
+      <div className="flex items-start gap-4 relative">
+        <div
+          className={`capability-icon-wrap ${isCyan ? 'text-[var(--accent)]' : 'text-[var(--accent2)]'}`}
+        >
+          {cap.icon}
+        </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-heading text-lg font-bold text-white leading-tight">{cap.title}</h3>
           <span className="holo-tag mt-2 text-[10px]">{cap.tag}</span>
         </div>
       </div>
-      <p className="text-sm leading-7 text-slate-400">{cap.description}</p>
+      <p className="text-sm leading-7 text-slate-400 relative">{cap.description}</p>
     </article>
   );
 };
 
+/* ── Project card ── */
 const ProjectCard = ({ project, index }) => {
   const ref = useRef(null);
   const img = project.featured_preview_image || project.hero_image;
@@ -152,15 +191,10 @@ const ProjectCard = ({ project, index }) => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        el,
+      gsap.fromTo(el,
         { opacity: 0, y: 40 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          delay: index * 0.12,
-          ease: 'power3.out',
+          opacity: 1, y: 0, duration: 0.8, delay: index * 0.12, ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 88%' },
         }
       );
@@ -171,18 +205,16 @@ const ProjectCard = ({ project, index }) => {
   return (
     <article ref={ref} className="project-card group">
       <Link to={`/portfolio/${project.id}`} className="block">
-        <div className="overflow-hidden">
+        <div className="overflow-hidden relative">
           {img ? (
-            <SmartImage
-              src={img}
-              alt={project.title}
-              className="project-card-img"
-            />
+            <SmartImage src={img} alt={project.title} className="project-card-img" />
           ) : (
             <div className="project-card-img bg-[radial-gradient(circle_at_30%_30%,rgba(140,214,255,.15),transparent_50%)] flex items-center justify-center">
               <span className="font-mono text-xs uppercase tracking-widest text-slate-600">No preview</span>
             </div>
           )}
+          {/* Scan overlay on hover */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_40%,rgba(2,8,16,.6))] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </div>
         <div className="p-5">
           <span className="holo-tag text-[10px]">{project.categories?.name || 'Maatwerk'}</span>
@@ -190,8 +222,8 @@ const ProjectCard = ({ project, index }) => {
           {project.short_description && (
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">{project.short_description}</p>
           )}
-          <div className="mt-4 flex items-center gap-1 font-mono text-[11px] uppercase tracking-[.18em] text-[var(--accent)] transition-all duration-300 group-hover:gap-2">
-            Open case <ArrowRight size={12} />
+          <div className="mt-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[.18em] text-[var(--accent)] transition-all duration-300 group-hover:gap-2.5">
+            Open case <ArrowUpRight size={12} />
           </div>
         </div>
       </Link>
@@ -199,23 +231,19 @@ const ProjectCard = ({ project, index }) => {
   );
 };
 
+/* ── Testimonial card ── */
 const TestimonialCard = ({ testimonial, featured = false, index = 0 }) => {
-  const ref = useRef(null);
+  const ref  = useRef(null);
   const text = testimonial?.text?.trim() || 'Reviewtekst ontbreekt';
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        el,
+      gsap.fromTo(el,
         { opacity: 0, y: 28 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.7,
-          delay: index * 0.1,
-          ease: 'power3.out',
+          opacity: 1, y: 0, duration: 0.7, delay: index * 0.12, ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 88%' },
         }
       );
@@ -224,14 +252,14 @@ const TestimonialCard = ({ testimonial, featured = false, index = 0 }) => {
   }, [index]);
 
   return (
-    <figure ref={ref} className={`glass-card rounded-2xl ${featured ? 'p-8 md:p-10' : 'p-6'}`}>
-      <Quote
-        className={`${featured ? 'mb-5 h-8 w-8' : 'mb-4 h-6 w-6'} text-[var(--accent2)]`}
-        aria-hidden="true"
-      />
-      <blockquote
-        className={`font-heading text-white ${featured ? 'text-xl leading-8 md:text-2xl' : 'text-base leading-7'} ${!featured && 'line-clamp-5'}`}
-      >
+    <figure ref={ref} className={`glass-card rounded-2xl relative overflow-hidden ${featured ? 'p-8 md:p-10' : 'p-6'}`}>
+      {/* Corner accent */}
+      <div className="absolute top-0 left-0 w-12 h-12 overflow-hidden" aria-hidden="true">
+        <div className="absolute top-0 left-0 w-px h-6 bg-[var(--accent2)]" />
+        <div className="absolute top-0 left-0 h-px w-6 bg-[var(--accent2)]" />
+      </div>
+      <Quote className={`${featured ? 'mb-5 h-8 w-8' : 'mb-4 h-6 w-6'} text-[var(--accent2)]`} aria-hidden="true" />
+      <blockquote className={`font-heading text-white ${featured ? 'text-xl leading-8 md:text-2xl' : 'text-base leading-7'} ${!featured && 'line-clamp-5'}`}>
         {text}
       </blockquote>
       <figcaption className="mt-5 font-mono text-[11px] uppercase tracking-[.22em] text-[var(--accent)]">
@@ -243,17 +271,24 @@ const TestimonialCard = ({ testimonial, featured = false, index = 0 }) => {
 };
 
 const SectionLabel = ({ children }) => (
-  <p className="section-eyebrow mb-4">{children}</p>
+  <div className="flex items-center gap-3 mb-4">
+    <span className="status-dot" />
+    <p className="section-eyebrow">{children}</p>
+  </div>
 );
 
-const HomePage = () => {
-  const [projects, setProjects] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Divider = ({ lime = false }) => (
+  <div className={`h-px w-full ${lime ? 'divider-lime' : 'divider-glow'}`} aria-hidden="true" />
+);
 
-  const statsRef = useRef(null);
-  const capRef = useRef(null);
-  const procRef = useRef(null);
+/* ── Main page ── */
+const HomePage = () => {
+  const [projects,     setProjects]     = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading,      setLoading]      = useState(true);
+
+  const procRef    = useRef(null);
+  const missionRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -303,29 +338,58 @@ const HomePage = () => {
     return () => { mounted = false; };
   }, []);
 
+  /* Mission statement reveal */
   useEffect(() => {
+    const el = missionRef.current;
+    if (!el) return;
     const ctx = gsap.context(() => {
-      if (procRef.current) {
-        const steps = procRef.current.querySelectorAll('.process-step');
-        steps.forEach((step, i) => {
-          gsap.fromTo(
-            step,
-            { opacity: 0, x: i % 2 === 0 ? -40 : 40 },
-            {
-              opacity: 1,
-              x: 0,
-              duration: 0.8,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: step, start: 'top 85%' },
-            }
-          );
-        });
+      const words = el.querySelectorAll('.mission-word');
+      gsap.fromTo(words,
+        { opacity: 0, y: 50, rotateX: 25 },
+        {
+          opacity: 1, y: 0, rotateX: 0, duration: 1.1, stagger: 0.06, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 78%' },
+        }
+      );
+    });
+    return () => ctx.revert();
+  }, []);
+
+  /* Process steps reveal */
+  useEffect(() => {
+    const el = procRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      const steps = el.querySelectorAll('.process-step');
+      steps.forEach((step, i) => {
+        gsap.fromTo(step,
+          { opacity: 0, x: -44 },
+          {
+            opacity: 1, x: 0, duration: 0.85, ease: 'power3.out',
+            scrollTrigger: { trigger: step, start: 'top 86%' },
+            delay: i * 0.08,
+          }
+        );
+      });
+
+      /* Animate the vertical connector line drawing down */
+      const line = el.querySelector('.process-line');
+      if (line) {
+        gsap.fromTo(line,
+          { scaleY: 0, transformOrigin: 'top center' },
+          {
+            scaleY: 1, duration: 1.8, ease: 'power2.out',
+            scrollTrigger: { trigger: line, start: 'top 85%' },
+          }
+        );
       }
     });
     return () => ctx.revert();
   }, []);
 
   const smallTestimonials = useMemo(() => testimonials.slice(1, 3), [testimonials]);
+
+  const missionWords = ['Geen', 'templates.', 'Geen', 'compromissen.', 'Alleen', 'resultaat.'];
 
   return (
     <>
@@ -338,6 +402,7 @@ const HomePage = () => {
       </Helmet>
 
       <main className="overflow-hidden">
+
         {/* ── Hero ── */}
         <FuturisticHero />
 
@@ -346,15 +411,11 @@ const HomePage = () => {
 
         {/* ── Stats ── */}
         <section
-          ref={statsRef}
-          className="relative py-24 px-5 md:px-10"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.07) 0%, transparent 70%)',
-          }}
+          className="relative py-28 px-5 md:px-10"
+          style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.07) 0%, transparent 70%)' }}
         >
           <div className="mx-auto max-w-6xl">
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <SectionLabel>In cijfers</SectionLabel>
               <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
                 Resultaten die{' '}
@@ -369,15 +430,67 @@ const HomePage = () => {
           </div>
         </section>
 
+        <Divider />
+
+        {/* ── Mission Statement ── */}
+        <section className="relative py-24 px-5 md:px-10 overflow-hidden">
+          {/* Faint grid */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-15"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+              backgroundSize: '80px 80px',
+              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
+            }}
+            aria-hidden="true"
+          />
+          <div className="relative mx-auto max-w-5xl text-center" ref={missionRef} style={{ perspective: '700px' }}>
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <span className="status-dot status-dot-cyan" />
+              <span className="hud-label">Studio Statement 2025</span>
+              <span className="status-dot status-dot-cyan" />
+            </div>
+            <h2
+              className="font-heading text-[clamp(3rem,9vw,8rem)] font-black uppercase leading-[.85] tracking-[-.06em] text-white"
+              aria-label={missionWords.join(' ')}
+            >
+              {missionWords.map((w, i) => (
+                <span
+                  key={i}
+                  className={`mission-word inline-block mr-[0.22em] ${i % 2 !== 0 ? 'gradient-text-full' : ''}`}
+                >
+                  {w}
+                </span>
+              ))}
+            </h2>
+            <p className="mx-auto mt-8 max-w-2xl text-base leading-8 text-slate-400">
+              Wij geloven dat elk bedrijf een website verdient die voelt als de toekomst —
+              niet als een gratis theme. Maatwerk van A tot Z, zonder tussenlaag.
+            </p>
+            <Link
+              to="/over-ons"
+              className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-[rgba(140,214,255,.25)] px-6 py-3 text-sm font-bold uppercase tracking-[.14em] text-[var(--accent)] transition hover:bg-[rgba(140,214,255,.08)] hover:border-[rgba(140,214,255,.5)]"
+            >
+              Over ons <ArrowRight size={15} />
+            </Link>
+          </div>
+        </section>
+
+        <Divider lime />
+
         {/* ── Capabilities ── */}
-        <section
-          ref={capRef}
-          className="relative py-24 px-5 md:px-10 sci-fi-grid"
-          style={{ '--tw-bg-opacity': 1 }}
-        >
-          <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]" aria-hidden="true" />
+        <section className="relative py-24 px-5 md:px-10 sci-fi-grid">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              maskImage: 'radial-gradient(ellipse at center, black 20%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse at center, black 20%, transparent 75%)',
+            }}
+            aria-hidden="true"
+          />
           <div className="relative z-10 mx-auto max-w-6xl">
-            <div className="mb-14 max-w-3xl">
+            <div className="mb-16 max-w-3xl">
               <SectionLabel>Wat wij bouwen</SectionLabel>
               <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
                 De complete{' '}
@@ -393,14 +506,25 @@ const HomePage = () => {
                 <CapabilityCard key={cap.title} cap={cap} index={i} />
               ))}
             </div>
+            <div className="mt-10 flex justify-start">
+              <Link to="/diensten" className="ghost-button">
+                Alle diensten <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         </section>
 
+        <Divider />
+
         {/* ── Featured Projects ── */}
         <section className="relative py-24 px-5 md:px-10">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.3)] to-transparent" />
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-14 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse 55% 55% at 80% 40%, rgba(14,165,233,.05), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="relative mx-auto max-w-6xl">
+            <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <SectionLabel>Portfolio</SectionLabel>
                 <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
@@ -408,10 +532,7 @@ const HomePage = () => {
                   <span className="gradient-text-cyan">projecten</span>
                 </h2>
               </div>
-              <Link
-                to="/portfolio"
-                className="ghost-button shrink-0 self-start sm:self-auto"
-              >
+              <Link to="/portfolio" className="ghost-button shrink-0 self-start sm:self-auto">
                 Alle projecten <ArrowRight size={15} />
               </Link>
             </div>
@@ -419,20 +540,13 @@ const HomePage = () => {
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="glass-card rounded-2xl aspect-[4/5] animate-pulse"
-                  />
+                  <div key={i} className="glass-card rounded-2xl aspect-[4/5] animate-pulse" />
                 ))}
               </div>
             ) : projects.length === 0 ? (
               <div className="glass-card rounded-2xl p-10 text-center">
-                <p className="font-mono text-xs uppercase tracking-widest text-slate-500 mb-4">
-                  Nog geen projecten
-                </p>
-                <p className="text-slate-400 mb-6">
-                  Voeg projecten toe via de admin om ze hier te tonen.
-                </p>
+                <p className="font-mono text-xs uppercase tracking-widest text-slate-500 mb-4">Nog geen projecten</p>
+                <p className="text-slate-400 mb-6">Voeg projecten toe via de admin om ze hier te tonen.</p>
                 <Link to="/contact" className="glow-button">
                   Start uw eerste project <ArrowRight size={15} />
                 </Link>
@@ -447,18 +561,16 @@ const HomePage = () => {
           </div>
         </section>
 
+        <Divider lime />
+
         {/* ── Process ── */}
         <section
           ref={procRef}
           className="relative py-24 px-5 md:px-10"
-          style={{
-            background:
-              'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(214,245,122,.04) 0%, transparent 60%)',
-          }}
+          style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(214,245,122,.04) 0%, transparent 60%)' }}
         >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(214,245,122,.25)] to-transparent" />
           <div className="mx-auto max-w-6xl">
-            <div className="mb-14 max-w-2xl">
+            <div className="mb-16 max-w-2xl">
               <SectionLabel>Werkwijze</SectionLabel>
               <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
                 Vier stappen naar{' '}
@@ -469,36 +581,60 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="relative pl-0 md:pl-0">
-              <div className="process-connector hidden md:block" />
-              <div className="flex flex-col gap-6 md:pl-20">
+            {/* Timeline layout */}
+            <div className="relative">
+              {/* Vertical connector */}
+              <div
+                className="process-line absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--accent)] via-[var(--accent2)] to-transparent md:left-7"
+                aria-hidden="true"
+              />
+
+              <div className="flex flex-col gap-6 pl-14 md:pl-20">
                 {PROCESS.map((step, i) => (
                   <div key={step.num} className="process-step glass-card rounded-2xl p-6 md:p-8 relative">
-                    <div className="absolute -left-6 top-6 hidden md:flex items-center justify-center w-12 h-12 rounded-full border border-[var(--accent)] bg-[#020810]">
-                      <span className="font-mono text-xs font-bold text-[var(--accent)]">{step.num}</span>
+                    {/* Step number bubble */}
+                    <div className="absolute -left-[3.25rem] top-6 flex items-center justify-center w-10 h-10 rounded-full border border-[var(--accent)] bg-[#020810] md:-left-[4.25rem] md:w-12 md:h-12">
+                      <span className="font-mono text-[10px] font-black text-[var(--accent)] md:text-xs">{step.num}</span>
                     </div>
+                    {/* Connector dot on the line */}
+                    <div
+                      className="absolute top-[1.75rem] -left-[2.05rem] w-2.5 h-2.5 rounded-full bg-[var(--accent2)] shadow-[0_0_10px_rgba(214,245,122,.8)] md:-left-[2.45rem]"
+                      aria-hidden="true"
+                    />
                     <div className="flex items-start gap-4">
-                      <div className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-[var(--accent)] bg-[rgba(12,22,40,.9)] shrink-0">
-                        <span className="font-mono text-[10px] font-bold text-[var(--accent)]">{step.num}</span>
-                      </div>
-                      <div>
-                        <h3 className="font-heading text-xl font-bold text-white">{step.title}</h3>
-                        <p className="mt-2 text-sm leading-7 text-slate-400">{step.desc}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="feature-num text-6xl">{step.num}</span>
+                          <h3 className="font-heading text-xl font-bold text-white">{step.title}</h3>
+                        </div>
+                        <p className="text-sm leading-7 text-slate-400">{step.desc}</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="mt-10 flex justify-start pl-14 md:pl-20">
+              <Link to="/werkwijze" className="ghost-button">
+                Volledige werkwijze <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         </section>
+
+        <Divider />
 
         {/* ── Testimonials ── */}
         {testimonials.length > 0 && (
           <section className="relative py-24 px-5 md:px-10">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.3)] to-transparent" />
-            <div className="mx-auto max-w-6xl">
-              <div className="mb-14">
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(14,165,233,.05), transparent)' }}
+              aria-hidden="true"
+            />
+            <div className="relative mx-auto max-w-6xl">
+              <div className="mb-16">
                 <SectionLabel>Klantreacties</SectionLabel>
                 <h2 className="display-xl text-[clamp(2.8rem,7vw,6rem)]">
                   Wat klanten{' '}
@@ -519,21 +655,26 @@ const HomePage = () => {
           </section>
         )}
 
+        <Divider lime />
+
         {/* ── CTA ── */}
         <section className="relative py-28 px-5 md:px-10 cta-section-bg">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.4)] to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgba(140,214,255,.2)] to-transparent" />
 
           <div
-            className="mx-auto max-w-4xl glass-card rounded-3xl p-10 md:p-16 text-center relative overflow-hidden"
+            className="mx-auto max-w-4xl glass-card cyber-corner rounded-3xl p-10 md:p-16 text-center relative overflow-hidden"
             style={{ animation: 'glow-pulse 4s ease-in-out infinite' }}
           >
             <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-40" aria-hidden="true" />
             <div className="relative z-10">
-              <span className="holo-tag mb-6 inline-flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent2)] animate-pulse" />
-                Beschikbaar voor nieuwe projecten
-              </span>
+              <div className="mb-6 flex items-center justify-center gap-2.5">
+                <span className="status-dot" />
+                <span className="holo-tag inline-flex">
+                  Beschikbaar voor nieuwe projecten
+                </span>
+                <span className="status-dot" />
+              </div>
               <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)] mt-4">
                 Klaar om te bouwen
                 <br />
@@ -553,6 +694,7 @@ const HomePage = () => {
             </div>
           </div>
         </section>
+
       </main>
     </>
   );

@@ -11,7 +11,11 @@ const ConfirmedPage = () => {
   return (
     <main className="cinema-bg flex min-h-screen items-center overflow-hidden px-5 py-24 md:px-8">
       <Helmet><title>Nieuwsbrief bevestigd | Vos Web Designs</title></Helmet>
-      <section className="glass-card relative z-10 mx-auto max-w-3xl rounded-3xl p-8 text-center md:p-12">
+      <section className="glass-card cyber-corner relative z-10 mx-auto max-w-3xl rounded-3xl p-8 text-center md:p-12">
+        <div className="flex items-center justify-center gap-2.5 mb-6">
+          <span className={`status-dot ${isProblem ? '' : ''}`} />
+          <span className="hud-label">Nieuwsbrief systeem</span>
+        </div>
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(140,214,255,.3)] bg-[rgba(140,214,255,.1)] text-[var(--accent)]">
           {isProblem ? <MailWarning size={34} /> : <CheckCircle2 size={34} />}
         </div>
