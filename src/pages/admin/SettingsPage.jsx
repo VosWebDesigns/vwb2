@@ -176,7 +176,7 @@ const SettingsPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="animate-spin text-[#38bdf8]" size={32} />
+        <Loader2 className="animate-spin text-[#8cd6ff]" size={32} />
       </div>
     );
   }
@@ -200,7 +200,7 @@ const SettingsPage = () => {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className="bg-[#38bdf8] text-black min-w-[140px]"
+          className="bg-[#8cd6ff] text-black min-w-[140px]"
         >
           {saving ? (
             <Loader2 className="animate-spin mr-2" size={18} />
@@ -212,38 +212,38 @@ const SettingsPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-[#111827] border border-gray-800 w-full justify-start h-auto flex-wrap p-2 gap-2 mb-6 rounded-lg">
+        <TabsList className="bg-[rgba(12,22,40,0.72)] border border-[rgba(140,214,255,0.12)] w-full justify-start h-auto flex-wrap p-2 gap-2 mb-6 rounded-lg">
           <TabsTrigger 
             value="general"
-            className="data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black text-gray-400"
           >
             <Globe size={16} className="mr-2" />
             Algemeen
           </TabsTrigger>
           <TabsTrigger 
             value="business"
-            className="data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black text-gray-400"
           >
             <Building2 size={16} className="mr-2" />
             Bedrijfsgegevens
           </TabsTrigger>
           <TabsTrigger 
             value="socials"
-            className="data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black text-gray-400"
           >
             <Share2 size={16} className="mr-2" />
             Social Media
           </TabsTrigger>
           <TabsTrigger 
             value="seo"
-            className="data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black text-gray-400"
           >
             <Search size={16} className="mr-2" />
             SEO
           </TabsTrigger>
           <TabsTrigger 
             value="notifications"
-            className="data-[state=active]:bg-[#38bdf8] data-[state=active]:text-black text-gray-400"
+            className="data-[state=active]:bg-[#8cd6ff] data-[state=active]:text-black text-gray-400"
           >
             <Bell size={16} className="mr-2" />
             Notificaties
@@ -253,7 +253,7 @@ const SettingsPage = () => {
         <div className="space-y-4">
           {/* General Tab */}
           <TabsContent value="general">
-            <Card className="bg-[#111827] border-gray-800">
+            <Card className="bg-[rgba(12,22,40,0.72)] border-[rgba(140,214,255,0.12)]">
               <CardHeader>
                 <CardTitle className="text-white">Algemene Informatie</CardTitle>
                 <CardDescription>Basisinstellingen voor je website.</CardDescription>
@@ -266,7 +266,7 @@ const SettingsPage = () => {
                     name="site_name" 
                     value={formData.site_name || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-2">
@@ -276,7 +276,7 @@ const SettingsPage = () => {
                     name="site_description" 
                     value={formData.site_description || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -288,7 +288,7 @@ const SettingsPage = () => {
                       type="email"
                       value={formData.contact_email || ''} 
                       onChange={handleInputChange} 
-                      className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                      className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                     />
                   </div>
                   <div className="grid gap-2">
@@ -298,18 +298,18 @@ const SettingsPage = () => {
                       name="contact_phone" 
                       value={formData.contact_phone || ''} 
                       onChange={handleInputChange} 
-                      className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                      className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                     />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="website" className="text-gray-300">Website URL</Label>
-                    <Input id="website" name="website" value={formData.website || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="website" name="website" value={formData.website || ''} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="logo_url" className="text-gray-300">Logo URL</Label>
-                    <Input id="logo_url" name="logo_url" value={formData.logo_url || ''} onChange={handleInputChange} placeholder="/logo.jpeg" className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="logo_url" name="logo_url" value={formData.logo_url || ''} onChange={handleInputChange} placeholder="/logo.jpeg" className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                 </div>
               </CardContent>
@@ -318,7 +318,7 @@ const SettingsPage = () => {
 
           {/* Business Tab */}
           <TabsContent value="business">
-            <Card className="bg-[#111827] border-gray-800">
+            <Card className="bg-[rgba(12,22,40,0.72)] border-[rgba(140,214,255,0.12)]">
               <CardHeader>
                 <CardTitle className="text-white">Bedrijfsgegevens</CardTitle>
                 <CardDescription>Deze gegevens worden getoond in de footer en op de contactpagina.</CardDescription>
@@ -331,7 +331,7 @@ const SettingsPage = () => {
                     name="address_street" 
                     value={formData.address_street || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid sm:grid-cols-3 gap-4">
@@ -342,7 +342,7 @@ const SettingsPage = () => {
                       name="address_city" 
                       value={formData.address_city || ''} 
                       onChange={handleInputChange} 
-                      className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                      className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                     />
                   </div>
                   <div className="grid gap-2">
@@ -352,7 +352,7 @@ const SettingsPage = () => {
                       name="address_postal_code" 
                       value={formData.address_postal_code || ''} 
                       onChange={handleInputChange} 
-                      className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                      className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                     />
                   </div>
                   <div className="grid gap-2">
@@ -362,18 +362,18 @@ const SettingsPage = () => {
                       name="address_country" 
                       value={formData.address_country || ''} 
                       onChange={handleInputChange} 
-                      className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                      className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                     />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="kvk" className="text-gray-300">KVK</Label>
-                    <Input id="kvk" name="kvk" value={formData.kvk || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="kvk" name="kvk" value={formData.kvk || ''} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="iban" className="text-gray-300">IBAN</Label>
-                    <Input id="iban" name="iban" value={formData.iban || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="iban" name="iban" value={formData.iban || ''} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                 </div>
               </CardContent>
@@ -382,7 +382,7 @@ const SettingsPage = () => {
 
           {/* Socials Tab */}
           <TabsContent value="socials">
-            <Card className="bg-[#111827] border-gray-800">
+            <Card className="bg-[rgba(12,22,40,0.72)] border-[rgba(140,214,255,0.12)]">
               <CardHeader>
                 <CardTitle className="text-white">Social Media</CardTitle>
                 <CardDescription>Links naar je social media profielen.</CardDescription>
@@ -396,7 +396,7 @@ const SettingsPage = () => {
                     placeholder="https://instagram.com/..."
                     value={formData.social_instagram || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-2">
@@ -407,7 +407,7 @@ const SettingsPage = () => {
                     placeholder="https://linkedin.com/in/..."
                     value={formData.social_linkedin || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-2">
@@ -418,7 +418,7 @@ const SettingsPage = () => {
                     placeholder="https://facebook.com/..."
                     value={formData.social_facebook || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-2">
@@ -429,7 +429,7 @@ const SettingsPage = () => {
                     placeholder="https://x.com/..."
                     value={formData.social_twitter || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-2">
@@ -440,7 +440,7 @@ const SettingsPage = () => {
                     placeholder="https://tiktok.com/@..."
                     value={formData.social_tiktok || ''}
                     onChange={handleInputChange}
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]"
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -451,7 +451,7 @@ const SettingsPage = () => {
                     placeholder="https://youtube.com/@..."
                     value={formData.social_youtube || ''}
                     onChange={handleInputChange}
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]"
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]"
                   />
                 </div>
               </CardContent>
@@ -460,7 +460,7 @@ const SettingsPage = () => {
 
           {/* SEO Tab */}
           <TabsContent value="seo">
-            <Card className="bg-[#111827] border-gray-800">
+            <Card className="bg-[rgba(12,22,40,0.72)] border-[rgba(140,214,255,0.12)]">
               <CardHeader>
                 <CardTitle className="text-white">SEO Instellingen</CardTitle>
                 <CardDescription>Optimaliseer je vindbaarheid in zoekmachines.</CardDescription>
@@ -468,7 +468,7 @@ const SettingsPage = () => {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="seo_title" className="text-gray-300">SEO titel</Label>
-                  <Input id="seo_title" name="seo_title" value={formData.seo_title || ''} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                  <Input id="seo_title" name="seo_title" value={formData.seo_title || ''} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="seo_meta_description" className="text-gray-300">Standaard Meta Beschrijving</Label>
@@ -478,7 +478,7 @@ const SettingsPage = () => {
                     rows={4}
                     value={formData.seo_meta_description || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                   <p className="text-xs text-gray-500">Wordt gebruikt als er geen specifieke pagina beschrijving is.</p>
                 </div>
@@ -490,21 +490,21 @@ const SettingsPage = () => {
                     placeholder="webdesign, portfolio, development..."
                     value={formData.seo_keywords || ''} 
                     onChange={handleInputChange} 
-                    className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" 
+                    className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" 
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="grid gap-2">
                     <Label htmlFor="default_payment_term_days" className="text-gray-300">Standaard betalingstermijn</Label>
-                    <Input id="default_payment_term_days" name="default_payment_term_days" type="number" value={formData.default_payment_term_days || 14} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="default_payment_term_days" name="default_payment_term_days" type="number" value={formData.default_payment_term_days || 14} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="default_vat_rate" className="text-gray-300">Standaard btw %</Label>
-                    <Input id="default_vat_rate" name="default_vat_rate" type="number" value={formData.default_vat_rate || 21} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="default_vat_rate" name="default_vat_rate" type="number" value={formData.default_vat_rate || 21} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="default_quote_validity_days" className="text-gray-300">Offerte geldigheid</Label>
-                    <Input id="default_quote_validity_days" name="default_quote_validity_days" type="number" value={formData.default_quote_validity_days || 14} onChange={handleInputChange} className="bg-black border-gray-700 text-white focus:border-[#38bdf8]" />
+                    <Input id="default_quote_validity_days" name="default_quote_validity_days" type="number" value={formData.default_quote_validity_days || 14} onChange={handleInputChange} className="bg-black border-[rgba(140,214,255,0.16)] text-white focus:border-[#8cd6ff]" />
                   </div>
                 </div>
               </CardContent>
@@ -513,13 +513,13 @@ const SettingsPage = () => {
 
           {/* Notifications Tab */}
           <TabsContent value="notifications">
-            <Card className="bg-[#111827] border-gray-800">
+            <Card className="bg-[rgba(12,22,40,0.72)] border-[rgba(140,214,255,0.12)]">
               <CardHeader>
                 <CardTitle className="text-white">Email Notificaties</CardTitle>
                 <CardDescription>Beheer waarvoor je notificaties wilt ontvangen.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between space-x-2 border-b border-gray-800 pb-4">
+                <div className="flex items-center justify-between space-x-2 border-b border-[rgba(140,214,255,0.12)] pb-4">
                   <div className="space-y-1">
                     <Label htmlFor="notify_new_project" className="text-white font-medium">Nieuw Project</Label>
                     <p className="text-sm text-gray-400">Ontvang een bevestiging wanneer je een nieuw project aanmaakt.</p>

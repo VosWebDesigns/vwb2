@@ -381,6 +381,29 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, 
 
 .mono { font-family: 'Space Mono', ui-monospace, monospace; }
 
+/* Admin: static futuristic-OS backdrop (no WebGL canvas in a working tool). */
+.admin-shell {
+  position: relative;
+  background:
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(140,214,255,.10), transparent 55%),
+    radial-gradient(ellipse 50% 50% at 0% 100%, rgba(214,245,122,.05), transparent 55%),
+    #060e1c;
+}
+.admin-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(140,214,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,214,255,.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 70% 20%, black 5%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 70% 20%, black 5%, transparent 70%);
+}
+.admin-shell > * { position: relative; z-index: 1; }
+
 @media (max-width: 767px) {
   .display-xl { letter-spacing: -.055em; }
 }
