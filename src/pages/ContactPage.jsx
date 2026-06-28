@@ -1,10 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { Mail, MessageCircle, Phone, Send } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
 import { trackAnalyticsEvent } from '@/components/CookieBanner';
-import { useReveal } from '@/hooks/useReveal';
 
 const initial = {
   name: '', email: '', phone: '', company: '', service: '', package: '', message: '',
@@ -21,13 +20,6 @@ const ContactPage = () => {
   const { settings } = useSettings();
   const [formData, setFormData] = useState(initial);
   const [status,   setStatus]   = useState('idle');
-  const rootRef = useRef(null);
-  useReveal(rootRef);
-
-  const completion = useMemo(() => {
-    const fields = ['name', 'email', 'service', 'message'];
-    return Math.round((fields.filter((f) => formData[f]?.trim()).length / fields.length) * 100);
-  }, [formData]);
 
   const handleChange = (event) =>
     setFormData((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -54,9 +46,9 @@ const ContactPage = () => {
   };
 
   const inputClass =
-    'w-full rounded-xl border border-[rgba(204,255,0,.12)] bg-[rgba(8,16,30,.7)] px-4 py-3.5 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(204,255,0,.12)]';
+    'w-full rounded-xl border border-[rgba(204,255,0,.12)] bg-[rgba(8,16,30,.7)] px-5 py-4 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(204,255,0,.12)]';
 
-  const labelClass = 'grid gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--accent)]';
+  const labelClass = 'grid gap-2.5 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--accent)]';
 
   const contactEmail = settings?.contact_email?.trim();
   const contactPhone = settings?.contact_phone?.trim();
@@ -69,147 +61,229 @@ const ContactPage = () => {
         <meta name="description" content="Klaar om uw project te starten? Neem contact op met Vos Web Designs voor een vrijblijvend gesprek." />
       </Helmet>
 
-      <main ref={rootRef} className="cinema-bg min-h-screen overflow-hidden pt-24">
-        <section className="cinematic-section relative overflow-hidden">
+      <main className="cinema-bg min-h-screen overflow-hidden pt-24">
+        <section className="relative overflow-hidden">
           {/* Background glow */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 70% 50% at 30% 30%, rgba(204,255,0,.06), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 70% at 20% 30%, rgba(204,255,0,.06), transparent)' }}
+            aria-hidden="true"
+          />
+          {/* Grid */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.018) 1px, transparent 1px)',
+              backgroundSize: '100px 100px',
+              maskImage: 'radial-gradient(ellipse 70% 50% at 30% 30%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 30% 30%, black, transparent)',
+            }}
             aria-hidden="true"
           />
 
-          <div className="cinematic-container relative z-10 grid gap-10 lg:grid-cols-[.85fr_1.15fr]">
+          <div className="relative z-10 grid gap-0 lg:grid-cols-[1fr_1.15fr] min-h-screen">
 
-            {/* ── Sidebar ── */}
-            <aside className="lg:sticky lg:top-28 lg:h-fit">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="status-dot" />
-                <p data-reveal className="section-eyebrow">Contact</p>
-              </div>
-              <h1 data-reveal className="display-xl mt-0 text-[clamp(3.2rem,8vw,7rem)]">
-                Start uw{' '}
-                <span className="gradient-text-full">project</span>.
-              </h1>
-              <p data-reveal className="mt-6 max-w-lg text-lg leading-8 text-slate-300">
-                Vertel wat u wilt bereiken. We denken mee over structuur, design, techniek en de slimste volgende stap.
-              </p>
+            {/* ── LEFT: sticky identity panel ── */}
+            <aside
+              className="flex flex-col justify-between px-5 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24 lg:sticky lg:top-0 lg:h-screen"
+              style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}
+            >
+              <div>
+                {/* HUD label */}
+                <div className="flex items-center gap-3 mb-10">
+                  <span className="status-dot" />
+                  <p className="font-mono text-[.6rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                    Contact
+                  </p>
+                </div>
 
-              {/* Contact info */}
-              <div data-reveal className="glass-card cyber-corner mt-8 rounded-2xl p-6 grid gap-3">
-                <span className="hud-label block mb-2">Directe contactgegevens</span>
-                {contactEmail && (
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="terminal-line flex items-center gap-3 text-slate-300 hover:text-[var(--accent)] transition"
+                {/* Large headline */}
+                <h1
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(2.8rem, 7vw, 7rem)',
+                    letterSpacing: '-.065em',
+                    lineHeight: 0.88,
+                    color: 'var(--accent3)',
+                    margin: 0,
+                  }}
+                >
+                  LATEN<br />WE<br />
+                  <em
+                    style={{
+                      fontFamily: '"Cormorant Garamond", serif',
+                      fontStyle: 'italic',
+                      fontWeight: 600,
+                      color: 'var(--accent)',
+                      fontSize: '1.04em',
+                      letterSpacing: '-.02em',
+                    }}
                   >
-                    <Mail size={14} className="shrink-0 text-[var(--accent)]" />
-                    {contactEmail}
-                  </a>
-                )}
-                {contactPhone && (
-                  <a
-                    href={`tel:${contactPhone.replace(/[^+\d]/g, '')}`}
-                    className="terminal-line flex items-center gap-3 text-slate-300 hover:text-[var(--accent)] transition"
-                  >
-                    <Phone size={14} className="shrink-0 text-[var(--accent)]" />
-                    {contactPhone}
-                  </a>
-                )}
-                {!contactEmail && !contactPhone && (
-                  <p className="text-sm text-slate-500">Contactgegevens worden binnenkort aangevuld.</p>
-                )}
+                    praten
+                  </em>
+                  .
+                </h1>
+
+                <p className="mt-8 text-base leading-8 max-w-sm" style={{ color: 'rgba(240,237,230,.42)' }}>
+                  Vertel wat u wilt bereiken. We denken mee over structuur, design, techniek en de slimste volgende stap.
+                </p>
               </div>
 
-              {/* WhatsApp CTA */}
-              {whatsappUrl && (
-                <div data-reveal className="mt-4">
+              {/* Contact details as terminal rows */}
+              <div className="mt-10 lg:mt-0">
+                <p className="font-mono text-[.56rem] uppercase tracking-[.28em] mb-5" style={{ color: 'rgba(204,255,0,.28)' }}>
+                  Directe contactgegevens
+                </p>
+                <div className="grid gap-3">
+                  {contactEmail && (
+                    <a
+                      href={`mailto:${contactEmail}`}
+                      className="flex items-center gap-3 font-mono text-[.72rem] transition-colors"
+                      style={{ color: 'rgba(240,237,230,.50)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(240,237,230,.50)'; }}
+                    >
+                      <Mail size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                      {contactEmail}
+                    </a>
+                  )}
+                  {contactPhone && (
+                    <a
+                      href={`tel:${contactPhone.replace(/[^+\d]/g, '')}`}
+                      className="flex items-center gap-3 font-mono text-[.72rem] transition-colors"
+                      style={{ color: 'rgba(240,237,230,.50)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(240,237,230,.50)'; }}
+                    >
+                      <Phone size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                      {contactPhone}
+                    </a>
+                  )}
+                  {!contactEmail && !contactPhone && (
+                    <p className="font-mono text-[.65rem]" style={{ color: 'rgba(204,255,0,.25)' }}>
+                      Contactgegevens worden binnenkort aangevuld.
+                    </p>
+                  )}
+                </div>
+
+                {whatsappUrl && (
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2.5 rounded-full border border-[var(--accent2)]/35 px-5 py-2.5 text-sm font-bold text-[var(--accent2)] transition hover:border-[var(--accent2)] hover:bg-[var(--accent2)] hover:text-black"
+                    className="inline-flex items-center gap-2.5 mt-5 rounded-full px-5 py-2.5 font-mono text-[.62rem] uppercase tracking-[.16em] transition-all"
+                    style={{
+                      border: '1px solid rgba(255,63,0,.35)',
+                      color: 'var(--accent2)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--accent2)';
+                      e.currentTarget.style.color = '#060608';
+                      e.currentTarget.style.borderColor = 'var(--accent2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'var(--accent2)';
+                      e.currentTarget.style.borderColor = 'rgba(255,63,0,.35)';
+                    }}
                   >
-                    <MessageCircle size={15} />
+                    <MessageCircle size={13} />
                     WhatsApp ons direct
                   </a>
-                </div>
-              )}
+                )}
 
-              {/* Status readout */}
-              <div data-reveal className="mt-6 flex flex-col gap-1.5">
-                <span className="hud-label">Response tijd</span>
-                <div className="flex items-center gap-2">
-                  <span className="status-dot status-dot-cyan" />
-                  <span className="font-mono text-[11px] text-[rgba(204,255,0,.55)]">Reactie binnen 24 uur</span>
+                {/* Response time */}
+                <div className="mt-6 flex items-center gap-2">
+                  <span className="status-dot" />
+                  <span className="font-mono text-[.62rem]" style={{ color: 'rgba(204,255,0,.48)' }}>
+                    Reactie binnen 24 uur
+                  </span>
                 </div>
               </div>
             </aside>
 
-            {/* ── Form ── */}
-            <form
-              data-reveal
-              onSubmit={handleSubmit}
-              className="glass-card grid gap-5 rounded-3xl p-6 md:p-8 relative overflow-hidden"
-            >
-              {/* Subtle top glow */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-50" aria-hidden="true" />
+            {/* ── RIGHT: contact form ── */}
+            <div className="px-5 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24">
+              <form onSubmit={handleSubmit} className="grid gap-6 max-w-xl">
+                {/* Ghost header */}
+                <p className="font-mono text-[.6rem] uppercase tracking-[.38em] mb-2" style={{ color: 'rgba(204,255,0,.30)' }}>
+                  — Stuur een bericht
+                </p>
 
-              {/* Honeypot */}
-              <input
-                type="text"
-                name="website"
-                value={formData.website}
-                onChange={handleChange}
-                className="hidden"
-                tabIndex="-1"
-                autoComplete="off"
-                aria-hidden="true"
-              />
+                {/* Honeypot */}
+                <input
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  className="hidden"
+                  tabIndex="-1"
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
 
-              {/* Progress bar */}
-              <div>
-                <div className="mb-2 flex justify-between">
-                  <span className="hud-label">Formulier voortgang</span>
-                  <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[var(--accent2)]">{completion}%</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-white/8 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[var(--accent2)] transition-all duration-500"
-                    style={{ width: `${completion}%` }}
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-
-              {/* Name + Email */}
-              <div className="grid gap-5 md:grid-cols-2">
+                {/* Name */}
                 <label className={labelClass}>
                   Naam *
-                  <input required name="name" value={formData.name} onChange={handleChange} className={inputClass} placeholder="Jan de Vries" />
+                  <input
+                    required
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Jan de Vries"
+                  />
                 </label>
+
+                {/* Email */}
                 <label className={labelClass}>
                   Email *
-                  <input required type="email" name="email" value={formData.email} onChange={handleChange} className={inputClass} placeholder="jan@bedrijf.nl" />
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="jan@bedrijf.nl"
+                  />
                 </label>
-              </div>
 
-              {/* Phone + Company */}
-              <div className="grid gap-5 md:grid-cols-2">
+                {/* Phone */}
                 <label className={labelClass}>
                   Telefoon
-                  <input name="phone" value={formData.phone} onChange={handleChange} className={inputClass} placeholder="+31 6 12345678" />
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="+31 6 12345678"
+                  />
                 </label>
+
+                {/* Company */}
                 <label className={labelClass}>
                   Bedrijf
-                  <input name="company" value={formData.company} onChange={handleChange} className={inputClass} placeholder="Bedrijfsnaam" />
+                  <input
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Bedrijfsnaam"
+                  />
                 </label>
-              </div>
 
-              {/* Service + Budget */}
-              <div className="grid gap-5 md:grid-cols-2">
+                {/* Service */}
                 <label className={labelClass}>
                   Interesse *
-                  <select required name="service" value={formData.service} onChange={handleChange} className={inputClass}>
+                  <select
+                    required
+                    name="service"
+                    value={formData.service}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
                     <option value="">Kies dienst…</option>
                     <option>Website redesign</option>
                     <option>React/Supabase build</option>
@@ -217,47 +291,56 @@ const ContactPage = () => {
                     <option>SEO/content systeem</option>
                   </select>
                 </label>
+
+                {/* Budget */}
                 <label className={labelClass}>
                   Budget
-                  <select name="package" value={formData.package} onChange={handleChange} className={inputClass}>
+                  <select
+                    name="package"
+                    value={formData.package}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
                     <option value="">Nog open</option>
                     <option>Starter</option>
                     <option>Groei</option>
                     <option>Pro</option>
                   </select>
                 </label>
-              </div>
 
-              {/* Message */}
-              <label className={labelClass}>
-                Projectnotities *
-                <textarea
-                  required
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={7}
-                  className={`${inputClass} resize-none`}
-                  placeholder="Wat moet uw nieuwe website bereiken? Huidige situatie, doelen, deadline…"
-                />
-              </label>
+                {/* Message */}
+                <label className={labelClass}>
+                  Projectnotities *
+                  <textarea
+                    required
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows={7}
+                    className={`${inputClass} resize-none`}
+                    placeholder="Wat moet uw nieuwe website bereiken? Huidige situatie, doelen, deadline…"
+                  />
+                </label>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={status === 'sending' || status === 'sent'}
-                className="glow-button w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {status === 'sending' ? 'Verzenden…' : status === 'sent' ? 'Verzonden ✓' : 'Verstuur bericht'}
-                {status !== 'sent' && <Send size={16} />}
-              </button>
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={status === 'sending' || status === 'sent'}
+                  className="glow-button w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {status === 'sending' ? 'Verzenden…' : status === 'sent' ? 'Verzonden ✓' : 'Verstuur bericht'}
+                  {status !== 'sent' && <Send size={16} />}
+                </button>
 
-              {status === 'sent' && (
-                <p className="text-center font-mono text-xs uppercase tracking-[.18em] text-[var(--accent2)]">
-                  Bedankt — we reageren binnen 24 uur.
+                {/* Response time confidence line */}
+                <p className="text-center font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.30)' }}>
+                  {status === 'sent'
+                    ? 'Bedankt — we reageren binnen 24 uur.'
+                    : 'Reactie altijd binnen 24 uur · Geen verplichtingen'
+                  }
                 </p>
-              )}
-            </form>
+              </form>
+            </div>
 
           </div>
         </section>

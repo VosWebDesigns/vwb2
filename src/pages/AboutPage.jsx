@@ -3,47 +3,53 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Layers, Smartphone, MessagesSquare, Rocket, CheckCircle } from 'lucide-react';
-import { useReveal } from '@/hooks/useReveal';
+import { ArrowRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const PILLARS = [
-  { icon: <Layers size={20} />,         title: 'Geen standaard template-flow', text: 'Elke site krijgt een eigen richting en visuele stijl — geen kant-en-klare blokken.' },
-  { icon: <Smartphone size={20} />,     title: 'Snel en mobielvriendelijk',     text: 'Gebouwd voor bezoekers die snel willen begrijpen wat je doet, op elk apparaat.' },
-  { icon: <MessagesSquare size={20} />, title: 'Persoonlijk contact',            text: 'Korte lijnen en duidelijke communicatie zonder tussenpersonen of ruis.' },
-  { icon: <Rocket size={20} />,         title: 'Doorontwikkelbaar',              text: 'Techniek die later uitgebreid kan worden naarmate je bedrijf groeit.' },
-];
-
-const VALUES = [
-  { num: '01', label: 'Transparantie', desc: 'Geen verborgen kosten, geen verrassingen. Alles wordt van tevoren afgestemd.' },
-  { num: '02', label: 'Kwaliteit',     desc: 'Elk detail telt. Van typografie tot laadtijden — geen enkel compromis.' },
-  { num: '03', label: 'Resultaat',     desc: 'Een mooie website is een middel, niet het doel. Jouw groei is het eindpunt.' },
+  { num: '01', title: 'Geen standaard template-flow', text: 'Elke site krijgt een eigen richting en visuele stijl — geen kant-en-klare blokken.' },
+  { num: '02', title: 'Snel en mobielvriendelijk',    text: 'Gebouwd voor bezoekers die snel willen begrijpen wat je doet, op elk apparaat.' },
+  { num: '03', title: 'Persoonlijk contact',           text: 'Korte lijnen en duidelijke communicatie zonder tussenpersonen of ruis.' },
+  { num: '04', title: 'Doorontwikkelbaar',             text: 'Techniek die later uitgebreid kan worden naarmate je bedrijf groeit.' },
 ];
 
 const FACTS = [
-  ['100%', 'Maatwerk'],
-  ['0',    'Templates'],
-  ['1',    'Specialist'],
+  { value: '100%', label: 'Maatwerk' },
+  { value: '0',    label: 'Templates' },
+  { value: '1',    label: 'Specialist' },
+  { value: '5+',   label: 'Jaar ervaring' },
 ];
 
 const AboutPage = () => {
-  const rootRef    = useRef(null);
-  const valuesRef  = useRef(null);
-  useReveal(rootRef);
+  const heroRef    = useRef(null);
+  const storyRef   = useRef(null);
+  const pillarsRef = useRef(null);
 
   useEffect(() => {
-    const el = valuesRef.current;
-    if (!el) return;
     const ctx = gsap.context(() => {
-      const cards = el.querySelectorAll('.value-card');
-      cards.forEach((card, i) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 40, scale: 0.97 },
+      /* Hero animate */
+      gsap.fromTo(heroRef.current.querySelectorAll('[data-reveal]'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out', delay: 0.2 }
+      );
+
+      /* Story section */
+      gsap.fromTo(storyRef.current,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out',
+          scrollTrigger: { trigger: storyRef.current, start: 'top 80%' } }
+      );
+
+      /* Pillar rows */
+      const rows = pillarsRef.current?.querySelectorAll('.pillar-row');
+      rows?.forEach((row, i) => {
+        gsap.fromTo(row,
+          { opacity: 0, x: -30 },
           {
-            opacity: 1, y: 0, scale: 1, duration: 0.75, ease: 'power3.out',
-            delay: i * 0.12,
-            scrollTrigger: { trigger: card, start: 'top 86%' },
+            opacity: 1, x: 0, duration: 0.75, ease: 'power3.out',
+            scrollTrigger: { trigger: row, start: 'top 88%' },
+            delay: i * 0.07,
           }
         );
       });
@@ -58,162 +64,215 @@ const AboutPage = () => {
         <meta name="description" content="Eén specialist, volledige focus en geen template-smaak. Maak kennis met Vos Web Designs." />
       </Helmet>
 
-      <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
+      <main className="cinema-bg overflow-hidden pt-24">
 
-        {/* ── Hero ── */}
-        <section className="cinematic-section relative overflow-hidden">
+        {/* ── Section A: Identity ── */}
+        <section ref={heroRef} className="relative py-24 md:py-32 px-5 md:px-10 lg:px-16 overflow-hidden">
+          {/* Grid backdrop */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-15"
+            className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.05) 1px, transparent 1px)',
-              backgroundSize: '80px 80px',
-              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+              backgroundSize: '90px 90px',
+              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
             }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10 grid gap-10 lg:grid-cols-[1fr_.55fr] lg:items-end">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="status-dot" />
-                <p data-reveal className="section-eyebrow">Over Vos Web Designs</p>
-              </div>
-              <h1 data-reveal className="display-xl mt-0 text-[clamp(2.4rem,8vw,7rem)]">
-                Eén specialist.{' '}
-                <span className="gradient-text-full">Volledige focus.</span>
-              </h1>
-            </div>
-            <div data-reveal className="grid gap-4">
-              {FACTS.map(([val, label]) => (
-                <div
-                  key={label}
-                  className="glass-card rounded-2xl p-5 flex items-center gap-4"
-                >
-                  <span
-                    className="font-heading text-3xl font-bold"
-                    style={{ color: 'var(--accent)', fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                  >
-                    {val}
-                  </span>
-                  <span className="font-mono text-xs uppercase tracking-[.18em] text-slate-400">{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Story ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <article data-reveal className="glass-card cyber-corner rounded-3xl overflow-hidden">
-              <div className="grid lg:grid-cols-[1fr_1px_1fr]">
-                <div className="p-7 md:p-10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="status-dot status-dot-cyan" />
-                    <span className="hud-label">Studio verhaal</span>
-                  </div>
-                  <h2
-                    className="font-heading font-bold leading-tight tracking-[-.04em] text-white"
-                    style={{
-                      fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                      fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
-                    }}
-                  >
-                    Websites gebouwd met aandacht, strategie en techniek.
-                  </h2>
-                  <p className="mt-6 text-base leading-8 text-slate-300">
-                    Mijn naam is Melvin Vos. Met Vos Web Designs help ik ondernemers aan snelle, professionele websites die vertrouwen wekken en niet voelen als een standaard template.
-                  </p>
-                </div>
-                <div className="bg-[var(--stroke)] hidden lg:block" aria-hidden="true" />
-                <div
-                  className="p-7 md:p-10"
-                  style={{ borderTop: '1px solid var(--stroke)' }}
-                >
-                  <p className="text-base leading-8 text-slate-400">
-                    Elke website krijgt een eigen concept, eigen uitstraling en een duidelijke opbouw. Geen generieke blokken achter elkaar, maar een website die past bij het bedrijf — en die groeit met de ambities.
-                  </p>
-                  <ul className="mt-7 grid gap-3">
-                    {[
-                      'Persoonlijk traject, geen standaard pakket',
-                      'Volledige eigendom na oplevering',
-                      'Doorontwikkelbaar naarmate je groeit',
-                    ].map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-sm text-slate-300">
-                        <CheckCircle size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--accent2)' }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        {/* ── Pillars ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <div className="flex items-center gap-3 mb-10">
-              <span className="status-dot" />
-              <p className="section-eyebrow">Onze aanpak</p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {PILLARS.map((pillar, i) => (
-                <article
-                  key={pillar.title}
-                  data-reveal
-                  data-reveal-delay={i * 0.08}
-                  className="glass-card group rounded-2xl p-6 relative overflow-hidden transition-all duration-400 hover:-translate-y-1"
-                >
-                  <div
-                    className="absolute inset-x-0 top-0 h-px scale-x-0 transition-transform duration-400 group-hover:scale-x-100"
-                    style={{ background: 'var(--accent)' }}
-                    aria-hidden="true"
-                  />
-                  <div className="capability-icon-wrap" style={{ color: 'var(--accent)' }}>
-                    {pillar.icon}
-                  </div>
-                  <h3
-                    className="mt-4 font-heading text-base font-bold text-white leading-tight"
-                    style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                  >
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-400">{pillar.text}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Values ── */}
-        <section className="cinematic-section pt-0 relative overflow-hidden">
           <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 70% at 0% 50%, rgba(255,63,0,.04), transparent)' }}
+            className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[55vw]"
+            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(204,255,0,.07), transparent 55%)' }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10" ref={valuesRef}>
-            <div className="flex items-center gap-3 mb-10">
+
+          <div className="relative z-10 max-w-[1180px] mx-auto">
+            {/* Status */}
+            <div data-reveal className="flex items-center gap-3 mb-10">
               <span className="status-dot" />
-              <p className="section-eyebrow">Kernwaarden</p>
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Over Vos Web Designs
+              </p>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {VALUES.map(({ num, label, desc }) => (
-                <div key={num} className="value-card glass-card rounded-2xl p-7 relative overflow-hidden">
-                  <span className="feature-num text-6xl sm:text-7xl absolute top-2 right-3 select-none">{num}</span>
-                  <div className="relative">
-                    <span className="font-mono text-[10px] uppercase tracking-[.26em]" style={{ color: 'var(--accent)' }}>
-                      {num}
-                    </span>
+
+            {/* Editorial 2-line heading */}
+            <h1 data-reveal style={{ margin: 0 }}>
+              <div
+                style={{
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(3rem, 10vw, 10rem)',
+                  letterSpacing: '-.065em',
+                  lineHeight: 0.87,
+                  color: 'var(--accent3)',
+                }}
+              >
+                ÉÉN SPECIALIST.
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Cormorant Garamond", Georgia, serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  fontSize: 'clamp(3.2rem, 10.5vw, 10.5rem)',
+                  letterSpacing: '-.03em',
+                  lineHeight: 0.87,
+                  color: 'var(--accent)',
+                  paddingLeft: 'clamp(2rem, 8vw, 10rem)',
+                }}
+              >
+                Volledige focus.
+              </div>
+            </h1>
+
+            {/* Divider + facts data cells */}
+            <div
+              data-reveal
+              className="mt-12 pt-8 grid grid-cols-2 md:grid-cols-4 gap-0"
+              style={{ borderTop: '1px solid rgba(204,255,0,.08)' }}
+            >
+              {FACTS.map(({ value, label }, i) => (
+                <div
+                  key={label}
+                  className="flex flex-col gap-1.5 py-6 pr-6"
+                  style={{
+                    borderRight: i < FACTS.length - 1 ? '1px solid rgba(204,255,0,.07)' : 'none',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 'clamp(2rem, 4.5vw, 4rem)',
+                      letterSpacing: '-.06em',
+                      lineHeight: 1,
+                      color: 'var(--accent)',
+                    }}
+                  >
+                    {value}
+                  </span>
+                  <span
+                    className="font-mono text-[.58rem] uppercase tracking-[.22em]"
+                    style={{ color: 'rgba(204,255,0,.30)' }}
+                  >
+                    {label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Section B: Story (editorial 2-column text) ── */}
+        <section className="relative py-20 px-5 md:px-10 lg:px-16">
+          <div className="max-w-[1180px] mx-auto">
+            {/* Title row with horizontal rule */}
+            <div className="flex items-center gap-6 mb-10">
+              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Studio verhaal
+              </p>
+              <div className="flex-1 h-px" style={{ background: 'rgba(204,255,0,.08)' }} />
+            </div>
+
+            {/* Newspaper 2-column body text */}
+            <div ref={storyRef} className="lg:columns-2 gap-12">
+              <h2
+                className="font-heading font-bold mb-6 break-inside-avoid"
+                style={{
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+                  letterSpacing: '-.04em',
+                  lineHeight: 1.1,
+                  color: 'var(--accent3)',
+                  columnSpan: 'all',
+                }}
+              >
+                Websites gebouwd met aandacht, strategie en techniek.
+              </h2>
+              <p className="text-base leading-8 mb-5" style={{ color: 'rgba(240,237,230,.50)' }}>
+                Mijn naam is Melvin Vos. Met Vos Web Designs help ik ondernemers aan snelle,
+                professionele websites die vertrouwen wekken en niet voelen als een standaard template.
+              </p>
+              <p className="text-base leading-8 mb-5" style={{ color: 'rgba(240,237,230,.44)' }}>
+                Elke website krijgt een eigen concept, eigen uitstraling en een duidelijke opbouw.
+                Geen generieke blokken achter elkaar, maar een website die past bij het bedrijf —
+                en die groeit met de ambities.
+              </p>
+              <p className="text-base leading-8" style={{ color: 'rgba(240,237,230,.38)' }}>
+                Persoonlijk traject, geen standaard pakket. Volledige eigendom na oplevering.
+                Doorontwikkelbaar naarmate je groeit.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Section C: Pillars as numbered rule list ── */}
+        <section className="relative py-20 px-5 md:px-10 lg:px-16">
+          <div className="max-w-[1180px] mx-auto">
+            {/* Section label */}
+            <div className="flex items-center gap-6 mb-8">
+              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Onze aanpak
+              </p>
+              <div className="flex-1 h-px" style={{ background: 'rgba(204,255,0,.08)' }} />
+            </div>
+
+            <div
+              ref={pillarsRef}
+              style={{ borderTop: '1px solid rgba(204,255,0,.06)' }}
+            >
+              {PILLARS.map(({ num, title, text }) => (
+                <div
+                  key={num}
+                  className="pillar-row group flex items-baseline gap-6 md:gap-10 py-6 md:py-8 cursor-default"
+                  style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.querySelector('.pillar-num').style.color = 'var(--accent)';
+                    e.currentTarget.querySelector('.pillar-title').style.color = 'var(--accent)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.querySelector('.pillar-num').style.color = 'rgba(204,255,0,.28)';
+                    e.currentTarget.querySelector('.pillar-title').style.color = 'var(--accent3)';
+                  }}
+                >
+                  {/* Number */}
+                  <span
+                    className="pillar-num font-mono shrink-0"
+                    style={{
+                      fontSize: 'clamp(1.4rem, 3vw, 2.8rem)',
+                      fontWeight: 700,
+                      letterSpacing: '-.04em',
+                      lineHeight: 1,
+                      color: 'rgba(204,255,0,.28)',
+                      transition: 'color .3s ease',
+                    }}
+                  >
+                    {num}
+                  </span>
+
+                  {/* Divider rule */}
+                  <div className="hidden md:block h-px flex-1 max-w-[3rem]" style={{ background: 'rgba(204,255,0,.12)', marginBottom: '0.15em' }} />
+
+                  {/* Title + description */}
+                  <div className="flex-1 flex flex-col md:flex-row md:items-baseline md:gap-8">
                     <h3
-                      className="mt-3 font-heading text-2xl font-bold text-white"
-                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                      className="pillar-title font-heading font-bold uppercase leading-none shrink-0"
+                      style={{
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                        fontSize: 'clamp(1rem, 2.2vw, 1.8rem)',
+                        letterSpacing: '-.04em',
+                        color: 'var(--accent3)',
+                        transition: 'color .3s ease',
+                      }}
                     >
-                      {label}
+                      {title}
                     </h3>
-                    <p className="mt-3 text-sm leading-7 text-slate-400">{desc}</p>
+                    <p
+                      className="mt-2 md:mt-0 text-sm leading-[1.75]"
+                      style={{ color: 'rgba(240,237,230,.40)' }}
+                    >
+                      {text}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -221,31 +280,43 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* ── CTA ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <article
-              data-reveal
-              className="glass-card cyber-corner rounded-3xl p-8 text-center md:p-14 relative overflow-hidden"
-              style={{ animation: 'glow-pulse 4s ease-in-out infinite' }}
+        {/* ── Section D: CTA ── */}
+        <section className="relative py-28 px-5 md:px-10 lg:px-16">
+          <div
+            className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.06), transparent 60%)' }}
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.15), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="relative max-w-[1180px] mx-auto text-center">
+            <div className="inline-flex items-center gap-2.5 mb-8">
+              <span className="status-dot" />
+              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Vrijblijvend kennismaken
+              </span>
+            </div>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(2.5rem, 7vw, 7rem)',
+                letterSpacing: '-.06em',
+                lineHeight: 0.9,
+                color: 'var(--accent3)',
+              }}
             >
-              <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-20" aria-hidden="true" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-center gap-2.5 mb-6">
-                  <span className="status-dot" />
-                  <span className="hud-label">Vrijblijvend kennismaken</span>
-                </div>
-                <h2 className="display-xl text-[clamp(2.2rem,6vw,4.5rem)]">
-                  Kennismaken?
-                </h2>
-                <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-slate-300">
-                  Vertel waar je naartoe wilt groeien. Dan kijken we samen welke website daar het beste bij past.
-                </p>
-                <Link to="/contact" className="glow-button mt-8">
-                  Contact opnemen <ArrowRight size={16} />
-                </Link>
-              </div>
-            </article>
+              KENNISMAKEN?
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-base leading-8" style={{ color: 'rgba(240,237,230,.40)' }}>
+              Vertel waar je naartoe wilt groeien. Dan kijken we samen welke website daar het beste bij past.
+            </p>
+            <Link to="/contact" className="glow-button mt-10">
+              Contact opnemen <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
 

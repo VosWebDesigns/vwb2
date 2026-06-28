@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ArrowRight, CheckCircle, Code, Palette, Search, ShoppingCart, Star, Zap, ArrowUpRight } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
-import { useReveal } from '@/hooks/useReveal';
 import supabase from '@/lib/customSupabaseClient';
 import {
   SERVICE_CATALOG_ID,
@@ -40,11 +40,59 @@ const TRUST_ITEMS = [
   { label: 'Persoonlijk contact',  sub: 'Directe communicatie' },
 ];
 
+const FaqItem = ({ q, a, index, isOpen, onToggle }) => {
+  const answerRef = useRef(null);
+
+  useEffect(() => {
+    const el = answerRef.current;
+    if (!el) return;
+    if (isOpen) {
+      gsap.fromTo(el,
+        { height: 0, opacity: 0 },
+        { height: 'auto', opacity: 1, duration: 0.55, ease: 'power2.out' }
+      );
+    } else {
+      gsap.to(el, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.in' });
+    }
+  }, [isOpen]);
+
+  return (
+    <div style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}>
+      <button
+        type="button"
+        onClick={() => onToggle(index)}
+        className="w-full flex items-baseline justify-between gap-6 py-6 text-left"
+      >
+        <span
+          className="font-bold text-lg transition-colors duration-300"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            letterSpacing: '-.03em',
+            color: isOpen ? 'var(--accent)' : 'var(--accent3)',
+          }}
+        >
+          {q}
+        </span>
+        <span
+          className="shrink-0 font-mono text-xl leading-none transition-colors duration-300"
+          style={{ color: isOpen ? 'var(--accent)' : 'rgba(204,255,0,.30)' }}
+        >
+          {isOpen ? '−' : '+'}
+        </span>
+      </button>
+      <div ref={answerRef} style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
+        <p className="pb-6 text-base leading-8" style={{ color: 'rgba(240,237,230,.45)' }}>{a}</p>
+      </div>
+    </div>
+  );
+};
+
 const ServicesPage = () => {
   const [services, setServices] = useState(() => cloneDefaultServiceCatalog());
   const [loading,  setLoading]  = useState(true);
-  const rootRef = useRef(null);
-  useReveal(rootRef, [loading, services]);
+  const [openFaq,  setOpenFaq]  = useState(null);
+
+  const toggleFaq = (index) => setOpenFaq((prev) => prev === index ? null : index);
 
   useEffect(() => {
     let mounted = true;
@@ -70,66 +118,94 @@ const ServicesPage = () => {
         <meta name="description" content="Webdesign, webontwikkeling, e-commerce, SEO en performance pakketten van Vos Web Designs." />
       </Helmet>
 
-      <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
+      <main className="cinema-bg overflow-hidden pt-24">
 
         {/* ── Hero ── */}
-        <section className="cinematic-section relative overflow-hidden">
+        <section className="relative py-20 md:py-28 px-5 md:px-10 lg:px-16 overflow-hidden">
           <div
-            className="pointer-events-none absolute inset-0 opacity-20"
+            className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.05) 1px, transparent 1px)',
-              backgroundSize: '80px 80px',
-              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+              backgroundSize: '90px 90px',
+              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
             }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10">
-            <div className="max-w-4xl">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="status-dot" />
-                <p data-reveal className="section-eyebrow">Diensten & pakketten</p>
-              </div>
-              <h1
-                data-reveal
-                className="display-xl mt-0 text-[clamp(3rem,8vw,7rem)]"
-              >
-                Professionele websites{' '}
-                <span className="gradient-text-full">die écht voor je werken</span>.
-              </h1>
-              <p data-reveal className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-                Van eerste website tot schaalbare online oplossing. Transparant, betaalbaar en zonder technische zorgen.
+          <div className="relative z-10 max-w-[1180px] mx-auto">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="status-dot" />
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Diensten & pakketten
               </p>
             </div>
+            <h1
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(3rem, 9vw, 8rem)',
+                letterSpacing: '-.065em',
+                lineHeight: 0.88,
+                color: 'var(--accent3)',
+                margin: 0,
+              }}
+            >
+              ONZE<br />
+              <em
+                style={{
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontSize: '1.04em',
+                  letterSpacing: '-.02em',
+                }}
+              >
+                diensten
+              </em>
+              .
+            </h1>
+            <p className="mt-8 max-w-xl text-base leading-8" style={{ color: 'rgba(240,237,230,.42)' }}>
+              Van eerste website tot schaalbare online oplossing. Transparant geprijsd, zonder technische zorgen.
+            </p>
           </div>
         </section>
 
         {/* ── Trust strip ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10 grid gap-3 grid-cols-2 md:grid-cols-4">
+        <section className="px-5 md:px-10 lg:px-16 pb-10">
+          <div
+            className="max-w-[1180px] mx-auto grid grid-cols-2 md:grid-cols-4"
+            style={{ borderTop: '1px solid rgba(204,255,0,.06)', borderBottom: '1px solid rgba(204,255,0,.06)' }}
+          >
             {TRUST_ITEMS.map(({ label, sub }, i) => (
               <div
                 key={label}
-                data-reveal
-                data-reveal-delay={i * 0.07}
-                className="glass-card rounded-2xl p-5 flex flex-col gap-1.5 transition-all duration-300 hover:-translate-y-0.5"
-                style={{ '--hover-shadow': '0 12px 40px rgba(204,255,0,.08)' }}
+                className="flex flex-col gap-1.5 py-6 pr-6"
+                style={{
+                  borderRight: i < TRUST_ITEMS.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none',
+                }}
               >
-                <CheckCircle size={18} style={{ color: 'var(--accent)' }} />
-                <p className="font-bold text-white text-sm mt-1">{label}</p>
-                <p className="text-xs text-slate-500">{sub}</p>
+                <p
+                  className="font-bold text-sm"
+                  style={{ color: 'var(--accent3)', fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+                >
+                  {label}
+                </p>
+                <p className="font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.30)' }}>
+                  {sub}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── Services ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10 space-y-16">
+        <section className="px-5 md:px-10 lg:px-16 py-16">
+          <div className="max-w-[1180px] mx-auto space-y-16">
             {loading && (
-              <div className="glass-card rounded-2xl p-8 text-center">
+              <div className="text-center py-20">
                 <span className="status-dot mx-auto mb-4 block" />
-                <p className="font-mono text-xs uppercase tracking-widest text-slate-500 animate-pulse">
+                <p className="font-mono text-[.65rem] uppercase tracking-[.20em] animate-pulse" style={{ color: 'rgba(204,255,0,.28)' }}>
                   Diensten laden…
                 </p>
               </div>
@@ -140,51 +216,74 @@ const ServicesPage = () => {
               return (
                 <article
                   key={service.title}
-                  data-reveal
                   className="relative overflow-hidden rounded-3xl"
-                  style={{ border: '1px solid var(--stroke)' }}
+                  style={{ border: '1px solid rgba(204,255,0,.06)' }}
                 >
                   {/* Top accent line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px"
-                    style={{ background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.5 }}
+                    style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.20), transparent)' }}
                     aria-hidden="true"
                   />
 
                   {/* Service header */}
                   <div
-                    className="backdrop-blur-sm px-7 py-6 md:px-10 md:py-8 grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+                    className="relative overflow-hidden px-7 py-6 md:px-10 md:py-8 grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
                     style={{
-                      background: 'rgba(8,8,12,.65)',
-                      borderBottom: '1px solid var(--stroke)',
+                      background: 'rgba(8,16,30,.60)',
+                      borderBottom: '1px solid rgba(204,255,0,.06)',
                     }}
                   >
+                    {/* Ghost service number */}
                     <div
-                      className="grid h-14 w-14 place-items-center rounded-2xl"
+                      className="pointer-events-none select-none absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block"
+                      aria-hidden="true"
                       style={{
-                        border: '1px solid var(--stroke)',
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 'clamp(8rem, 18vw, 16rem)',
+                        letterSpacing: '-.06em',
+                        lineHeight: 1,
+                        color: 'transparent',
+                        WebkitTextStroke: '1px rgba(204,255,0,.04)',
+                      }}
+                    >
+                      0{serviceIndex + 1}
+                    </div>
+
+                    {/* Icon */}
+                    <div
+                      className="relative z-10 grid h-14 w-14 shrink-0 place-items-center rounded-2xl"
+                      style={{
+                        border: '1px solid rgba(204,255,0,.12)',
                         background: 'rgba(204,255,0,.04)',
                         color: 'var(--accent)',
                       }}
                     >
-                      <Icon size={28} />
+                      <Icon size={26} />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="status-dot status-dot-cyan" />
-                        <p className="eyebrow">0{serviceIndex + 1} / dienst</p>
-                      </div>
+
+                    {/* Title */}
+                    <div className="relative z-10">
+                      <p className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2" style={{ color: 'rgba(204,255,0,.35)' }}>
+                        0{serviceIndex + 1} / dienst
+                      </p>
                       <h2
-                        className="font-heading font-bold tracking-[-.05em] leading-none text-white"
                         style={{
                           fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                          fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                          fontWeight: 700,
+                          letterSpacing: '-.05em',
+                          lineHeight: 1,
+                          color: 'var(--accent3)',
+                          fontSize: 'clamp(1.8rem, 3.5vw, 3rem)',
                         }}
                       >
                         {service.title}
                       </h2>
                     </div>
-                    <div className="hidden sm:block overflow-hidden rounded-xl" style={{ border: '1px solid var(--stroke)' }}>
+
+                    {/* Image (desktop) */}
+                    <div className="relative z-10 hidden sm:block overflow-hidden rounded-xl" style={{ border: '1px solid rgba(204,255,0,.06)' }}>
                       <SmartImage src={service.image} alt={service.title} className="h-24 w-40 object-cover" />
                     </div>
                   </div>
@@ -194,15 +293,21 @@ const ServicesPage = () => {
                     {/* Left: description */}
                     <div
                       className="p-7 md:p-10"
-                      style={{ borderBottom: '1px solid var(--stroke)' }}
+                      style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}
                     >
-                      <p className="text-xl text-white font-medium leading-8">{service.shortDescription}</p>
-                      <p className="mt-4 leading-8 text-slate-300">{service.description}</p>
-                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl" style={{ border: '1px solid var(--stroke)' }}>
+                      <p className="text-xl font-medium leading-8" style={{ color: 'var(--accent3)' }}>{service.shortDescription}</p>
+                      <p className="mt-4 leading-8" style={{ color: 'rgba(240,237,230,.45)' }}>{service.description}</p>
+                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl" style={{ border: '1px solid rgba(204,255,0,.06)' }}>
                         <SmartImage src={service.image} alt={service.title} className="h-44 w-full object-cover" />
                       </div>
-                      <Link to="/contact" className="ghost-link mt-7 inline-flex text-sm">
-                        Vraag een offerte aan <ArrowRight size={14} />
+                      <Link
+                        to="/contact"
+                        className="inline-flex items-center gap-2 mt-7 font-mono text-[.65rem] uppercase tracking-[.16em] transition-opacity"
+                        style={{ color: 'var(--accent)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.65'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                      >
+                        Vraag een offerte aan <ArrowRight size={13} />
                       </Link>
                     </div>
 
@@ -223,9 +328,9 @@ const ServicesPage = () => {
                             key={pkg.id}
                             className="relative rounded-[1.5rem] p-5 transition-all duration-300"
                             style={{
-                              border: `1px solid ${highlighted ? 'var(--accent2)' : 'var(--stroke)'}`,
-                              background: highlighted ? 'rgba(255,63,0,.05)' : 'rgba(255,255,255,.02)',
-                              boxShadow: highlighted ? '0 0 40px rgba(255,63,0,.08)' : 'none',
+                              border: `1px solid ${highlighted ? 'rgba(255,63,0,.35)' : 'rgba(204,255,0,.08)'}`,
+                              background: highlighted ? 'rgba(255,63,0,.04)' : 'rgba(204,255,0,.02)',
+                              boxShadow: highlighted ? '0 0 40px rgba(255,63,0,.07)' : 'none',
                             }}
                           >
                             {highlighted && (pkg.badge || service.highlightLabel) && (
@@ -239,12 +344,15 @@ const ServicesPage = () => {
                             )}
 
                             <div className="flex flex-wrap items-start justify-between gap-3">
-                              <h3 className="font-heading text-xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
+                              <h3
+                                className="font-bold text-xl"
+                                style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", color: 'var(--accent3)', letterSpacing: '-.03em' }}
+                              >
                                 {pkg.name}
                               </h3>
                               <div className="text-right">
                                 {discount > 0 && (
-                                  <p className="text-xs font-bold text-slate-500 line-through">
+                                  <p className="text-xs font-bold line-through" style={{ color: 'rgba(240,237,230,.25)' }}>
                                     {formatPackagePrice(pkg.price)}
                                   </p>
                                 )}
@@ -258,13 +366,13 @@ const ServicesPage = () => {
                               </div>
                             </div>
 
-                            <p className="mt-1 text-[11px] font-mono uppercase tracking-[.10em] text-slate-500">
+                            <p className="mt-1 font-mono text-[.58rem] uppercase tracking-[.10em]" style={{ color: 'rgba(204,255,0,.25)' }}>
                               {getDelivery(pkg.name)} · Geen aanbetaling
                             </p>
 
                             <ul className="mt-4 grid gap-2">
                               {pkg.features.map((f) => (
-                                <li key={f} className="flex gap-2.5 text-sm text-slate-300">
+                                <li key={f} className="flex gap-2.5 text-sm" style={{ color: 'rgba(240,237,230,.55)' }}>
                                   <CheckCircle size={14} className="mt-0.5 shrink-0" style={{ color: highlighted ? 'var(--accent2)' : 'var(--accent)' }} />
                                   {f}
                                 </li>
@@ -273,9 +381,23 @@ const ServicesPage = () => {
 
                             <Link
                               to="/contact"
-                              className={highlighted ? 'cta-link mt-5 w-full text-sm' : 'ghost-link mt-5 w-full text-sm'}
+                              className="inline-flex items-center gap-2 mt-5 w-full justify-center rounded-full py-2.5 font-mono text-[.62rem] uppercase tracking-[.16em] transition-all"
+                              style={highlighted ? {
+                                background: 'var(--accent2)',
+                                color: '#060608',
+                                border: '1px solid var(--accent2)',
+                              } : {
+                                border: '1px solid rgba(204,255,0,.20)',
+                                color: 'var(--accent)',
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!highlighted) e.currentTarget.style.background = 'rgba(204,255,0,.08)';
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!highlighted) e.currentTarget.style.background = 'transparent';
+                              }}
                             >
-                              {getCTA(pkg.name)} <ArrowUpRight size={14} />
+                              {getCTA(pkg.name)} <ArrowUpRight size={13} />
                             </Link>
                           </div>
                         );
@@ -289,47 +411,69 @@ const ServicesPage = () => {
         </section>
 
         {/* ── FAQ ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
+        <section className="px-5 md:px-10 lg:px-16 py-20">
+          <div className="max-w-[1180px] mx-auto">
             <div className="grid gap-12 lg:grid-cols-[.6fr_1fr] lg:items-start">
+
+              {/* Left: heading */}
               <div>
-                <div className="flex items-center gap-3 mb-5">
+                <div className="flex items-center gap-3 mb-6">
                   <span className="status-dot" />
-                  <p data-reveal className="section-eyebrow">FAQ</p>
+                  <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                    Veelgestelde vragen
+                  </p>
                 </div>
-                <h2 data-reveal className="display-xl text-[clamp(2.4rem,5vw,4.5rem)]">
-                  Veelgestelde <span className="gradient-text-cyan">vragen</span>.
+                <h2
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(2.4rem, 5vw, 4.5rem)',
+                    letterSpacing: '-.065em',
+                    lineHeight: 0.9,
+                    color: 'var(--accent3)',
+                    margin: 0,
+                  }}
+                >
+                  ALLES<br />
+                  <em
+                    style={{
+                      fontFamily: '"Cormorant Garamond", serif',
+                      fontStyle: 'italic',
+                      fontWeight: 600,
+                      color: 'var(--accent)',
+                      fontSize: '1.04em',
+                      letterSpacing: '-.02em',
+                    }}
+                  >
+                    duidelijk
+                  </em>
+                  ?
                 </h2>
-                <p className="mt-5 text-slate-400 leading-7">
+                <p className="mt-5 text-base leading-8" style={{ color: 'rgba(240,237,230,.40)' }}>
                   Staat jouw vraag er niet bij? Neem dan gerust contact op.
                 </p>
-                <Link to="/contact" className="ghost-link mt-6 inline-flex text-sm">
-                  Stel je vraag <ArrowRight size={14} />
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 mt-6 font-mono text-[.65rem] uppercase tracking-[.16em] transition-opacity"
+                  style={{ color: 'var(--accent)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.65'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  Stel je vraag <ArrowRight size={13} />
                 </Link>
               </div>
 
-              <div className="grid gap-2.5">
-                {faq.map(([q, a]) => (
-                  <details
+              {/* Right: accordion */}
+              <div style={{ borderTop: '1px solid rgba(204,255,0,.06)' }}>
+                {faq.map(([q, a], i) => (
+                  <FaqItem
                     key={q}
-                    data-reveal
-                    className="glass-card group rounded-2xl overflow-hidden transition-all duration-300"
-                  >
-                    <summary
-                      className="flex items-center justify-between cursor-pointer list-none p-5 font-heading text-base font-bold tracking-[-.03em] transition group-open:text-[var(--accent)]"
-                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
-                    >
-                      {q}
-                      <ChevronDown
-                        size={16}
-                        className="shrink-0 transition-transform duration-300 group-open:rotate-180"
-                        style={{ color: 'var(--accent)' }}
-                      />
-                    </summary>
-                    <div style={{ borderTop: '1px solid var(--stroke)' }} className="px-5 pb-5 pt-4">
-                      <p className="leading-7 text-slate-300 text-sm">{a}</p>
-                    </div>
-                  </details>
+                    q={q}
+                    a={a}
+                    index={i}
+                    isOpen={openFaq === i}
+                    onToggle={toggleFaq}
+                  />
                 ))}
               </div>
             </div>
@@ -337,34 +481,55 @@ const ServicesPage = () => {
         </section>
 
         {/* ── CTA ── */}
-        <section className="cinematic-section pt-0">
+        <section className="relative py-28 px-5 md:px-10 lg:px-16">
           <div
-            data-reveal
-            className="cinematic-container cyber-corner relative z-10 rounded-3xl p-8 text-center md:p-12 overflow-hidden"
-            style={{
-              border: '1px solid var(--stroke)',
-              background: 'rgba(8,8,12,.85)',
-              animation: 'glow-pulse 4s ease-in-out infinite',
-            }}
-          >
-            <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-25" aria-hidden="true" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-center gap-2.5 mb-6">
-                <span className="status-dot" />
-                <span className="hud-label">Beschikbaar voor nieuwe projecten</span>
-                <span className="status-dot" />
-              </div>
-              <h2 className="display-xl text-[clamp(2.4rem,6vw,5.5rem)]">
-                Klaar om{' '}
-                <span className="gradient-text-full">professioneel te groeien</span>?
-              </h2>
-              <p className="mx-auto mt-5 max-w-2xl text-slate-300">
-                Plan vrijblijvend een kennismaking en ontdek welke oplossing het beste past bij jouw situatie.
-              </p>
-              <Link to="/contact" className="glow-button mt-8">
-                Start vandaag nog <ArrowRight size={16} />
-              </Link>
+            className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.06), transparent 60%)' }}
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.15), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="relative max-w-[1180px] mx-auto text-center">
+            <div className="inline-flex items-center gap-2.5 mb-8">
+              <span className="status-dot" />
+              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Beschikbaar voor nieuwe projecten
+              </span>
             </div>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(2.4rem, 6vw, 6rem)',
+                letterSpacing: '-.06em',
+                lineHeight: 0.9,
+                color: 'var(--accent3)',
+              }}
+            >
+              KLAAR OM<br />
+              <em
+                style={{
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontSize: '1.04em',
+                  letterSpacing: '-.02em',
+                }}
+              >
+                samen
+              </em>
+              {' '}TE BOUWEN?
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-base leading-8" style={{ color: 'rgba(240,237,230,.40)' }}>
+              Plan een vrijblijvend gesprek en ontdek welke oplossing het beste past bij jouw situatie.
+            </p>
+            <Link to="/contact" className="glow-button mt-10">
+              Start vandaag nog <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
 

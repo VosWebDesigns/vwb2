@@ -3,84 +3,208 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, CheckCircle, Code, Lightbulb, MessageCircle, Palette, Rocket } from 'lucide-react';
-import { useReveal } from '@/hooks/useReveal';
+import { ArrowRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const processSteps = [
   {
-    number: '01', icon: <MessageCircle size={26} />, title: 'Kennismaking & Strategie', duration: '~1 week',
-    description: 'We beginnen met een uitgebreid gesprek over uw bedrijf, doelen, en doelgroep. Hierbij analyseren we uw huidige situatie en concurrentie om een solide strategie te ontwikkelen.',
+    number: '01', title: 'Kennismaking & Strategie', duration: '~1 week',
+    description: 'We beginnen met een uitgebreid gesprek over uw bedrijf, doelen en doelgroep. Hierbij analyseren we uw huidige situatie en concurrentie om een solide strategie te ontwikkelen.',
     activities: ['Intakegesprek en doelen bepalen', 'Doelgroep en persona research', 'Concurrentieanalyse', 'Projectscope en planning opstellen', 'Budget en timeline bespreken'],
   },
   {
-    number: '02', icon: <Lightbulb size={26} />, title: 'Concept & Wireframing', duration: '1–2 weken',
+    number: '02', title: 'Concept & Wireframing', duration: '1–2 weken',
     description: 'Op basis van de strategie creëren we concepten en wireframes. Dit geeft u een duidelijk beeld van de structuur en functionaliteit voordat we beginnen met design.',
     activities: ['Sitemap en informatiearchitectuur', 'Wireframes voor key pages', 'User flow mapping', 'Feedback sessies', 'Concept presentatie en goedkeuring'],
   },
   {
-    number: '03', icon: <Palette size={26} />, title: 'Design & Prototyping', duration: '2–3 weken',
-    description: 'Nu wordt het visueel! We ontwerpen hoogwaardige mockups van alle paginas, compleet met uw branding, kleuren, en beeldmateriaal. Interactive prototypes laten u de website al ervaren.',
-    activities: ['Visual design alle paginas', 'Responsive design (desktop, tablet, mobiel)', 'Interactive prototype', 'Design review sessies', 'Finalisatie en goedkeuring'],
+    number: '03', title: 'Design & Prototyping', duration: '2–3 weken',
+    description: 'Nu wordt het visueel. We ontwerpen hoogwaardige mockups van alle pagina\'s, compleet met uw branding, kleuren en beeldmateriaal. Interactive prototypes laten u de website al ervaren.',
+    activities: ['Visual design alle pagina\'s', 'Responsive design (desktop, tablet, mobiel)', 'Interactive prototype', 'Design review sessies', 'Finalisatie en goedkeuring'],
   },
   {
-    number: '04', icon: <Code size={26} />, title: 'Development & Integratie', duration: '3–6 weken',
+    number: '04', title: 'Development & Integratie', duration: '3–6 weken',
     description: 'De goedgekeurde designs worden omgezet in een volledig functionele website. We bouwen met de nieuwste technologieën en integreren alle benodigde systemen en tools.',
     activities: ['Frontend development', 'Backend development en database', 'CMS implementatie', 'Third-party integraties', 'Testen en quality assurance'],
   },
   {
-    number: '05', icon: <Rocket size={26} />, title: 'Lancering & Optimalisatie', duration: '~1 week',
+    number: '05', title: 'Lancering & Optimalisatie', duration: '~1 week',
     description: 'Voor de lancering voeren we uitgebreide tests uit. Na lancering monitoren we de prestaties nauwlettend en optimaliseren waar nodig voor maximale resultaten.',
     activities: ['Pre-launch testing en bugfixes', 'Performance optimalisatie', 'SEO setup en implementatie', 'Analytics en tracking configuratie', 'Live gang en support'],
   },
 ];
 
 const afterLaunch = [
-  ['Onderhoud & Support',    'Technische updates, bugfixes, en content aanpassingen'],
+  ['Onderhoud & Support',    'Technische updates, bugfixes en content aanpassingen'],
   ['Performance Monitoring', 'Continue monitoring en optimalisatie voor beste resultaten'],
   ['SEO & Marketing',        'Doorlopende SEO optimalisatie en marketing support'],
   ['Groei & Uitbreidingen',  'Nieuwe features en functionaliteiten wanneer u deze nodig heeft'],
 ];
 
-const ProcessPage = () => {
-  const rootRef      = useRef(null);
-  const timelineRef  = useRef(null);
-  useReveal(rootRef);
+/* ── Single pinned chapter section ── */
+const ChapterSection = ({ step, index, total }) => {
+  const secRef     = useRef(null);
+  const ghostRef   = useRef(null);
+  const contentRef = useRef(null);
+  const isEven     = index % 2 === 0;
 
   useEffect(() => {
-    const el = timelineRef.current;
+    const el = secRef.current;
+    if (!el) return;
+
+    const ctx = gsap.context(() => {
+      const isMobile = window.innerWidth < 768;
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top top',
+        end: '+=100%',
+        pin: !isMobile,
+        pinSpacing: !isMobile,
+      });
+
+      gsap.fromTo(ghostRef.current,
+        { scale: 0.85, opacity: 0 },
+        {
+          scale: 1, opacity: 1, duration: 1.0, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 80%' },
+        }
+      );
+      gsap.fromTo(contentRef.current,
+        { x: isEven ? -40 : 40, opacity: 0 },
+        {
+          x: 0, opacity: 1, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 80%' },
+          delay: 0.2,
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, [isEven]);
+
+  return (
+    <div
+      ref={secRef}
+      className="chapter-section relative flex items-center overflow-hidden"
+      style={{ minHeight: '100vh', padding: '7rem 1.25rem 4rem' }}
+    >
+      {/* Alternating radial glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: isEven
+            ? 'radial-gradient(ellipse 55% 55% at 12% 50%, rgba(204,255,0,.04), transparent)'
+            : 'radial-gradient(ellipse 55% 55% at 88% 50%, rgba(255,63,0,.04), transparent)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Ghost step number */}
+      <span
+        ref={ghostRef}
+        aria-hidden="true"
+        className="ghost-num"
+        style={{
+          fontSize: 'clamp(12rem, 30vw, 40rem)',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          left: isEven ? '-0.1em' : 'auto',
+          right: isEven ? 'auto' : '-0.1em',
+          lineHeight: 1,
+        }}
+      >
+        {step.number}
+      </span>
+
+      {/* Content grid */}
+      <div
+        ref={contentRef}
+        className="relative z-10 w-full max-w-[1180px] mx-auto grid gap-8 lg:gap-12 lg:grid-cols-2 items-center px-4 md:px-6 lg:px-8"
+      >
+        {/* Left panel: step info */}
+        <div className={isEven ? '' : 'lg:order-2'}>
+          <p
+            className="font-mono text-[.6rem] uppercase tracking-[.30em] mb-5"
+            style={{ color: 'rgba(204,255,0,.36)' }}
+          >
+            STAP {step.number} — {step.duration}
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontWeight: 700,
+              fontSize: 'clamp(2rem, 4.5vw, 4.2rem)',
+              letterSpacing: '-.055em',
+              lineHeight: 0.92,
+              color: 'var(--accent3)',
+            }}
+          >
+            {step.title}
+          </h2>
+          <p
+            className="mt-6 text-base leading-[1.85]"
+            style={{ color: 'rgba(240,237,230,.46)', maxWidth: '38ch' }}
+          >
+            {step.description}
+          </p>
+        </div>
+
+        {/* Right panel: deliverables glass card */}
+        <div className={`glass-card rounded-2xl p-6 md:p-8 ${isEven ? '' : 'lg:order-1'}`}>
+          <p
+            className="font-mono text-[.56rem] uppercase tracking-[.26em] mb-5"
+            style={{ color: 'rgba(204,255,0,.34)' }}
+          >
+            Activiteiten
+          </p>
+          <div className="grid gap-0">
+            {step.activities.map((act, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-4 py-3.5"
+                style={{ borderBottom: i < step.activities.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none' }}
+              >
+                <span
+                  className="font-mono text-[.54rem] shrink-0 mt-0.5"
+                  style={{ color: 'rgba(204,255,0,.28)' }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="text-sm leading-[1.7]" style={{ color: 'rgba(240,237,230,.52)' }}>
+                  {act}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Progress bar: shows how far through the 5 steps */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px]"
+        style={{
+          width: `${((index + 1) / total) * 100}%`,
+          background: 'linear-gradient(to right, var(--accent), var(--accent2))',
+          transition: 'width .4s ease',
+        }}
+      />
+    </div>
+  );
+};
+
+const ProcessPage = () => {
+  const heroRef = useRef(null);
+
+  useEffect(() => {
+    const el = heroRef.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      const line = el.querySelector('.timeline-draw-line');
-      if (line) {
-        gsap.fromTo(line,
-          { scaleY: 0, transformOrigin: 'top center' },
-          { scaleY: 1, duration: 2.2, ease: 'power2.out', scrollTrigger: { trigger: line, start: 'top 80%' } }
-        );
-      }
-
-      const steps = el.querySelectorAll('.timeline-card');
-      steps.forEach((card) => {
-        gsap.fromTo(card,
-          { opacity: 0, x: -40 },
-          {
-            opacity: 1, x: 0, duration: 0.85, ease: 'power3.out',
-            scrollTrigger: { trigger: card, start: 'top 88%' },
-          }
-        );
-        const bubble = card.querySelector('.step-bubble');
-        if (bubble) {
-          gsap.fromTo(bubble,
-            { scale: 0.6, opacity: 0 },
-            {
-              scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)',
-              scrollTrigger: { trigger: card, start: 'top 88%' },
-              delay: 0.15,
-            }
-          );
-        }
-      });
+      gsap.fromTo(el.querySelectorAll('[data-hero-reveal]'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: 0.2 }
+      );
     });
     return () => ctx.revert();
   }, []);
@@ -92,144 +216,187 @@ const ProcessPage = () => {
         <meta name="description" content="Ontdek hoe we te werk gaan bij Vos Web Designs. Van strategie tot lancering - een transparant proces met gegarandeerde resultaten." />
       </Helmet>
 
-      <main ref={rootRef} className="cinema-bg overflow-hidden pt-24">
+      <main className="cinema-bg overflow-hidden pt-24">
 
-        {/* ── Hero ── */}
-        <section className="cinematic-section relative overflow-hidden">
+        {/* ── Hero: full-bleed 80vh ── */}
+        <section
+          ref={heroRef}
+          className="relative flex flex-col justify-end overflow-hidden px-5 md:px-10 lg:px-16 pb-16 md:pb-24"
+          style={{ minHeight: '80vh' }}
+        >
+          {/* Grid backdrop */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-15"
+            className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.05) 1px, transparent 1px)',
-              backgroundSize: '80px 80px',
-              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
+              backgroundImage: 'linear-gradient(rgba(204,255,0,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.025) 1px, transparent 1px)',
+              backgroundSize: '90px 90px',
+              maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
             }}
             aria-hidden="true"
           />
-          <div className="cinematic-container relative z-10 grid gap-8 lg:grid-cols-[1fr_.65fr] lg:items-end">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="status-dot" />
-                <p data-reveal className="section-eyebrow">Onze werkwijze</p>
-              </div>
-              <h1 data-reveal className="display-xl mt-0 text-[clamp(3rem,8vw,7rem)]">
-                Van idee naar{' '}
-                <span className="gradient-text-full">live resultaat</span>.
-              </h1>
-            </div>
-            <aside data-reveal className="glass-card cyber-corner rounded-2xl p-6">
-              <span className="hud-label block mb-3">Doorlooptijd globaal</span>
-              <p className="text-lg leading-8 text-slate-300">
-                Een bewezen proces dat consistente, hoogwaardige resultaten oplevert — van strategie tot lancering.
+          {/* Lime glow */}
+          <div
+            className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[60vw]"
+            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(204,255,0,.07), transparent 55%)' }}
+            aria-hidden="true"
+          />
+
+          {/* Ghost large "01–05" mark */}
+          <span
+            className="ghost-num"
+            aria-hidden="true"
+            style={{ fontSize: 'clamp(12rem, 32vw, 42rem)', right: '-0.05em', top: '50%', transform: 'translateY(-50%)', lineHeight: 1 }}
+          >
+            05
+          </span>
+
+          <div className="relative z-10 max-w-[1180px] mx-auto w-full">
+            <div data-hero-reveal className="flex items-center gap-3 mb-8">
+              <span className="status-dot" />
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                Onze werkwijze
               </p>
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                {[['1–2 wk', 'Kennismaking'], ['2–3 wk', 'Design'], ['3–6 wk', 'Development'], ['~1 wk', 'Launch']].map(([t, l]) => (
-                  <div key={l} className="rounded-xl border border-[var(--stroke)] bg-white/[.02] p-3 text-center">
-                    <p className="font-heading text-sm font-black text-[var(--accent)]">{t}</p>
-                    <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[.18em] text-slate-500">{l}</p>
-                  </div>
-                ))}
+            </div>
+
+            <h1
+              data-hero-reveal
+              style={{
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(3rem, 9vw, 9rem)',
+                letterSpacing: '-.065em',
+                lineHeight: 0.88,
+                color: 'var(--accent3)',
+              }}
+            >
+              VAN IDEE<br />
+              <em
+                style={{
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontSize: '1.05em',
+                  letterSpacing: '-.02em',
+                }}
+              >
+                naar live
+              </em>
+              .
+            </h1>
+
+            <div data-hero-reveal className="mt-10 flex items-center gap-8 flex-wrap">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Stappen</span>
+                <span
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(1.4rem, 3vw, 2.4rem)',
+                    letterSpacing: '-.05em',
+                    color: 'var(--accent)',
+                  }}
+                >
+                  5
+                </span>
               </div>
-            </aside>
-          </div>
-        </section>
-
-        {/* ── Timeline ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <div className="relative" ref={timelineRef}>
-              <div
-                className="timeline-draw-line absolute left-[14px] top-4 bottom-0 w-px md:left-[18px] lg:left-[22px]"
-                style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent2), transparent)' }}
-                aria-hidden="true"
-              />
-
-              <div className="flex flex-col gap-6 pl-10 md:pl-12 lg:pl-16">
-                {processSteps.map((step, i) => (
-                  <article key={step.number} className="timeline-card relative">
-                    <div
-                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#06060c] text-[var(--accent)] shadow-[0_0_20px_rgba(204,255,0,.3)] md:-left-12 md:h-9 md:w-9 lg:-left-16 lg:h-11 lg:w-11"
-                      aria-hidden="true"
-                    >
-                      <span className="font-mono text-[9px] font-black md:text-[10px] lg:text-[11px]">{step.number}</span>
-                    </div>
-
-                    <div
-                      className="absolute -left-[1rem] top-[1.5rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(255,63,0,.6)] md:-left-[1.15rem] md:top-[1.65rem] lg:-left-[1.45rem]"
-                      aria-hidden="true"
-                    />
-
-                    <div className="glass-card rounded-2xl p-5 md:p-7">
-                      <div className="grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
-                        <div>
-                          <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(204,255,0,.04)] text-[var(--accent)]">
-                            {step.icon}
-                          </div>
-                          <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[var(--accent2)]">
-                            {step.duration}
-                          </span>
-                          <h2 className="mt-2 font-heading text-[clamp(1.5rem,2.5vw,2.4rem)] font-black tracking-[-.05em] text-white">
-                            {step.title}
-                          </h2>
-                          <p className="mt-3 text-sm leading-7 text-slate-300">{step.description}</p>
-                        </div>
-
-                        <div className="grid content-start gap-2.5">
-                          <span className="hud-label mb-1">Activiteiten</span>
-                          {step.activities.map((activity) => (
-                            <div
-                              key={activity}
-                              className="flex gap-2.5 items-start rounded-xl border border-[var(--stroke)] bg-white/[.02] p-3 text-sm text-slate-300 transition hover:border-[rgba(204,255,0,.2)]"
-                            >
-                              <CheckCircle size={14} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
-                              {activity}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                ))}
+              <div className="h-8 w-px" style={{ background: 'rgba(204,255,0,.10)' }} />
+              <div className="flex flex-col gap-0.5">
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Gemiddeld</span>
+                <span
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(1.4rem, 3vw, 2.4rem)',
+                    letterSpacing: '-.05em',
+                    color: 'var(--accent3)',
+                  }}
+                >
+                  6–12 weken
+                </span>
+              </div>
+              <div className="h-8 w-px" style={{ background: 'rgba(204,255,0,.10)' }} />
+              <div className="flex flex-col gap-0.5">
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Resultaat</span>
+                <span
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(1.4rem, 3vw, 2.4rem)',
+                    letterSpacing: '-.05em',
+                    color: 'var(--accent3)',
+                  }}
+                >
+                  Live product
+                </span>
               </div>
             </div>
           </div>
         </section>
+
+        {/* ── Pinned chapter sections ── */}
+        {processSteps.map((step, i) => (
+          <ChapterSection key={step.number} step={step} index={i} total={processSteps.length} />
+        ))}
 
         {/* ── After launch ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <div data-reveal className="glass-card rounded-3xl p-7 md:p-12 relative overflow-hidden">
-              <div className="pointer-events-none absolute inset-0 sci-fi-grid-fine opacity-20" aria-hidden="true" />
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="status-dot" />
-                  <p className="section-eyebrow">Na de lancering</p>
-                </div>
-                <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-start">
-                  <div>
-                    <h2 className="display-xl text-[clamp(2rem,5vw,4rem)]">
-                      We blijven{' '}
-                      <span className="gradient-text-cyan">meekijken</span>.
-                    </h2>
-                    <p className="mt-5 text-base leading-8 text-slate-300">
-                      Onze betrokkenheid stopt niet bij de lancering. We bieden continue support en staan klaar om uw website te laten groeien.
-                    </p>
-                    <Link to="/contact" className="glow-button mt-7">
-                      Start uw project <ArrowRight size={16} />
-                    </Link>
+        <section className="relative py-28 px-5 md:px-10 lg:px-16">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(204,255,0,.03), transparent)' }}
+            aria-hidden="true"
+          />
+          <div className="relative max-w-[1180px] mx-auto">
+            <p className="font-mono text-[.65rem] uppercase tracking-[.38em] mb-4" style={{ color: 'var(--accent)' }}>
+              — Na de lancering
+            </p>
+            <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-start mb-12">
+              <div>
+                <h2
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+                    letterSpacing: '-.055em',
+                    lineHeight: 0.92,
+                    color: 'var(--accent3)',
+                  }}
+                >
+                  WE BLIJVEN<br />
+                  <em style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontWeight: 600, color: 'var(--accent)', fontSize: '1.05em', letterSpacing: '-.02em' }}>
+                    meekijken
+                  </em>
+                  .
+                </h2>
+                <p className="mt-5 text-base leading-8" style={{ color: 'rgba(240,237,230,.44)' }}>
+                  Onze betrokkenheid stopt niet bij de lancering. We bieden continue support en staan klaar om uw website te laten groeien.
+                </p>
+                <Link to="/contact" className="glow-button mt-8">
+                  Start uw project <ArrowRight size={16} />
+                </Link>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                {afterLaunch.map(([title, text]) => (
+                  <div
+                    key={title}
+                    className="rounded-2xl p-5 transition-all duration-300"
+                    style={{
+                      border: '1px solid rgba(204,255,0,.08)',
+                      background: 'rgba(8,8,12,.55)',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(204,255,0,.20)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(204,255,0,.08)'; }}
+                  >
+                    <h3
+                      className="font-heading font-bold text-base mb-2"
+                      style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", color: 'var(--accent)' }}
+                    >
+                      {title}
+                    </h3>
+                    <p className="text-sm leading-6" style={{ color: 'rgba(240,237,230,.44)' }}>{text}</p>
                   </div>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {afterLaunch.map(([title, text]) => (
-                      <div
-                        key={title}
-                        className="rounded-2xl border border-[rgba(204,255,0,.10)] bg-[rgba(8,16,30,.5)] p-5 transition hover:border-[rgba(204,255,0,.22)]"
-                      >
-                        <h3 className="font-heading text-base font-black text-[var(--accent)]">{title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-slate-300">{text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>

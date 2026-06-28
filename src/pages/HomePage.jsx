@@ -22,21 +22,68 @@ const STATS = [
   { value: 2,   suffix: 's',  label: 'Gemiddelde laadtijd', prefix: '<' },
 ];
 
-/* ── Word-by-word statement reveal ── */
+/* ── Animated stat row (used inside StatementSection) ── */
+const StatRow = ({ value, suffix, prefix, label, index }) => {
+  const ref    = useRef(null);
+  const numRef = useRef(null);
+
+  useEffect(() => {
+    const el    = ref.current;
+    const numEl = numRef.current;
+    if (!el || !numEl) return;
+    const ctx = gsap.context(() => {
+      gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } })
+        .fromTo(el, { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.7, delay: index * 0.1, ease: 'power3.out' })
+        .fromTo({ n: 0 }, { n: 0 }, {
+          n: value, duration: 1.4, ease: 'power2.out',
+          onUpdate: function () { numEl.textContent = Math.round(this.targets()[0].n); },
+        }, '<0.3');
+    });
+    return () => ctx.revert();
+  }, [index, value]);
+
+  return (
+    <div
+      ref={ref}
+      className="data-rule-row flex items-center justify-between py-5"
+    >
+      <p
+        className="font-mono text-[.58rem] uppercase tracking-[.22em]"
+        style={{ color: 'rgba(204,255,0,.30)' }}
+      >
+        {label}
+      </p>
+      <p
+        className="font-heading font-bold leading-none tabular-nums"
+        style={{
+          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+          fontSize: 'clamp(1.6rem, 3.5vw, 3rem)',
+          letterSpacing: '-.05em',
+          color: 'var(--accent3)',
+        }}
+      >
+        <span style={{ color: 'rgba(204,255,0,.45)', fontSize: '.7em' }}>{prefix}</span>
+        <span ref={numRef}>{value}</span>
+        <span style={{ color: 'var(--accent)', fontSize: '.65em' }}>{suffix}</span>
+      </p>
+    </div>
+  );
+};
+
+/* ── Statement + Stats split section ── */
 const StatementSection = () => {
-  const ref = useRef(null);
+  const leftRef  = useRef(null);
+  const rightRef = useRef(null);
   const WORDS = ['Geen', 'templates.', 'Geen', 'compromissen.', 'Alleen', 'resultaat.'];
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(el.querySelectorAll('.stmt-word'),
+      gsap.fromTo(leftRef.current.querySelectorAll('.stmt-word'),
         { opacity: 0, y: 60, rotateX: 22 },
         {
           opacity: 1, y: 0, rotateX: 0,
           duration: 1.1, stagger: 0.09, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 72%' },
+          scrollTrigger: { trigger: leftRef.current, start: 'top 72%' },
         }
       );
     });
@@ -57,103 +104,74 @@ const StatementSection = () => {
         }}
         aria-hidden="true"
       />
-      {/* Subtle lime glow */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[40vh] w-[60vw]"
         style={{ background: 'radial-gradient(ellipse, rgba(204,255,0,.05), transparent 70%)' }}
         aria-hidden="true"
       />
-      <div ref={ref} className="relative mx-auto text-center" style={{ perspective: '900px' }}>
-        <p
-          className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
-          style={{ color: 'rgba(204,255,0,.35)' }}
-        >
-          — Studio Statement
-        </p>
-        <h2
-          className="font-heading font-bold uppercase leading-[.88] tracking-[-0.06em]"
-          style={{
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: 'clamp(3rem, 11vw, 11rem)',
-            color: 'var(--accent3)',
-          }}
-          aria-label={WORDS.join(' ')}
-        >
-          {WORDS.map((word, i) => (
-            <span
-              key={i}
-              className="stmt-word inline-block mr-[.2em]"
-              style={i % 2 !== 0 ? {
-                fontFamily: '"Cormorant Garamond", serif',
-                fontStyle: 'italic',
-                fontWeight: 600,
-                color: 'var(--accent)',
-                fontSize: '1.06em',
-                letterSpacing: '-.02em',
-              } : undefined}
-            >
-              {word}
-            </span>
+
+      <div className="relative grid gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+        {/* Left: manifesto statement */}
+        <div ref={leftRef} style={{ perspective: '900px' }}>
+          <p
+            className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
+            style={{ color: 'rgba(204,255,0,.35)' }}
+          >
+            — Studio Statement
+          </p>
+          <h2
+            className="font-heading font-bold uppercase leading-[.88] tracking-[-0.06em]"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontSize: 'clamp(2.8rem, 9vw, 9rem)',
+              color: 'var(--accent3)',
+            }}
+            aria-label={WORDS.join(' ')}
+          >
+            {WORDS.map((word, i) => (
+              <span
+                key={i}
+                className="stmt-word inline-block mr-[.15em]"
+                style={i % 2 !== 0 ? {
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  fontSize: '1.06em',
+                  letterSpacing: '-.02em',
+                } : undefined}
+              >
+                {word}
+              </span>
+            ))}
+          </h2>
+          <p
+            className="mt-10 max-w-xl text-base leading-8"
+            style={{ color: 'rgba(240,237,230,.38)' }}
+          >
+            Wij geloven dat elk bedrijf een website verdient die voelt als de toekomst —
+            niet als een gratis theme. Maatwerk van A tot Z, zonder tussenlaag.
+          </p>
+        </div>
+
+        {/* Right: stats as editorial rule list */}
+        <div ref={rightRef}>
+          <p
+            className="font-mono text-[.6rem] uppercase tracking-[.38em] mb-2"
+            style={{ color: 'rgba(204,255,0,.28)' }}
+          >
+            — Cijfers
+          </p>
+          {STATS.map((s, i) => (
+            <StatRow key={s.label} {...s} index={i} />
           ))}
-        </h2>
-        <p
-          className="mx-auto mt-10 max-w-xl text-base leading-8"
-          style={{ color: 'rgba(240,237,230,.38)' }}
-        >
-          Wij geloven dat elk bedrijf een website verdient die voelt als de toekomst —
-          niet als een gratis theme. Maatwerk van A tot Z, zonder tussenlaag.
-        </p>
+        </div>
       </div>
     </section>
   );
 };
 
-/* ── Animated stat counter ── */
-const StatItem = ({ value, suffix, prefix, label, index }) => {
-  const ref    = useRef(null);
-  const numRef = useRef(null);
-
-  useEffect(() => {
-    const el    = ref.current;
-    const numEl = numRef.current;
-    if (!el || !numEl) return;
-    const ctx = gsap.context(() => {
-      gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } })
-        .fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, delay: index * 0.1, ease: 'power3.out' })
-        .fromTo({ n: 0 }, { n: 0 }, {
-          n: value, duration: 1.4, ease: 'power2.out',
-          onUpdate: function () { numEl.textContent = Math.round(this.targets()[0].n); },
-        }, '<0.3');
-    });
-    return () => ctx.revert();
-  }, [index, value]);
-
-  return (
-    <div ref={ref} className="flex flex-col items-center gap-3 py-10">
-      <p
-        className="font-heading font-bold leading-none tabular-nums"
-        style={{
-          fontFamily: "'Space Grotesk', system-ui, sans-serif",
-          fontSize: 'clamp(2.8rem, 6.5vw, 6rem)',
-          letterSpacing: '-.05em',
-          color: 'var(--accent3)',
-        }}
-      >
-        <span style={{ color: 'rgba(204,255,0,.45)' }}>{prefix}</span>
-        <span ref={numRef}>{value}</span>
-        <span style={{ color: 'var(--accent)', fontSize: '.68em' }}>{suffix}</span>
-      </p>
-      <p
-        className="font-mono text-[.6rem] uppercase tracking-[.24em] text-center"
-        style={{ color: 'rgba(204,255,0,.30)' }}
-      >
-        {label}
-      </p>
-    </div>
-  );
-};
-
-/* ── Single centered testimonial ── */
+/* ── Centered testimonial ── */
 const TestimonialFeature = ({ testimonial }) => {
   const ref = useRef(null);
 
@@ -185,38 +203,23 @@ const TestimonialFeature = ({ testimonial }) => {
         aria-hidden="true"
       />
       <figure ref={ref} className="relative mx-auto max-w-4xl text-center">
-        <p
-          className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
-          style={{ color: 'rgba(204,255,0,.35)' }}
-        >
+        <p className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10" style={{ color: 'rgba(204,255,0,.35)' }}>
           — Klantreacties
         </p>
         <div
           className="font-heading font-bold leading-none mb-4 select-none pointer-events-none"
-          style={{
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: '9rem',
-            color: 'rgba(204,255,0,.06)',
-            lineHeight: 0.55,
-          }}
+          style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '9rem', color: 'rgba(204,255,0,.06)', lineHeight: 0.55 }}
           aria-hidden="true"
         >
           "
         </div>
         <blockquote
           className="font-heading font-bold uppercase leading-[.9] tracking-[-0.04em]"
-          style={{
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: 'clamp(1.8rem, 4.5vw, 4rem)',
-            color: 'var(--accent3)',
-          }}
+          style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: 'clamp(1.8rem, 4.5vw, 4rem)', color: 'var(--accent3)' }}
         >
           {testimonial.text}
         </blockquote>
-        <figcaption
-          className="mt-8 font-mono text-[.7rem] uppercase tracking-[.26em]"
-          style={{ color: 'var(--accent)' }}
-        >
+        <figcaption className="mt-8 font-mono text-[.7rem] uppercase tracking-[.26em]" style={{ color: 'var(--accent)' }}>
           {testimonial.name}{testimonial.company ? ` — ${testimonial.company}` : ''}
         </figcaption>
       </figure>
@@ -253,44 +256,24 @@ const CtaSection = () => {
         style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.07), transparent 60%)' }}
         aria-hidden="true"
       />
-
       <div ref={ref} className="relative mx-auto max-w-5xl text-center">
         <div className="inline-flex items-center gap-2.5 mb-10">
           <span className="status-dot" />
-          <span
-            className="font-mono text-[.62rem] uppercase tracking-[.36em]"
-            style={{ color: 'rgba(204,255,0,.40)' }}
-          >
+          <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
             Beschikbaar voor nieuwe projecten
           </span>
         </div>
         <h2
           className="font-heading font-bold uppercase leading-[.88] tracking-[-0.055em]"
-          style={{
-            fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: 'clamp(3rem, 10vw, 10rem)',
-            color: 'var(--accent3)',
-          }}
+          style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: 'clamp(3rem, 10vw, 10rem)', color: 'var(--accent3)' }}
         >
           KLAAR OM<br />
-          <em
-            style={{
-              fontFamily: '"Cormorant Garamond", serif',
-              fontStyle: 'italic',
-              fontWeight: 600,
-              color: 'var(--accent)',
-              fontSize: '1.06em',
-              letterSpacing: '-.02em',
-            }}
-          >
+          <em style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontWeight: 600, color: 'var(--accent)', fontSize: '1.06em', letterSpacing: '-.02em' }}>
             samen
           </em>
           {' '}TE BOUWEN?
         </h2>
-        <p
-          className="mx-auto mt-8 max-w-xl text-base leading-8"
-          style={{ color: 'rgba(240,237,230,.38)' }}
-        >
+        <p className="mx-auto mt-8 max-w-xl text-base leading-8" style={{ color: 'rgba(240,237,230,.38)' }}>
           Plan een vrijblijvend gesprek en ontdek hoe wij uw digitale aanwezigheid
           transformeren naar een premium ervaring die klanten nooit vergeten.
         </p>
@@ -370,31 +353,6 @@ const HomePage = () => {
         <StatementSection />
         <ServicesSection />
         <WorkShowcase projects={projects} loading={loading} />
-
-        {/* Stats strip */}
-        <section className="relative">
-          <div
-            className="absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
-            aria-hidden="true"
-          />
-          <div
-            className="grid grid-cols-2 lg:grid-cols-4"
-            style={{ borderLeft: '1px solid rgba(204,255,0,.05)' }}
-          >
-            {STATS.map((s, i) => (
-              <div key={s.label} style={{ borderRight: '1px solid rgba(204,255,0,.05)' }}>
-                <StatItem {...s} index={i} />
-              </div>
-            ))}
-          </div>
-        </section>
-
         <TestimonialFeature testimonial={testimonials[0]} />
         <CtaSection />
       </main>

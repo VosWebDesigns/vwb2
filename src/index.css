@@ -908,3 +908,23 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Horizontal service strip — vertical text for collapsed state */
+.service-strip-vert {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+}
+
+/* Architectural data rule row */
+.data-rule-row {
+  border-bottom: 1px solid rgba(204,255,0,.06);
+  transition: border-color .3s ease;
+}
+.data-rule-row:hover { border-color: rgba(204,255,0,.18); }
+
+/* Chapter section (pinned process step) */
+.chapter-section { will-change: transform; }
+
+/* Magazine grid hero card */
+.magazine-grid-hero { border-radius: 16px; overflow: hidden; }

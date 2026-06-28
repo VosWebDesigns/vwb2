@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -44,156 +45,8 @@ const SERVICES = [
   },
 ];
 
-const ServiceItem = ({ service, index }) => {
-  const [open, setOpen] = useState(false);
-  const descRef = useRef(null);
-  const rowRef  = useRef(null);
-
-  useEffect(() => {
-    const el = rowRef.current;
-    if (!el) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1, y: 0, duration: 0.7,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 88%' },
-          delay: index * 0.07,
-        }
-      );
-    });
-    return () => ctx.revert();
-  }, [index]);
-
-  useEffect(() => {
-    const el = descRef.current;
-    if (!el) return;
-    if (open) {
-      gsap.fromTo(el,
-        { height: 0, opacity: 0 },
-        { height: 'auto', opacity: 1, duration: 0.55, ease: 'power3.inOut' }
-      );
-    } else {
-      gsap.to(el, { height: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut' });
-    }
-  }, [open]);
-
-  return (
-    <div
-      ref={rowRef}
-      className="group/row relative border-b"
-      style={{ borderColor: 'rgba(204,255,0,.08)' }}
-    >
-      {/* Ghost number in background */}
-      <div
-        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 select-none overflow-hidden"
-        aria-hidden="true"
-        style={{
-          fontFamily: "'Space Grotesk', system-ui, sans-serif",
-          fontWeight: 700,
-          fontSize: 'clamp(5rem, 12vw, 12rem)',
-          letterSpacing: '-.06em',
-          lineHeight: 1,
-          color: 'transparent',
-          WebkitTextStroke: `1px rgba(204,255,0,${open ? '.10' : '.04'})`,
-          transition: 'all .5s ease',
-          opacity: 0.9,
-        }}
-      >
-        {service.num}
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between py-7 text-left md:py-9 transition-colors"
-        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--accent3)'; }}
-        style={{ color: 'var(--accent3)' }}
-      >
-        {/* Number + Name */}
-        <div className="flex items-baseline gap-5 md:gap-8">
-          <span
-            className="font-mono shrink-0"
-            style={{
-              fontSize: 'clamp(.6rem, 1vw, .75rem)',
-              letterSpacing: '.26em',
-              color: 'rgba(204,255,0,.36)',
-            }}
-          >
-            {service.num}
-          </span>
-          <span
-            className="font-heading font-bold uppercase leading-none tracking-[-0.055em] transition-colors duration-300"
-            style={{
-              fontFamily: "'Space Grotesk', system-ui, sans-serif",
-              fontSize: 'clamp(1.6rem, 4.5vw, 5rem)',
-            }}
-          >
-            {service.name}
-          </span>
-        </div>
-
-        {/* Right: tag + arrow */}
-        <div className="flex items-center gap-4 shrink-0 ml-4">
-          <span
-            className="hidden font-mono text-[.6rem] uppercase tracking-[.20em] lg:block"
-            style={{ color: 'rgba(204,255,0,.30)' }}
-          >
-            {service.short}
-          </span>
-          <div
-            className="grid h-10 w-10 place-items-center rounded-full transition-all duration-400"
-            style={{
-              border: `1px solid ${open ? 'var(--accent)' : 'rgba(204,255,0,.18)'}`,
-              background: open ? 'var(--accent)' : 'transparent',
-            }}
-          >
-            <ArrowUpRight
-              size={17}
-              style={{
-                color: open ? '#060608' : 'var(--accent)',
-                transform: open ? 'rotate(135deg)' : 'rotate(0deg)',
-                transition: 'transform .4s ease',
-              }}
-            />
-          </div>
-        </div>
-      </button>
-
-      {/* Expandable description */}
-      <div ref={descRef} style={{ height: 0, overflow: 'hidden', opacity: 0 }}>
-        <div
-          className="pb-8 pl-[calc(clamp(.6rem,1vw,.75rem)+1.25rem+2rem)] md:pl-[calc(clamp(.6rem,1vw,.75rem)+2rem+2.5rem)] flex items-start justify-between gap-8"
-        >
-          <div className="max-w-2xl">
-            <p className="text-base leading-[1.85]" style={{ color: 'rgba(240,237,230,.46)' }}>
-              {service.desc}
-            </p>
-            <Link
-              to={service.link}
-              className="inline-flex items-center gap-2 mt-6 font-mono text-[.72rem] uppercase tracking-[.18em] transition-colors"
-              style={{ color: 'var(--accent)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-            >
-              Meer over {service.name} <ArrowUpRight size={12} />
-            </Link>
-          </div>
-          <span
-            className="hidden shrink-0 font-mono text-[.6rem] uppercase tracking-[.20em] lg:block"
-            style={{ color: 'rgba(204,255,0,.25)' }}
-          >
-            {service.short}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const ServicesSection = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
   const headRef = useRef(null);
 
   useEffect(() => {
@@ -246,10 +99,7 @@ const ServicesSection = () => {
         <Link
           to="/diensten"
           className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.22em] pb-2 transition-colors"
-          style={{
-            color: 'rgba(204,255,0,.36)',
-            borderBottom: '1px solid rgba(204,255,0,.16)',
-          }}
+          style={{ color: 'rgba(204,255,0,.36)', borderBottom: '1px solid rgba(204,255,0,.16)' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(204,255,0,.36)'; }}
         >
@@ -257,13 +107,229 @@ const ServicesSection = () => {
         </Link>
       </div>
 
-      {/* Top divider */}
-      <div style={{ height: 1, background: 'rgba(204,255,0,.08)', marginBottom: 0 }} />
+      {/* ── Desktop: horizontal expanding strips ── */}
+      <div
+        className="hidden lg:flex overflow-hidden rounded-2xl"
+        style={{ minHeight: '65vh', border: '1px solid rgba(204,255,0,.07)' }}
+        onMouseLeave={() => setActiveIndex(null)}
+      >
+        {SERVICES.map((s, i) => {
+          const isActive = activeIndex === i;
+          return (
+            <div
+              key={s.num}
+              className="relative overflow-hidden cursor-pointer"
+              style={{
+                flex: isActive ? '5 0 0%' : '1 0 0%',
+                transition: 'flex 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                borderRight: i < SERVICES.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none',
+              }}
+              onMouseEnter={() => setActiveIndex(i)}
+            >
+              <AnimatePresence mode="wait">
+                {isActive ? (
+                  <motion.div
+                    key="expanded"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35, delay: 0.15 }}
+                    className="absolute inset-0 flex flex-col justify-between p-8 lg:p-10"
+                  >
+                    {/* Ghost number */}
+                    <span
+                      className="ghost-num"
+                      aria-hidden="true"
+                      style={{
+                        fontSize: 'clamp(7rem, 14vw, 14rem)',
+                        right: '-0.15em',
+                        bottom: '-0.15em',
+                      }}
+                    >
+                      {s.num}
+                    </span>
 
-      {/* Service list */}
-      {SERVICES.map((s, i) => (
-        <ServiceItem key={s.num} service={s} index={i} />
-      ))}
+                    {/* Top: number + tech stack */}
+                    <div>
+                      <span
+                        className="font-mono text-[.58rem] uppercase tracking-[.28em] block"
+                        style={{ color: 'rgba(204,255,0,.36)' }}
+                      >
+                        {s.num}
+                      </span>
+                      <span
+                        className="font-mono text-[.54rem] uppercase tracking-[.16em] block mt-1.5"
+                        style={{ color: 'rgba(204,255,0,.22)' }}
+                      >
+                        {s.short}
+                      </span>
+                    </div>
+
+                    {/* Bottom: title + desc + link */}
+                    <div className="relative z-10">
+                      <h3
+                        style={{
+                          fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                          fontWeight: 700,
+                          fontSize: 'clamp(1.4rem, 2.2vw, 2.6rem)',
+                          letterSpacing: '-.055em',
+                          lineHeight: 1.0,
+                          color: 'var(--accent3)',
+                        }}
+                      >
+                        {s.name}
+                      </h3>
+                      <p
+                        className="mt-4 text-sm leading-[1.85]"
+                        style={{ color: 'rgba(240,237,230,.44)', maxWidth: '30ch' }}
+                      >
+                        {s.desc}
+                      </p>
+                      <Link
+                        to={s.link}
+                        className="inline-flex items-center gap-1.5 mt-5 font-mono text-[.6rem] uppercase tracking-[.18em] transition-colors"
+                        style={{ color: 'var(--accent)' }}
+                      >
+                        Meer info <ArrowUpRight size={11} />
+                      </Link>
+                    </div>
+
+                    {/* Bottom accent line */}
+                    <div
+                      className="absolute bottom-0 left-0 right-0 h-[2px]"
+                      style={{ background: 'linear-gradient(to right, var(--accent), var(--accent2))', opacity: 0.6 }}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="collapsed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-7 py-8"
+                  >
+                    <span
+                      className="font-mono text-[.52rem] uppercase tracking-[.28em]"
+                      style={{ color: 'rgba(204,255,0,.25)' }}
+                    >
+                      {s.num}
+                    </span>
+                    <span
+                      className="service-strip-vert"
+                      style={{
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 'clamp(.85rem, 1.3vw, 1.1rem)',
+                        letterSpacing: '.03em',
+                        color: 'rgba(240,237,230,.38)',
+                        transform: 'rotate(180deg)',
+                      }}
+                    >
+                      {s.name}
+                    </span>
+                    <div
+                      className="h-px w-5"
+                      style={{ background: 'rgba(204,255,0,.14)' }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Mobile: accordion ── */}
+      <div className="lg:hidden">
+        <div style={{ height: 1, background: 'rgba(204,255,0,.08)' }} />
+        {SERVICES.map((s, i) => {
+          const isOpen = activeIndex === i;
+          return (
+            <div
+              key={s.num}
+              style={{ borderBottom: '1px solid rgba(204,255,0,.08)' }}
+            >
+              <button
+                type="button"
+                onClick={() => setActiveIndex(isOpen ? null : i)}
+                className="flex w-full items-center justify-between py-6 text-left"
+              >
+                <div className="flex items-baseline gap-4">
+                  <span
+                    className="font-mono text-[.58rem] uppercase tracking-[.24em] shrink-0"
+                    style={{ color: 'rgba(204,255,0,.36)' }}
+                  >
+                    {s.num}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 'clamp(1.1rem, 4vw, 1.9rem)',
+                      letterSpacing: '-.04em',
+                      color: isOpen ? 'var(--accent)' : 'var(--accent3)',
+                      transition: 'color .3s ease',
+                    }}
+                  >
+                    {s.name}
+                  </span>
+                </div>
+                <ArrowUpRight
+                  size={16}
+                  style={{
+                    color: 'var(--accent)',
+                    transform: isOpen ? 'rotate(135deg)' : 'rotate(0deg)',
+                    transition: 'transform .4s ease',
+                    flexShrink: 0,
+                    marginLeft: '1rem',
+                  }}
+                />
+              </button>
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className="pb-7 pl-[calc(clamp(.58rem,1vw,.7rem)+1rem+1rem)]">
+                      <p
+                        className="font-mono text-[.55rem] uppercase tracking-[.18em] mb-3"
+                        style={{ color: 'rgba(204,255,0,.28)' }}
+                      >
+                        {s.short}
+                      </p>
+                      <p
+                        className="text-sm leading-[1.85]"
+                        style={{ color: 'rgba(240,237,230,.46)' }}
+                      >
+                        {s.desc}
+                      </p>
+                      <Link
+                        to={s.link}
+                        className="inline-flex items-center gap-2 mt-5 font-mono text-[.62rem] uppercase tracking-[.18em] transition-colors"
+                        style={{ color: 'var(--accent)' }}
+                      >
+                        Meer over {s.name} <ArrowUpRight size={11} />
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Mobile diensten link */}
+      <div className="mt-8 lg:hidden">
+        <Link to="/diensten" className="ghost-button">
+          Alle diensten <ArrowUpRight size={14} />
+        </Link>
+      </div>
     </section>
   );
 };
