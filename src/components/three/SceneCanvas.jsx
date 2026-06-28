@@ -4,9 +4,9 @@ import { Float, Stars, MeshDistortMaterial, Sphere } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-const GOLD   = '#ccff00';
-const VIOLET = '#ff3f00';
-const CREAM  = '#e8ffb3';
+const GOLD   = '#C8A86A';
+const VIOLET = '#7C5CBF';
+const CREAM  = '#EDE8E0';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
@@ -199,7 +199,7 @@ function FloatingPanel({ position, rotation, scale = 1, variant = 0 }) {
       <group ref={groupRef} position={position} rotation={rotation} scale={scale}>
         <mesh>
           <planeGeometry args={[w, h]} />
-          <meshBasicMaterial color="#04040a" transparent opacity={0.50} side={THREE.DoubleSide} />
+          <meshBasicMaterial color="#08050F" transparent opacity={0.50} side={THREE.DoubleSide} />
         </mesh>
         <lineSegments>
           <edgesGeometry args={[new THREE.PlaneGeometry(w, h)]} />
@@ -257,12 +257,12 @@ function Scene() {
     <>
       <Stars radius={90} depth={55} count={prefersReducedMotion ? 200 : 700} factor={3.5} saturation={0} fade />
 
-      {/* Lime key + signal red fill */}
-      <ambientLight intensity={0.18} />
-      <pointLight position={[8, 6, 6]}   intensity={55}  color={GOLD}   />
-      <pointLight position={[-10, -5, 4]} intensity={30}  color={VIOLET} />
-      <pointLight position={[0, 14, 2]}   intensity={18}  color="#f0ffe0" />
-      <pointLight position={[4, -2, 10]}  intensity={12}  color={GOLD}   />
+      {/* Gold key + deep violet fill */}
+      <ambientLight intensity={0.12} />
+      <pointLight position={[8, 6, 6]}   intensity={40}  color={GOLD}   />
+      <pointLight position={[-10, -5, 4]} intensity={22}  color={VIOLET} />
+      <pointLight position={[0, 14, 2]}   intensity={14}  color={CREAM} />
+      <pointLight position={[4, -2, 10]}  intensity={8}   color={GOLD}   />
 
       <ParticleField count={count} />
       <GoldOrb />
@@ -287,9 +287,9 @@ function Scene() {
       {!prefersReducedMotion && (
         <EffectComposer>
           <Bloom
-            luminanceThreshold={0.35}
+            luminanceThreshold={0.55}
             luminanceSmoothing={0.9}
-            intensity={0.8}
+            intensity={0.32}
             mipmapBlur
           />
           <Vignette eskil={false} offset={0.25} darkness={0.65} />

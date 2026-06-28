@@ -72,7 +72,7 @@ const AboutPage = () => {
           <div
             className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(200,168,106,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.022) 1px, transparent 1px)',
               backgroundSize: '90px 90px',
               maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
@@ -81,7 +81,7 @@ const AboutPage = () => {
           />
           <div
             className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[55vw]"
-            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(204,255,0,.07), transparent 55%)' }}
+            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(200,168,106,.07), transparent 55%)' }}
             aria-hidden="true"
           />
 
@@ -89,7 +89,7 @@ const AboutPage = () => {
             {/* Status */}
             <div data-reveal className="flex items-center gap-3 mb-10">
               <span className="status-dot" />
-              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Over Vos Web Designs
               </p>
             </div>
@@ -128,14 +128,14 @@ const AboutPage = () => {
             <div
               data-reveal
               className="mt-12 pt-8 grid grid-cols-2 md:grid-cols-4 gap-0"
-              style={{ borderTop: '1px solid rgba(204,255,0,.08)' }}
+              style={{ borderTop: '1px solid rgba(200,168,106,.08)' }}
             >
               {FACTS.map(({ value, label }, i) => (
                 <div
                   key={label}
                   className="flex flex-col gap-1.5 py-6 pr-6"
                   style={{
-                    borderRight: i < FACTS.length - 1 ? '1px solid rgba(204,255,0,.07)' : 'none',
+                    borderRight: i < FACTS.length - 1 ? '1px solid rgba(200,168,106,.07)' : 'none',
                   }}
                 >
                   <span
@@ -152,7 +152,7 @@ const AboutPage = () => {
                   </span>
                   <span
                     className="font-mono text-[.58rem] uppercase tracking-[.22em]"
-                    style={{ color: 'rgba(204,255,0,.30)' }}
+                    style={{ color: 'rgba(200,168,106,.30)' }}
                   >
                     {label}
                   </span>
@@ -167,10 +167,10 @@ const AboutPage = () => {
           <div className="max-w-[1180px] mx-auto">
             {/* Title row with horizontal rule */}
             <div className="flex items-center gap-6 mb-10">
-              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Studio verhaal
               </p>
-              <div className="flex-1 h-px" style={{ background: 'rgba(204,255,0,.08)' }} />
+              <div className="flex-1 h-px" style={{ background: 'rgba(200,168,106,.08)' }} />
             </div>
 
             {/* Newspaper 2-column body text */}
@@ -211,27 +211,27 @@ const AboutPage = () => {
           <div className="max-w-[1180px] mx-auto">
             {/* Section label */}
             <div className="flex items-center gap-6 mb-8">
-              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.6rem] uppercase tracking-[.38em] shrink-0" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Onze aanpak
               </p>
-              <div className="flex-1 h-px" style={{ background: 'rgba(204,255,0,.08)' }} />
+              <div className="flex-1 h-px" style={{ background: 'rgba(200,168,106,.08)' }} />
             </div>
 
             <div
               ref={pillarsRef}
-              style={{ borderTop: '1px solid rgba(204,255,0,.06)' }}
+              style={{ borderTop: '1px solid rgba(200,168,106,.06)' }}
             >
               {PILLARS.map(({ num, title, text }) => (
                 <div
                   key={num}
                   className="pillar-row group flex items-baseline gap-6 md:gap-10 py-6 md:py-8 cursor-default"
-                  style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}
+                  style={{ borderBottom: '1px solid rgba(200,168,106,.06)' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.querySelector('.pillar-num').style.color = 'var(--accent)';
                     e.currentTarget.querySelector('.pillar-title').style.color = 'var(--accent)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.querySelector('.pillar-num').style.color = 'rgba(204,255,0,.28)';
+                    e.currentTarget.querySelector('.pillar-num').style.color = 'rgba(200,168,106,.28)';
                     e.currentTarget.querySelector('.pillar-title').style.color = 'var(--accent3)';
                   }}
                 >
@@ -243,7 +243,7 @@ const AboutPage = () => {
                       fontWeight: 700,
                       letterSpacing: '-.04em',
                       lineHeight: 1,
-                      color: 'rgba(204,255,0,.28)',
+                      color: 'rgba(200,168,106,.28)',
                       transition: 'color .3s ease',
                     }}
                   >
@@ -251,7 +251,7 @@ const AboutPage = () => {
                   </span>
 
                   {/* Divider rule */}
-                  <div className="hidden md:block h-px flex-1 max-w-[3rem]" style={{ background: 'rgba(204,255,0,.12)', marginBottom: '0.15em' }} />
+                  <div className="hidden md:block h-px flex-1 max-w-[3rem]" style={{ background: 'rgba(200,168,106,.12)', marginBottom: '0.15em' }} />
 
                   {/* Title + description */}
                   <div className="flex-1 flex flex-col md:flex-row md:items-baseline md:gap-8">
@@ -284,18 +284,18 @@ const AboutPage = () => {
         <section className="relative py-28 px-5 md:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
-            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.06), transparent 60%)' }}
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(200,168,106,.06), transparent 60%)' }}
             aria-hidden="true"
           />
           <div
             className="absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.15), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.15), transparent)' }}
             aria-hidden="true"
           />
           <div className="relative max-w-[1180px] mx-auto text-center">
             <div className="inline-flex items-center gap-2.5 mb-8">
               <span className="status-dot" />
-              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Vrijblijvend kennismaken
               </span>
             </div>

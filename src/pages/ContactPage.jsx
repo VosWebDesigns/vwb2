@@ -46,7 +46,7 @@ const ContactPage = () => {
   };
 
   const inputClass =
-    'w-full rounded-xl border border-[rgba(204,255,0,.12)] bg-[rgba(8,16,30,.7)] px-5 py-4 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(204,255,0,.12)]';
+    'w-full rounded-xl border border-[rgba(200,168,106,.12)] bg-[rgba(16,11,32,.7)] px-5 py-4 text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(200,168,106,.12)]';
 
   const labelClass = 'grid gap-2.5 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--accent)]';
 
@@ -66,14 +66,14 @@ const ContactPage = () => {
           {/* Background glow */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 70% at 20% 30%, rgba(204,255,0,.06), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 70% at 20% 30%, rgba(200,168,106,.06), transparent)' }}
             aria-hidden="true"
           />
           {/* Grid */}
           <div
             className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.018) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(200,168,106,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.018) 1px, transparent 1px)',
               backgroundSize: '100px 100px',
               maskImage: 'radial-gradient(ellipse 70% 50% at 30% 30%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 70% 50% at 30% 30%, black, transparent)',
@@ -86,13 +86,13 @@ const ContactPage = () => {
             {/* ── LEFT: sticky identity panel ── */}
             <aside
               className="flex flex-col justify-between px-5 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24 lg:sticky lg:top-0 lg:h-screen"
-              style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}
+              style={{ borderRight: '1px solid rgba(200,168,106,.06)' }}
             >
               <div>
                 {/* HUD label */}
                 <div className="flex items-center gap-3 mb-10">
                   <span className="status-dot" />
-                  <p className="font-mono text-[.6rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                  <p className="font-mono text-[.6rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                     Contact
                   </p>
                 </div>
@@ -132,7 +132,7 @@ const ContactPage = () => {
 
               {/* Contact details as terminal rows */}
               <div className="mt-10 lg:mt-0">
-                <p className="font-mono text-[.56rem] uppercase tracking-[.28em] mb-5" style={{ color: 'rgba(204,255,0,.28)' }}>
+                <p className="font-mono text-[.56rem] uppercase tracking-[.28em] mb-5" style={{ color: 'rgba(200,168,106,.28)' }}>
                   Directe contactgegevens
                 </p>
                 <div className="grid gap-3">
@@ -161,7 +161,7 @@ const ContactPage = () => {
                     </a>
                   )}
                   {!contactEmail && !contactPhone && (
-                    <p className="font-mono text-[.65rem]" style={{ color: 'rgba(204,255,0,.25)' }}>
+                    <p className="font-mono text-[.65rem]" style={{ color: 'rgba(200,168,106,.25)' }}>
                       Contactgegevens worden binnenkort aangevuld.
                     </p>
                   )}
@@ -174,18 +174,18 @@ const ContactPage = () => {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2.5 mt-5 rounded-full px-5 py-2.5 font-mono text-[.62rem] uppercase tracking-[.16em] transition-all"
                     style={{
-                      border: '1px solid rgba(255,63,0,.35)',
+                      border: '1px solid rgba(124,92,191,.35)',
                       color: 'var(--accent2)',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'var(--accent2)';
-                      e.currentTarget.style.color = '#060608';
+                      e.currentTarget.style.color = '#08050F';
                       e.currentTarget.style.borderColor = 'var(--accent2)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'transparent';
                       e.currentTarget.style.color = 'var(--accent2)';
-                      e.currentTarget.style.borderColor = 'rgba(255,63,0,.35)';
+                      e.currentTarget.style.borderColor = 'rgba(124,92,191,.35)';
                     }}
                   >
                     <MessageCircle size={13} />
@@ -196,7 +196,7 @@ const ContactPage = () => {
                 {/* Response time */}
                 <div className="mt-6 flex items-center gap-2">
                   <span className="status-dot" />
-                  <span className="font-mono text-[.62rem]" style={{ color: 'rgba(204,255,0,.48)' }}>
+                  <span className="font-mono text-[.62rem]" style={{ color: 'rgba(200,168,106,.48)' }}>
                     Reactie binnen 24 uur
                   </span>
                 </div>
@@ -207,7 +207,7 @@ const ContactPage = () => {
             <div className="px-5 py-16 md:px-10 md:py-20 lg:px-14 lg:py-24">
               <form onSubmit={handleSubmit} className="grid gap-6 max-w-xl">
                 {/* Ghost header */}
-                <p className="font-mono text-[.6rem] uppercase tracking-[.38em] mb-2" style={{ color: 'rgba(204,255,0,.30)' }}>
+                <p className="font-mono text-[.6rem] uppercase tracking-[.38em] mb-2" style={{ color: 'rgba(200,168,106,.30)' }}>
                   — Stuur een bericht
                 </p>
 
@@ -333,7 +333,7 @@ const ContactPage = () => {
                 </button>
 
                 {/* Response time confidence line */}
-                <p className="text-center font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.30)' }}>
+                <p className="text-center font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.30)' }}>
                   {status === 'sent'
                     ? 'Bedankt — we reageren binnen 24 uur.'
                     : 'Reactie altijd binnen 24 uur · Geen verplichtingen'

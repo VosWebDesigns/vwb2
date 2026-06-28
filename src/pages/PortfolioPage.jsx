@@ -39,9 +39,9 @@ const EditorialHeroCard = ({ project }) => {
             ) : (
               <div
                 className="h-full w-full flex items-center justify-center"
-                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(204,255,0,.07), rgba(6,6,8,.95))' }}
+                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(200,168,106,.07), rgba(8,5,15,.95))' }}
               >
-                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(204,255,0,.20)' }}>
+                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(200,168,106,.20)' }}>
                   {project.title}
                 </span>
               </div>
@@ -52,13 +52,13 @@ const EditorialHeroCard = ({ project }) => {
         {/* Gradient overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(6,6,8,.90) 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(8,5,15,.90) 100%)' }}
         />
 
         {/* Always-visible info bar */}
         <div className="absolute bottom-0 left-0 right-0 px-6 py-5 md:px-8 md:py-6 flex items-end justify-between">
           <div>
-            <p className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2" style={{ color: 'rgba(204,255,0,.50)' }}>
+            <p className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2" style={{ color: 'rgba(200,168,106,.50)' }}>
               {project.categories?.name || 'Web Design'} — {new Date(project.created_at).getFullYear()}
             </p>
             <h2
@@ -77,17 +77,17 @@ const EditorialHeroCard = ({ project }) => {
           <div
             className="ml-4 shrink-0 grid h-11 w-11 place-items-center rounded-full transition-all duration-400"
             style={{
-              border: '1px solid rgba(204,255,0,.40)',
+              border: '1px solid rgba(200,168,106,.40)',
               background: hovered ? 'var(--accent)' : 'transparent',
             }}
           >
-            <ArrowUpRight size={16} style={{ color: hovered ? '#060608' : 'var(--accent)' }} />
+            <ArrowUpRight size={16} style={{ color: hovered ? '#08050F' : 'var(--accent)' }} />
           </div>
         </div>
 
         {/* Project index */}
         <div className="absolute top-5 left-6">
-          <span className="font-mono text-[.56rem] uppercase tracking-[.28em]" style={{ color: 'rgba(204,255,0,.28)' }}>01</span>
+          <span className="font-mono text-[.56rem] uppercase tracking-[.28em]" style={{ color: 'rgba(200,168,106,.28)' }}>01</span>
         </div>
       </Link>
     </article>
@@ -120,9 +120,9 @@ const MasonryCard = ({ project, index }) => {
             ) : (
               <div
                 className="h-full w-full flex items-center justify-center"
-                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(204,255,0,.07), rgba(6,6,8,.95))' }}
+                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(200,168,106,.07), rgba(8,5,15,.95))' }}
               >
-                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(204,255,0,.20)' }}>
+                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(200,168,106,.20)' }}>
                   {project.title}
                 </span>
               </div>
@@ -133,10 +133,10 @@ const MasonryCard = ({ project, index }) => {
         {/* Info below image (always visible) */}
         <div className="pt-3 pb-1">
           <div className="flex items-center justify-between mb-1">
-            <p className="font-mono text-[.52rem] uppercase tracking-[.22em]" style={{ color: 'rgba(204,255,0,.32)' }}>
+            <p className="font-mono text-[.52rem] uppercase tracking-[.22em]" style={{ color: 'rgba(200,168,106,.32)' }}>
               {project.categories?.name || 'Web Design'}
             </p>
-            <p className="font-mono text-[.5rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.20)' }}>
+            <p className="font-mono text-[.5rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.20)' }}>
               {new Date(project.created_at).getFullYear()}
             </p>
           </div>
@@ -214,7 +214,7 @@ const PortfolioPage = () => {
           <div
             className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(200,168,106,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.022) 1px, transparent 1px)',
               backgroundSize: '90px 90px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -224,7 +224,7 @@ const PortfolioPage = () => {
           <div className="relative z-10 max-w-[1180px] mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <span className="status-dot" />
-              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Portfolio
               </p>
             </div>
@@ -263,7 +263,7 @@ const PortfolioPage = () => {
 
             {/* ── Sidebar filter (desktop) ── */}
             <aside className="hidden lg:block w-44 shrink-0 sticky top-28">
-              <p className="font-mono text-[.56rem] uppercase tracking-[.30em] mb-5" style={{ color: 'rgba(204,255,0,.30)' }}>
+              <p className="font-mono text-[.56rem] uppercase tracking-[.30em] mb-5" style={{ color: 'rgba(200,168,106,.30)' }}>
                 Filter
               </p>
               <nav className="flex flex-col gap-1">
@@ -276,7 +276,7 @@ const PortfolioPage = () => {
                       onClick={() => setActiveFilter(cat)}
                       className="text-left py-2 font-mono text-[.65rem] uppercase tracking-[.20em] transition-colors"
                       style={{
-                        color: isActive ? 'var(--accent)' : 'rgba(204,255,0,.30)',
+                        color: isActive ? 'var(--accent)' : 'rgba(200,168,106,.30)',
                         borderBottom: isActive ? '1px solid var(--accent)' : '1px solid transparent',
                       }}
                     >
@@ -285,7 +285,7 @@ const PortfolioPage = () => {
                   );
                 })}
                 {!loading && (
-                  <p className="mt-6 font-mono text-[.52rem] uppercase tracking-[.20em]" style={{ color: 'rgba(204,255,0,.18)' }}>
+                  <p className="mt-6 font-mono text-[.52rem] uppercase tracking-[.20em]" style={{ color: 'rgba(200,168,106,.18)' }}>
                     {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projecten'}
                   </p>
                 )}
@@ -306,9 +306,9 @@ const PortfolioPage = () => {
                         onClick={() => setActiveFilter(cat)}
                         className="shrink-0 rounded-full px-4 py-2 font-mono text-[.6rem] uppercase tracking-[.18em] transition-all"
                         style={{
-                          border: `1px solid ${isActive ? 'var(--accent)' : 'rgba(204,255,0,.12)'}`,
+                          border: `1px solid ${isActive ? 'var(--accent)' : 'rgba(200,168,106,.12)'}`,
                           background: isActive ? 'var(--accent)' : 'transparent',
-                          color: isActive ? '#060608' : 'rgba(204,255,0,.40)',
+                          color: isActive ? '#08050F' : 'rgba(200,168,106,.40)',
                         }}
                       >
                         {cat}
@@ -324,7 +324,7 @@ const PortfolioPage = () => {
                     <div
                       key={i}
                       className="break-inside-avoid mb-4 animate-pulse rounded-xl"
-                      style={{ aspectRatio: i % 3 === 0 ? '3/4' : '4/3', background: 'rgba(204,255,0,.03)' }}
+                      style={{ aspectRatio: i % 3 === 0 ? '3/4' : '4/3', background: 'rgba(200,168,106,.03)' }}
                     />
                   ))}
                 </div>
@@ -364,10 +364,10 @@ const PortfolioPage = () => {
               {/* CTA */}
               {!loading && filteredProjects.length > 0 && (
                 <div className="mt-16 text-center">
-                  <div className="h-px mb-12" style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.08), transparent)' }} />
+                  <div className="h-px mb-12" style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.08), transparent)' }} />
                   <div className="inline-flex items-center gap-2.5 mb-6">
                     <span className="status-dot" />
-                    <span className="font-mono text-[.6rem] uppercase tracking-[.28em]" style={{ color: 'rgba(204,255,0,.36)' }}>
+                    <span className="font-mono text-[.6rem] uppercase tracking-[.28em]" style={{ color: 'rgba(200,168,106,.36)' }}>
                       Nieuw project starten
                     </span>
                   </div>

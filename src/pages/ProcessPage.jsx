@@ -95,8 +95,8 @@ const ChapterSection = ({ step, index, total }) => {
         className="pointer-events-none absolute inset-0"
         style={{
           background: isEven
-            ? 'radial-gradient(ellipse 55% 55% at 12% 50%, rgba(204,255,0,.04), transparent)'
-            : 'radial-gradient(ellipse 55% 55% at 88% 50%, rgba(255,63,0,.04), transparent)',
+            ? 'radial-gradient(ellipse 55% 55% at 12% 50%, rgba(200,168,106,.04), transparent)'
+            : 'radial-gradient(ellipse 55% 55% at 88% 50%, rgba(124,92,191,.04), transparent)',
         }}
         aria-hidden="true"
       />
@@ -127,7 +127,7 @@ const ChapterSection = ({ step, index, total }) => {
         <div className={isEven ? '' : 'lg:order-2'}>
           <p
             className="font-mono text-[.6rem] uppercase tracking-[.30em] mb-5"
-            style={{ color: 'rgba(204,255,0,.36)' }}
+            style={{ color: 'rgba(200,168,106,.36)' }}
           >
             STAP {step.number} — {step.duration}
           </p>
@@ -155,7 +155,7 @@ const ChapterSection = ({ step, index, total }) => {
         <div className={`glass-card rounded-2xl p-6 md:p-8 ${isEven ? '' : 'lg:order-1'}`}>
           <p
             className="font-mono text-[.56rem] uppercase tracking-[.26em] mb-5"
-            style={{ color: 'rgba(204,255,0,.34)' }}
+            style={{ color: 'rgba(200,168,106,.34)' }}
           >
             Activiteiten
           </p>
@@ -164,11 +164,11 @@ const ChapterSection = ({ step, index, total }) => {
               <div
                 key={i}
                 className="flex items-start gap-4 py-3.5"
-                style={{ borderBottom: i < step.activities.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none' }}
+                style={{ borderBottom: i < step.activities.length - 1 ? '1px solid rgba(200,168,106,.06)' : 'none' }}
               >
                 <span
                   className="font-mono text-[.54rem] shrink-0 mt-0.5"
-                  style={{ color: 'rgba(204,255,0,.28)' }}
+                  style={{ color: 'rgba(200,168,106,.28)' }}
                 >
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -228,7 +228,7 @@ const ProcessPage = () => {
           <div
             className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.025) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(200,168,106,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.025) 1px, transparent 1px)',
               backgroundSize: '90px 90px',
               maskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 0%, black, transparent)',
@@ -238,7 +238,7 @@ const ProcessPage = () => {
           {/* Lime glow */}
           <div
             className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[60vw]"
-            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(204,255,0,.07), transparent 55%)' }}
+            style={{ background: 'radial-gradient(ellipse at 10% 10%, rgba(200,168,106,.07), transparent 55%)' }}
             aria-hidden="true"
           />
 
@@ -254,7 +254,7 @@ const ProcessPage = () => {
           <div className="relative z-10 max-w-[1180px] mx-auto w-full">
             <div data-hero-reveal className="flex items-center gap-3 mb-8">
               <span className="status-dot" />
-              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Onze werkwijze
               </p>
             </div>
@@ -288,7 +288,7 @@ const ProcessPage = () => {
 
             <div data-hero-reveal className="mt-10 flex items-center gap-8 flex-wrap">
               <div className="flex flex-col gap-0.5">
-                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Stappen</span>
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(200,168,106,.28)' }}>Stappen</span>
                 <span
                   style={{
                     fontFamily: "'Space Grotesk', system-ui, sans-serif",
@@ -301,9 +301,9 @@ const ProcessPage = () => {
                   5
                 </span>
               </div>
-              <div className="h-8 w-px" style={{ background: 'rgba(204,255,0,.10)' }} />
+              <div className="h-8 w-px" style={{ background: 'rgba(200,168,106,.10)' }} />
               <div className="flex flex-col gap-0.5">
-                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Gemiddeld</span>
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(200,168,106,.28)' }}>Gemiddeld</span>
                 <span
                   style={{
                     fontFamily: "'Space Grotesk', system-ui, sans-serif",
@@ -316,9 +316,9 @@ const ProcessPage = () => {
                   6–12 weken
                 </span>
               </div>
-              <div className="h-8 w-px" style={{ background: 'rgba(204,255,0,.10)' }} />
+              <div className="h-8 w-px" style={{ background: 'rgba(200,168,106,.10)' }} />
               <div className="flex flex-col gap-0.5">
-                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.28)' }}>Resultaat</span>
+                <span className="font-mono text-[.6rem] uppercase tracking-[.24em]" style={{ color: 'rgba(200,168,106,.28)' }}>Resultaat</span>
                 <span
                   style={{
                     fontFamily: "'Space Grotesk', system-ui, sans-serif",
@@ -344,7 +344,7 @@ const ProcessPage = () => {
         <section className="relative py-28 px-5 md:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(204,255,0,.03), transparent)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,168,106,.03), transparent)' }}
             aria-hidden="true"
           />
           <div className="relative max-w-[1180px] mx-auto">
@@ -382,11 +382,11 @@ const ProcessPage = () => {
                     key={title}
                     className="rounded-2xl p-5 transition-all duration-300"
                     style={{
-                      border: '1px solid rgba(204,255,0,.08)',
+                      border: '1px solid rgba(200,168,106,.08)',
                       background: 'rgba(8,8,12,.55)',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(204,255,0,.20)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(204,255,0,.08)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(200,168,106,.20)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(200,168,106,.08)'; }}
                   >
                     <h3
                       className="font-heading font-bold text-base mb-2"

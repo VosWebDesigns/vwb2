@@ -57,7 +57,7 @@ const FaqItem = ({ q, a, index, isOpen, onToggle }) => {
   }, [isOpen]);
 
   return (
-    <div style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}>
+    <div style={{ borderBottom: '1px solid rgba(200,168,106,.06)' }}>
       <button
         type="button"
         onClick={() => onToggle(index)}
@@ -75,7 +75,7 @@ const FaqItem = ({ q, a, index, isOpen, onToggle }) => {
         </span>
         <span
           className="shrink-0 font-mono text-xl leading-none transition-colors duration-300"
-          style={{ color: isOpen ? 'var(--accent)' : 'rgba(204,255,0,.30)' }}
+          style={{ color: isOpen ? 'var(--accent)' : 'rgba(200,168,106,.30)' }}
         >
           {isOpen ? '−' : '+'}
         </span>
@@ -125,7 +125,7 @@ const ServicesPage = () => {
           <div
             className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(200,168,106,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.022) 1px, transparent 1px)',
               backgroundSize: '90px 90px',
               maskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
               WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)',
@@ -135,7 +135,7 @@ const ServicesPage = () => {
           <div className="relative z-10 max-w-[1180px] mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <span className="status-dot" />
-              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Diensten & pakketten
               </p>
             </div>
@@ -175,14 +175,14 @@ const ServicesPage = () => {
         <section className="px-5 md:px-10 lg:px-16 pb-10">
           <div
             className="max-w-[1180px] mx-auto grid grid-cols-2 md:grid-cols-4"
-            style={{ borderTop: '1px solid rgba(204,255,0,.06)', borderBottom: '1px solid rgba(204,255,0,.06)' }}
+            style={{ borderTop: '1px solid rgba(200,168,106,.06)', borderBottom: '1px solid rgba(200,168,106,.06)' }}
           >
             {TRUST_ITEMS.map(({ label, sub }, i) => (
               <div
                 key={label}
                 className="flex flex-col gap-1.5 py-6 pr-6"
                 style={{
-                  borderRight: i < TRUST_ITEMS.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none',
+                  borderRight: i < TRUST_ITEMS.length - 1 ? '1px solid rgba(200,168,106,.06)' : 'none',
                 }}
               >
                 <p
@@ -191,7 +191,7 @@ const ServicesPage = () => {
                 >
                   {label}
                 </p>
-                <p className="font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.30)' }}>
+                <p className="font-mono text-[.58rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.30)' }}>
                   {sub}
                 </p>
               </div>
@@ -205,7 +205,7 @@ const ServicesPage = () => {
             {loading && (
               <div className="text-center py-20">
                 <span className="status-dot mx-auto mb-4 block" />
-                <p className="font-mono text-[.65rem] uppercase tracking-[.20em] animate-pulse" style={{ color: 'rgba(204,255,0,.28)' }}>
+                <p className="font-mono text-[.65rem] uppercase tracking-[.20em] animate-pulse" style={{ color: 'rgba(200,168,106,.28)' }}>
                   Diensten laden…
                 </p>
               </div>
@@ -217,12 +217,12 @@ const ServicesPage = () => {
                 <article
                   key={service.title}
                   className="relative overflow-hidden rounded-3xl"
-                  style={{ border: '1px solid rgba(204,255,0,.06)' }}
+                  style={{ border: '1px solid rgba(200,168,106,.06)' }}
                 >
                   {/* Top accent line */}
                   <div
                     className="absolute inset-x-0 top-0 h-px"
-                    style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.20), transparent)' }}
+                    style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.20), transparent)' }}
                     aria-hidden="true"
                   />
 
@@ -230,8 +230,8 @@ const ServicesPage = () => {
                   <div
                     className="relative overflow-hidden px-7 py-6 md:px-10 md:py-8 grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center"
                     style={{
-                      background: 'rgba(8,16,30,.60)',
-                      borderBottom: '1px solid rgba(204,255,0,.06)',
+                      background: 'rgba(16,11,32,.60)',
+                      borderBottom: '1px solid rgba(200,168,106,.06)',
                     }}
                   >
                     {/* Ghost service number */}
@@ -239,13 +239,14 @@ const ServicesPage = () => {
                       className="pointer-events-none select-none absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block"
                       aria-hidden="true"
                       style={{
-                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                        fontWeight: 700,
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        fontStyle: 'italic',
+                        fontWeight: 600,
                         fontSize: 'clamp(8rem, 18vw, 16rem)',
-                        letterSpacing: '-.06em',
+                        letterSpacing: '-.03em',
                         lineHeight: 1,
                         color: 'transparent',
-                        WebkitTextStroke: '1px rgba(204,255,0,.04)',
+                        WebkitTextStroke: '1px rgba(200,168,106,.06)',
                       }}
                     >
                       0{serviceIndex + 1}
@@ -255,8 +256,8 @@ const ServicesPage = () => {
                     <div
                       className="relative z-10 grid h-14 w-14 shrink-0 place-items-center rounded-2xl"
                       style={{
-                        border: '1px solid rgba(204,255,0,.12)',
-                        background: 'rgba(204,255,0,.04)',
+                        border: '1px solid rgba(200,168,106,.12)',
+                        background: 'rgba(200,168,106,.04)',
                         color: 'var(--accent)',
                       }}
                     >
@@ -265,7 +266,7 @@ const ServicesPage = () => {
 
                     {/* Title */}
                     <div className="relative z-10">
-                      <p className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2" style={{ color: 'rgba(204,255,0,.35)' }}>
+                      <p className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2" style={{ color: 'rgba(200,168,106,.35)' }}>
                         0{serviceIndex + 1} / dienst
                       </p>
                       <h2
@@ -283,7 +284,7 @@ const ServicesPage = () => {
                     </div>
 
                     {/* Image (desktop) */}
-                    <div className="relative z-10 hidden sm:block overflow-hidden rounded-xl" style={{ border: '1px solid rgba(204,255,0,.06)' }}>
+                    <div className="relative z-10 hidden sm:block overflow-hidden rounded-xl" style={{ border: '1px solid rgba(200,168,106,.06)' }}>
                       <SmartImage src={service.image} alt={service.title} className="h-24 w-40 object-cover" />
                     </div>
                   </div>
@@ -293,11 +294,11 @@ const ServicesPage = () => {
                     {/* Left: description */}
                     <div
                       className="p-7 md:p-10"
-                      style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}
+                      style={{ borderRight: '1px solid rgba(200,168,106,.06)' }}
                     >
                       <p className="text-xl font-medium leading-8" style={{ color: 'var(--accent3)' }}>{service.shortDescription}</p>
                       <p className="mt-4 leading-8" style={{ color: 'rgba(240,237,230,.45)' }}>{service.description}</p>
-                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl" style={{ border: '1px solid rgba(204,255,0,.06)' }}>
+                      <div className="mt-6 block sm:hidden overflow-hidden rounded-xl" style={{ border: '1px solid rgba(200,168,106,.06)' }}>
                         <SmartImage src={service.image} alt={service.title} className="h-44 w-full object-cover" />
                       </div>
                       <Link
@@ -328,15 +329,15 @@ const ServicesPage = () => {
                             key={pkg.id}
                             className="relative rounded-[1.5rem] p-5 transition-all duration-300"
                             style={{
-                              border: `1px solid ${highlighted ? 'rgba(255,63,0,.35)' : 'rgba(204,255,0,.08)'}`,
-                              background: highlighted ? 'rgba(255,63,0,.04)' : 'rgba(204,255,0,.02)',
-                              boxShadow: highlighted ? '0 0 40px rgba(255,63,0,.07)' : 'none',
+                              border: `1px solid ${highlighted ? 'rgba(124,92,191,.35)' : 'rgba(200,168,106,.08)'}`,
+                              background: highlighted ? 'rgba(124,92,191,.04)' : 'rgba(200,168,106,.02)',
+                              boxShadow: highlighted ? '0 0 40px rgba(124,92,191,.07)' : 'none',
                             }}
                           >
                             {highlighted && (pkg.badge || service.highlightLabel) && (
                               <span
                                 className="mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-[.12em]"
-                                style={{ background: 'var(--accent2)', color: '#060608' }}
+                                style={{ background: 'var(--accent2)', color: '#08050F' }}
                               >
                                 <Star size={11} />
                                 {pkg.badge || service.highlightLabel}
@@ -366,7 +367,7 @@ const ServicesPage = () => {
                               </div>
                             </div>
 
-                            <p className="mt-1 font-mono text-[.58rem] uppercase tracking-[.10em]" style={{ color: 'rgba(204,255,0,.25)' }}>
+                            <p className="mt-1 font-mono text-[.58rem] uppercase tracking-[.10em]" style={{ color: 'rgba(200,168,106,.25)' }}>
                               {getDelivery(pkg.name)} · Geen aanbetaling
                             </p>
 
@@ -384,14 +385,14 @@ const ServicesPage = () => {
                               className="inline-flex items-center gap-2 mt-5 w-full justify-center rounded-full py-2.5 font-mono text-[.62rem] uppercase tracking-[.16em] transition-all"
                               style={highlighted ? {
                                 background: 'var(--accent2)',
-                                color: '#060608',
+                                color: '#08050F',
                                 border: '1px solid var(--accent2)',
                               } : {
-                                border: '1px solid rgba(204,255,0,.20)',
+                                border: '1px solid rgba(200,168,106,.20)',
                                 color: 'var(--accent)',
                               }}
                               onMouseEnter={(e) => {
-                                if (!highlighted) e.currentTarget.style.background = 'rgba(204,255,0,.08)';
+                                if (!highlighted) e.currentTarget.style.background = 'rgba(200,168,106,.08)';
                               }}
                               onMouseLeave={(e) => {
                                 if (!highlighted) e.currentTarget.style.background = 'transparent';
@@ -419,7 +420,7 @@ const ServicesPage = () => {
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <span className="status-dot" />
-                  <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+                  <p className="font-mono text-[.62rem] uppercase tracking-[.38em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                     Veelgestelde vragen
                   </p>
                 </div>
@@ -464,7 +465,7 @@ const ServicesPage = () => {
               </div>
 
               {/* Right: accordion */}
-              <div style={{ borderTop: '1px solid rgba(204,255,0,.06)' }}>
+              <div style={{ borderTop: '1px solid rgba(200,168,106,.06)' }}>
                 {faq.map(([q, a], i) => (
                   <FaqItem
                     key={q}
@@ -484,18 +485,18 @@ const ServicesPage = () => {
         <section className="relative py-28 px-5 md:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
-            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.06), transparent 60%)' }}
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(200,168,106,.06), transparent 60%)' }}
             aria-hidden="true"
           />
           <div
             className="absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.15), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.15), transparent)' }}
             aria-hidden="true"
           />
           <div className="relative max-w-[1180px] mx-auto text-center">
             <div className="inline-flex items-center gap-2.5 mb-8">
               <span className="status-dot" />
-              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+              <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(200,168,106,.40)' }}>
                 Beschikbaar voor nieuwe projecten
               </span>
             </div>

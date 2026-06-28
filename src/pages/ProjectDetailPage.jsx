@@ -31,8 +31,8 @@ const pruneSchema = (value) => {
 const MetaCell = ({ label, value }) => {
   if (!value) return null;
   return (
-    <div className="flex-1 min-w-[130px] px-6 py-5" style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}>
-      <p className="font-mono uppercase tracking-[.24em] mb-2" style={{ fontSize: '.44rem', color: 'rgba(204,255,0,.28)' }}>
+    <div className="flex-1 min-w-[130px] px-6 py-5" style={{ borderRight: '1px solid rgba(200,168,106,.06)' }}>
+      <p className="font-mono uppercase tracking-[.24em] mb-2" style={{ fontSize: '.44rem', color: 'rgba(200,168,106,.28)' }}>
         {label}
       </p>
       <p className="font-heading font-bold text-sm leading-tight" style={{ color: 'var(--accent3)' }}>
@@ -44,11 +44,11 @@ const MetaCell = ({ label, value }) => {
 
 const SectionDivider = ({ num, label }) => (
   <div className="flex items-center gap-4 mb-10">
-    <span className="font-mono uppercase tracking-[.28em]" style={{ fontSize: '.46rem', color: 'rgba(204,255,0,.28)' }}>
+    <span className="font-mono uppercase tracking-[.28em]" style={{ fontSize: '.46rem', color: 'rgba(200,168,106,.28)' }}>
       {num}
     </span>
-    <div className="flex-1 h-px" style={{ background: 'rgba(204,255,0,.08)' }} />
-    <span className="font-mono uppercase tracking-[.28em]" style={{ fontSize: '.46rem', color: 'rgba(204,255,0,.28)' }}>
+    <div className="flex-1 h-px" style={{ background: 'rgba(200,168,106,.08)' }} />
+    <span className="font-mono uppercase tracking-[.28em]" style={{ fontSize: '.46rem', color: 'rgba(200,168,106,.28)' }}>
       {label}
     </span>
   </div>
@@ -106,7 +106,7 @@ const ProjectDetailPage = () => {
       <main className="min-h-screen pt-32" style={{ background: 'var(--bg)' }}>
         <div className="mx-auto max-w-6xl px-5 py-24 text-center">
           <span className="status-dot mx-auto mb-4 block" />
-          <p className="font-mono text-xs uppercase tracking-widest animate-pulse" style={{ color: 'rgba(204,255,0,.25)' }}>
+          <p className="font-mono text-xs uppercase tracking-widest animate-pulse" style={{ color: 'rgba(200,168,106,.25)' }}>
             Project laden…
           </p>
         </div>
@@ -180,7 +180,7 @@ const ProjectDetailPage = () => {
             ) : (
               <div
                 className="h-full w-full"
-                style={{ background: 'radial-gradient(ellipse at 30% 40%, rgba(204,255,0,.12), rgba(6,6,8,1) 65%)' }}
+                style={{ background: 'radial-gradient(ellipse at 30% 40%, rgba(200,168,106,.12), rgba(6,6,8,1) 65%)' }}
               />
             )}
             <div
@@ -217,9 +217,9 @@ const ProjectDetailPage = () => {
         <div
           ref={metaRef}
           className="overflow-x-auto"
-          style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}
+          style={{ borderBottom: '1px solid rgba(200,168,106,.06)' }}
         >
-          <div className="flex" style={{ borderTop: '1px solid rgba(204,255,0,.06)', minWidth: 'max-content' }}>
+          <div className="flex" style={{ borderTop: '1px solid rgba(200,168,106,.06)', minWidth: 'max-content' }}>
             <MetaCell label="Client"       value={project.client} />
             <MetaCell label="Jaar"         value={year?.toString()} />
             <MetaCell label="Categorie"    value={project.categories?.name} />
@@ -292,14 +292,14 @@ const ProjectDetailPage = () => {
         {project.resultaat && (
           <section
             className="relative px-6 py-24 md:px-10 lg:px-16 xl:px-24 overflow-hidden text-center"
-            style={{ borderTop: '1px solid rgba(204,255,0,.06)', borderBottom: '1px solid rgba(204,255,0,.06)' }}
+            style={{ borderTop: '1px solid rgba(200,168,106,.06)', borderBottom: '1px solid rgba(200,168,106,.06)' }}
           >
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(204,255,0,.05), transparent)' }}
+              style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,168,106,.05), transparent)' }}
               aria-hidden="true"
             />
-            <p className="relative font-mono uppercase tracking-[.32em] mb-6" style={{ fontSize: '.5rem', color: 'rgba(204,255,0,.35)' }}>
+            <p className="relative font-mono uppercase tracking-[.32em] mb-6" style={{ fontSize: '.5rem', color: 'rgba(200,168,106,.35)' }}>
               — Resultaat
             </p>
             <p
@@ -341,11 +341,11 @@ const ProjectDetailPage = () => {
         {/* ── BOTTOM CTA ── */}
         <section
           className="relative px-6 py-24 md:px-10 lg:px-16 xl:px-24 overflow-hidden"
-          style={{ borderTop: '1px solid rgba(204,255,0,.06)' }}
+          style={{ borderTop: '1px solid rgba(200,168,106,.06)' }}
         >
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.22), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.22), transparent)' }}
             aria-hidden="true"
           />
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">

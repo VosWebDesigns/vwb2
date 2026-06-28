@@ -5,29 +5,29 @@ import { ArrowRight } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
 
 /* Faux browser-window card for the right column */
-const BrowserCard = ({ project, index, cardRef, rotation, accentColor = 'rgba(204,255,0,.08)' }) => {
-  const img = project?.featured_preview_image || project?.hero_image;
+const BrowserCard = ({ project, index, cardRef, accentColor = 'rgba(200,168,106,.06)' }) => {
+  const img   = project?.featured_preview_image || project?.hero_image;
   const label = ['Web Experience', '3D Interface', 'Motion Design'][index] || 'Digital';
 
   return (
     <div
       ref={cardRef}
       className="relative overflow-hidden rounded-xl"
-      style={{ border: '1px solid rgba(204,255,0,.08)', background: 'rgba(8,16,30,.65)' }}
+      style={{ border: '1px solid rgba(200,168,106,.10)', background: 'rgba(16,11,32,.75)' }}
     >
       {/* Browser chrome */}
       <div
         className="flex items-center gap-1.5 px-3 py-2.5"
-        style={{ borderBottom: '1px solid rgba(204,255,0,.06)', background: 'rgba(6,6,8,.80)' }}
+        style={{ borderBottom: '1px solid rgba(200,168,106,.07)', background: 'rgba(8,5,15,.80)' }}
       >
-        <div className="h-2 w-2 rounded-full bg-[var(--accent2)] opacity-75" />
-        <div className="h-2 w-2 rounded-full" style={{ background: 'rgba(204,255,0,.30)' }} />
-        <div className="h-2 w-2 rounded-full" style={{ background: 'rgba(204,255,0,.14)' }} />
+        <div className="h-2 w-2 rounded-full" style={{ background: 'rgba(124,92,191,.50)' }} />
+        <div className="h-2 w-2 rounded-full" style={{ background: 'rgba(200,168,106,.25)' }} />
+        <div className="h-2 w-2 rounded-full" style={{ background: 'rgba(200,168,106,.12)' }} />
         <div
           className="ml-2.5 h-3.5 flex-1 max-w-[130px] rounded-sm flex items-center px-2"
-          style={{ background: 'rgba(204,255,0,.04)', border: '1px solid rgba(204,255,0,.07)' }}
+          style={{ background: 'rgba(200,168,106,.04)', border: '1px solid rgba(200,168,106,.08)' }}
         >
-          <span className="font-mono text-[.38rem] uppercase tracking-widest truncate" style={{ color: 'rgba(204,255,0,.20)' }}>
+          <span className="font-mono text-[.38rem] uppercase tracking-widest truncate" style={{ color: 'rgba(200,168,106,.22)' }}>
             {project?.live_url || 'voswebdesigns.nl'}
           </span>
         </div>
@@ -44,17 +44,17 @@ const BrowserCard = ({ project, index, cardRef, rotation, accentColor = 'rgba(20
         ) : (
           <div
             className="h-full w-full flex items-center justify-center"
-            style={{ background: `radial-gradient(ellipse at 35% 40%, ${accentColor}, rgba(6,6,8,.97))` }}
+            style={{ background: `radial-gradient(ellipse at 35% 40%, ${accentColor}, rgba(8,5,15,.97))` }}
           >
-            <span className="font-mono text-[.48rem] uppercase tracking-[.28em]" style={{ color: 'rgba(204,255,0,.18)' }}>
+            <span className="font-mono text-[.48rem] uppercase tracking-[.28em]" style={{ color: 'rgba(200,168,106,.18)' }}>
               {label}
             </span>
           </div>
         )}
         {/* Overlay bar */}
         {project?.title && (
-          <div className="absolute inset-x-0 bottom-0 px-3 py-2" style={{ background: 'linear-gradient(to top, rgba(6,6,8,.85), transparent)' }}>
-            <p className="font-mono text-[.46rem] uppercase tracking-[.16em] truncate" style={{ color: 'rgba(204,255,0,.50)' }}>
+          <div className="absolute inset-x-0 bottom-0 px-3 py-2" style={{ background: 'linear-gradient(to top, rgba(8,5,15,.85), transparent)' }}>
+            <p className="font-mono text-[.46rem] uppercase tracking-[.16em] truncate" style={{ color: 'rgba(200,168,106,.50)' }}>
               {project.title}
             </p>
           </div>
@@ -64,12 +64,12 @@ const BrowserCard = ({ project, index, cardRef, rotation, accentColor = 'rgba(20
       {/* Footer chrome */}
       <div
         className="flex items-center justify-between px-3 py-2"
-        style={{ borderTop: '1px solid rgba(204,255,0,.06)', background: 'rgba(6,6,8,.50)' }}
+        style={{ borderTop: '1px solid rgba(200,168,106,.06)', background: 'rgba(8,5,15,.50)' }}
       >
-        <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.25)' }}>
+        <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.28)' }}>
           0{index + 1} — {project?.categories?.name || label}
         </span>
-        <div className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--accent)', boxShadow: '0 0 5px var(--accent)' }} />
+        <div className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--accent)', boxShadow: '0 0 5px rgba(200,168,106,.50)' }} />
       </div>
     </div>
   );
@@ -91,27 +91,27 @@ const FuturisticHero = ({ projects = [] }) => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Set initial states
       gsap.set(topRef.current,  { opacity: 0, y: 14 });
       gsap.set([line1Ref.current, line2Ref.current], { yPercent: 110, opacity: 0 });
       gsap.set(labelRef.current, { opacity: 0, y: 10 });
       gsap.set(botRef.current,  { opacity: 0, y: 14 });
-      gsap.set(card1Ref.current, { opacity: 0, x: 50, rotation: -2 });
-      gsap.set(card2Ref.current, { opacity: 0, x: 50, rotation: 0 });
-      gsap.set(card3Ref.current, { opacity: 0, x: 50, rotation: 1.5 });
+      gsap.set(card1Ref.current, { opacity: 0, x: 50 });
+      gsap.set(card2Ref.current, { opacity: 0, x: 50 });
+      gsap.set(card3Ref.current, { opacity: 0, x: 50 });
       gsap.set(pillRef.current, { opacity: 0, y: 10 });
 
-      const tl = gsap.timeline({ delay: 0.1, defaults: { ease: 'power4.out' } });
+      const silk = 'cubic-bezier(0.22, 1, 0.36, 1)';
+      const tl = gsap.timeline({ delay: 0.1, defaults: { ease: silk } });
 
-      tl.to(topRef.current,  { opacity: 1, y: 0, duration: 0.7 })
-        .to(line1Ref.current, { yPercent: 0, opacity: 1, duration: 1.0 }, '-=0.25')
-        .to(line2Ref.current, { yPercent: 0, opacity: 1, duration: 1.0 }, '-=0.80')
-        .to(labelRef.current, { opacity: 1, y: 0, duration: 0.65 }, '-=0.45')
-        .to(card1Ref.current, { opacity: 1, x: 0, duration: 0.95, ease: 'power3.out' }, '-=0.65')
-        .to(card2Ref.current, { opacity: 1, x: 0, duration: 0.95, ease: 'power3.out' }, '-=0.78')
-        .to(card3Ref.current, { opacity: 1, x: 0, duration: 0.95, ease: 'power3.out' }, '-=0.78')
-        .to(pillRef.current,  { opacity: 1, y: 0, duration: 0.55 }, '-=0.50')
-        .to(botRef.current,   { opacity: 1, y: 0, duration: 0.65 }, '-=0.50');
+      tl.to(topRef.current,  { opacity: 1, y: 0, duration: 0.9 })
+        .to(line1Ref.current, { yPercent: 0, opacity: 1, duration: 1.2 }, '-=0.40')
+        .to(line2Ref.current, { yPercent: 0, opacity: 1, duration: 1.2 }, '-=0.90')
+        .to(labelRef.current, { opacity: 1, y: 0, duration: 0.8 }, '-=0.55')
+        .to(card1Ref.current, { opacity: 1, x: 0, duration: 1.0 }, '-=0.75')
+        .to(card2Ref.current, { opacity: 1, x: 0, duration: 1.0 }, '-=0.85')
+        .to(card3Ref.current, { opacity: 1, x: 0, duration: 1.0 }, '-=0.85')
+        .to(pillRef.current,  { opacity: 1, y: 0, duration: 0.7 }, '-=0.60')
+        .to(botRef.current,   { opacity: 1, y: 0, duration: 0.8 }, '-=0.60');
 
       // Differential parallax on scroll
       const onScroll = () => {
@@ -129,11 +129,11 @@ const FuturisticHero = ({ projects = [] }) => {
   return (
     <section ref={secRef} className="relative flex h-[100svh] overflow-hidden">
 
-      {/* Architectural grid backdrop */}
+      {/* Architectural gold grid */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: 'linear-gradient(rgba(204,255,0,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.018) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(200,168,106,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.018) 1px, transparent 1px)',
           backgroundSize: '120px 120px',
           maskImage: 'radial-gradient(ellipse 85% 85% at 50% 50%, black, transparent)',
           WebkitMaskImage: 'radial-gradient(ellipse 85% 85% at 50% 50%, black, transparent)',
@@ -141,13 +141,13 @@ const FuturisticHero = ({ projects = [] }) => {
         aria-hidden="true"
       />
 
-      {/* Atmospheric glows */}
+      {/* Atmospheric glows — violet left, faint gold right */}
       <div className="pointer-events-none absolute left-0 top-0 h-[70vh] w-[60vw]"
-        style={{ background: 'radial-gradient(ellipse at 12% 10%, rgba(204,255,0,.10) 0%, transparent 55%)' }}
+        style={{ background: 'radial-gradient(ellipse at 12% 10%, rgba(124,92,191,.14) 0%, transparent 55%)' }}
         aria-hidden="true"
       />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[50vh] w-[50vw]"
-        style={{ background: 'radial-gradient(ellipse at 85% 90%, rgba(255,63,0,.07) 0%, transparent 55%)' }}
+        style={{ background: 'radial-gradient(ellipse at 85% 90%, rgba(200,168,106,.06) 0%, transparent 55%)' }}
         aria-hidden="true"
       />
 
@@ -155,60 +155,64 @@ const FuturisticHero = ({ projects = [] }) => {
       <div
         ref={leftRef}
         className="relative z-10 flex flex-col justify-between w-full lg:w-[55%] px-5 pt-6 pb-8 md:px-10 md:pt-8 md:pb-10 lg:px-14"
-        style={{ borderRight: '1px solid rgba(204,255,0,.06)' }}
+        style={{ borderRight: '1px solid rgba(200,168,106,.06)' }}
       >
         {/* HUD top bar */}
         <div ref={topRef} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="status-dot" />
-            <span className="font-mono text-[9px] uppercase tracking-[.42em]" style={{ color: 'rgba(204,255,0,.45)' }}>
+            <span className="font-mono text-[9px] uppercase tracking-[.42em]" style={{ color: 'rgba(200,168,106,.45)' }}>
               Studio — beschikbaar
             </span>
           </div>
-          <span className="font-mono text-[9px] uppercase tracking-[.42em]" style={{ color: 'rgba(204,255,0,.25)' }}>
+          <span className="font-mono text-[9px] uppercase tracking-[.42em]" style={{ color: 'rgba(200,168,106,.25)' }}>
             NL · Est. 2019
           </span>
         </div>
 
-        {/* MAAT / werk — split headline */}
-        <div className="select-none" style={{ perspective: '1000px' }}>
+        {/* Headline: "Op maat" (Cormorant italic, cream) + "gebouwd." (Space Grotesk, gold) */}
+        <div className="select-none">
           <div className="overflow-hidden">
             <div
               ref={line1Ref}
               style={{
-                fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                fontWeight: 700,
-                fontSize: 'clamp(4.2rem, 15.5vw, 16.5rem)',
-                letterSpacing: '-.07em',
-                lineHeight: 0.86,
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: 'clamp(5rem, 16vw, 17rem)',
+                letterSpacing: '-.03em',
+                lineHeight: 0.88,
                 color: 'var(--accent3)',
               }}
             >
-              MAAT
+              Op maat
             </div>
           </div>
           <div className="overflow-hidden">
             <div
               ref={line2Ref}
               style={{
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontStyle: 'italic',
-                fontWeight: 600,
-                fontSize: 'clamp(4.8rem, 17vw, 18rem)',
-                letterSpacing: '-.03em',
-                lineHeight: 0.86,
+                fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                fontWeight: 700,
+                fontSize: 'clamp(3.2rem, 9.5vw, 10rem)',
+                letterSpacing: '-.07em',
+                lineHeight: 0.90,
                 color: 'var(--accent)',
               }}
             >
-              werk
+              gebouwd.
             </div>
           </div>
           <p
             ref={labelRef}
             className="mt-5 font-mono uppercase tracking-[.36em]"
-            style={{ fontSize: 'clamp(.6rem, 1.0vw, .82rem)', color: 'rgba(204,255,0,.25)' }}
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 'clamp(.55rem, .9vw, .78rem)',
+              color: 'rgba(200,168,106,.28)',
+            }}
           >
-            Web Design Studio · Nederland
+            Web Design Atelier · Nederland
           </p>
         </div>
 
@@ -216,8 +220,8 @@ const FuturisticHero = ({ projects = [] }) => {
         <div ref={botRef} className="flex items-end justify-between">
           {/* Scroll cue */}
           <div className="flex flex-col items-center gap-2">
-            <div className="h-12 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(204,255,0,.45))' }} />
-            <span className="font-mono text-[7px] uppercase tracking-[.50em] rotate-90 origin-bottom" style={{ color: 'rgba(204,255,0,.25)' }}>
+            <div className="h-12 w-px" style={{ background: 'linear-gradient(to bottom, transparent, rgba(200,168,106,.40))' }} />
+            <span className="font-mono text-[7px] uppercase tracking-[.50em] rotate-90 origin-bottom" style={{ color: 'rgba(200,168,106,.25)' }}>
               Scroll
             </span>
           </div>
@@ -227,12 +231,12 @@ const FuturisticHero = ({ projects = [] }) => {
             <div className="flex items-center gap-5 lg:hidden">
               <div className="text-right">
                 <span className="font-mono text-[.68rem] block" style={{ color: 'var(--accent)' }}>48u</span>
-                <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.22)' }}>gemiddeld design</span>
+                <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.22)' }}>gemiddeld design</span>
               </div>
-              <div className="h-4 w-px" style={{ background: 'rgba(204,255,0,.10)' }} />
+              <div className="h-4 w-px" style={{ background: 'rgba(200,168,106,.10)' }} />
               <div className="text-right">
                 <span className="font-mono text-[.68rem] block" style={{ color: 'var(--accent)' }}>99%</span>
-                <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.22)' }}>klanttevredenheid</span>
+                <span className="font-mono text-[.45rem] uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.22)' }}>klanttevredenheid</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -252,14 +256,14 @@ const FuturisticHero = ({ projects = [] }) => {
         ref={rightRef}
         className="relative z-10 hidden lg:flex flex-col justify-center gap-3 w-[45%] px-10 pb-10 pt-24 overflow-hidden"
       >
-        <BrowserCard project={projects[0]} index={0} cardRef={card1Ref} accentColor="rgba(204,255,0,.10)" />
-        <BrowserCard project={projects[1]} index={1} cardRef={card2Ref} accentColor="rgba(255,63,0,.07)" />
-        <BrowserCard project={projects[2]} index={2} cardRef={card3Ref} accentColor="rgba(204,255,0,.05)" />
+        <BrowserCard project={projects[0]} index={0} cardRef={card1Ref} accentColor="rgba(200,168,106,.10)" />
+        <BrowserCard project={projects[1]} index={1} cardRef={card2Ref} accentColor="rgba(124,92,191,.10)" />
+        <BrowserCard project={projects[2]} index={2} cardRef={card3Ref} accentColor="rgba(200,168,106,.06)" />
 
         {/* Availability pill */}
         <div ref={pillRef} className="inline-flex items-center gap-2.5 mt-1">
           <span className="status-dot" />
-          <span className="font-mono text-[.56rem] uppercase tracking-[.22em]" style={{ color: 'rgba(204,255,0,.36)' }}>
+          <span className="font-mono text-[.56rem] uppercase tracking-[.22em]" style={{ color: 'rgba(200,168,106,.36)' }}>
             1 plek beschikbaar — Q3 2025
           </span>
         </div>

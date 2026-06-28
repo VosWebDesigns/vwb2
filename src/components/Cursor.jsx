@@ -61,7 +61,7 @@ const Cursor = () => {
     const toDefault = () => {
       if (state.current === 'default') return;
       state.current = 'default';
-      gsap.to(ring, { width: 36, height: 36, background: 'transparent', borderColor: 'rgba(204,255,0,.45)', opacity: 0.6, duration: 0.4, ease: 'power3.out' });
+      gsap.to(ring, { width: 36, height: 36, background: 'transparent', borderColor: 'rgba(200,168,106,.50)', opacity: 0.6, duration: 0.4, ease: 'power3.out' });
       gsap.to(dot,  { scale: 1, opacity: 1, duration: 0.3 });
       if (lbl) gsap.to(lbl, { opacity: 0, duration: 0.2 });
     };
@@ -69,7 +69,7 @@ const Cursor = () => {
     const toHover = () => {
       if (state.current === 'hover') return;
       state.current = 'hover';
-      gsap.to(ring, { width: 54, height: 54, background: 'rgba(204,255,0,.08)', borderColor: 'rgba(204,255,0,.55)', opacity: 1, duration: 0.35, ease: 'power3.out' });
+      gsap.to(ring, { width: 54, height: 54, background: 'rgba(200,168,106,.08)', borderColor: 'rgba(200,168,106,.55)', opacity: 1, duration: 0.35, ease: 'power3.out' });
       gsap.to(dot,  { scale: 0, opacity: 0, duration: 0.25 });
     };
 
@@ -132,7 +132,7 @@ const Cursor = () => {
         ref={ringRef}
         aria-hidden="true"
         className="pointer-events-none fixed left-0 top-0 z-[9998] -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center overflow-hidden"
-        style={{ width: 36, height: 36, border: '1px solid rgba(204,255,0,.45)' }}
+        style={{ width: 36, height: 36, border: '1px solid rgba(200,168,106,.50)' }}
       >
         <span
           ref={lblRef}

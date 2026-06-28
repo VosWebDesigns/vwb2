@@ -96,18 +96,18 @@ const Footer = () => {
   ].filter(({ href }) => href?.trim());
 
   return (
-    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#040406] px-5 py-14 md:px-8 md:py-16">
+    <footer className="relative overflow-hidden border-t border-[color:var(--stroke)] bg-[#08050F] px-5 py-14 md:px-8 md:py-16">
       {/* Top glow line */}
       <div
         className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.45), rgba(255,63,0,.20), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.45), rgba(124,92,191,.20), transparent)' }}
       />
 
       {/* Background architectural grid */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: 'linear-gradient(rgba(204,255,0,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.03) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(200,168,106,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.03) 1px, transparent 1px)',
           backgroundSize: '80px 80px',
           maskImage: 'radial-gradient(ellipse at 50% 0%, black 20%, transparent 75%)',
           WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, black 20%, transparent 75%)',
@@ -117,10 +117,10 @@ const Footer = () => {
 
       {/* Radial glows */}
       <div className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 55% 35% at 50% 0%, rgba(204,255,0,.05), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse 55% 35% at 50% 0%, rgba(200,168,106,.05), transparent)' }}
       />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[30vh] w-[30vw]"
-        style={{ background: 'radial-gradient(ellipse at 80% 100%, rgba(255,63,0,.04), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse at 80% 100%, rgba(124,92,191,.04), transparent)' }}
       />
 
       <div className="relative mx-auto max-w-7xl">
@@ -128,11 +128,11 @@ const Footer = () => {
         {/* ── Editorial CTA block ── */}
         <div
           className="mb-20 pb-16"
-          style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}
+          style={{ borderBottom: '1px solid rgba(200,168,106,.06)' }}
         >
           <div className="inline-flex items-center gap-2.5 mb-8">
             <span className="status-dot" />
-            <span className="font-mono uppercase tracking-[.34em]" style={{ fontSize: '.54rem', color: 'rgba(204,255,0,.40)' }}>
+            <span className="font-mono uppercase tracking-[.34em]" style={{ fontSize: '.54rem', color: 'rgba(200,168,106,.40)' }}>
               Beschikbaar voor nieuwe projecten
             </span>
           </div>
@@ -195,7 +195,7 @@ const Footer = () => {
               <span className="hud-label">Systeem status</span>
               <div className="flex items-center gap-2">
                 <span className="status-dot" />
-                <span className="font-mono text-[11px]" style={{ color: 'rgba(204,255,0,.50)' }}>
+                <span className="font-mono text-[11px]" style={{ color: 'rgba(200,168,106,.50)' }}>
                   Alle systemen operationeel
                 </span>
               </div>
@@ -267,12 +267,12 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition"
                 style={{
-                  border: '1px solid rgba(204,255,0,.28)',
+                  border: '1px solid rgba(200,168,106,.28)',
                   color: 'var(--accent)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = 'var(--accent)';
-                  e.currentTarget.style.color = '#060608';
+                  e.currentTarget.style.color = '#08050F';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -294,8 +294,8 @@ const Footer = () => {
             <div
               className="cyber-corner rounded-3xl p-5"
               style={{
-                border: '1px solid rgba(204,255,0,.14)',
-                background: 'rgba(204,255,0,.03)',
+                border: '1px solid rgba(200,168,106,.14)',
+                background: 'rgba(200,168,106,.03)',
               }}
             >
               <span
@@ -317,7 +317,7 @@ const Footer = () => {
                   className="min-h-11 rounded-2xl border px-4 text-sm text-white outline-none transition placeholder:text-slate-700 disabled:cursor-not-allowed disabled:opacity-70"
                   style={{
                     borderColor: 'rgba(255,255,255,.08)',
-                    background: '#08080c',
+                    background: 'rgba(8,5,15,.85)',
                   }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)'; }}
@@ -335,13 +335,13 @@ const Footer = () => {
                 <button
                   type="submit"
                   disabled={newsletterState.status === 'loading' || newsletterState.status === 'success'}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-black text-[#060608] transition disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-black text-[#08050F] transition disabled:cursor-not-allowed disabled:opacity-70"
                   style={{
                     background: 'var(--accent)',
-                    boxShadow: '0 0 0 rgba(204,255,0,0)',
+                    boxShadow: '0 0 0 rgba(200,168,106,0)',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 30px rgba(204,255,0,.30)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 rgba(204,255,0,0)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 30px rgba(200,168,106,.30)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 rgba(200,168,106,0)'; }}
                 >
                   <Send size={15} />
                   {newsletterState.status === 'loading' ? 'Versturen…' : 'Inschrijven'}
@@ -381,12 +381,12 @@ const Footer = () => {
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = 'var(--accent)';
                         e.currentTarget.style.background = 'var(--accent)';
-                        e.currentTarget.style.color = '#060608';
+                        e.currentTarget.style.color = '#08050F';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)';
                         e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.color = 'rgb(203 213 225)';
+                        e.currentTarget.style.color = 'var(--accent3)';
                       }}
                     >
                       {Icon ? <Icon size={17} aria-hidden="true" /> : <span aria-hidden="true">TikTok</span>}

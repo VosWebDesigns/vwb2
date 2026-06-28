@@ -99,9 +99,9 @@ const ServicesSection = () => {
         <Link
           to="/diensten"
           className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.22em] pb-2 transition-colors"
-          style={{ color: 'rgba(204,255,0,.36)', borderBottom: '1px solid rgba(204,255,0,.16)' }}
+          style={{ color: 'rgba(200,168,106,.36)', borderBottom: '1px solid rgba(200,168,106,.16)' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(204,255,0,.36)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(200,168,106,.36)'; }}
         >
           Alle diensten <ArrowUpRight size={12} />
         </Link>
@@ -110,7 +110,7 @@ const ServicesSection = () => {
       {/* ── Desktop: horizontal expanding strips ── */}
       <div
         className="hidden lg:flex overflow-hidden rounded-2xl"
-        style={{ minHeight: '65vh', border: '1px solid rgba(204,255,0,.07)' }}
+        style={{ minHeight: '65vh', border: '1px solid rgba(200,168,106,.07)' }}
         onMouseLeave={() => setActiveIndex(null)}
       >
         {SERVICES.map((s, i) => {
@@ -122,7 +122,7 @@ const ServicesSection = () => {
               style={{
                 flex: isActive ? '5 0 0%' : '1 0 0%',
                 transition: 'flex 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                borderRight: i < SERVICES.length - 1 ? '1px solid rgba(204,255,0,.06)' : 'none',
+                borderRight: i < SERVICES.length - 1 ? '1px solid rgba(200,168,106,.06)' : 'none',
               }}
               onMouseEnter={() => setActiveIndex(i)}
             >
@@ -153,13 +153,13 @@ const ServicesSection = () => {
                     <div>
                       <span
                         className="font-mono text-[.58rem] uppercase tracking-[.28em] block"
-                        style={{ color: 'rgba(204,255,0,.36)' }}
+                        style={{ color: 'rgba(200,168,106,.36)' }}
                       >
                         {s.num}
                       </span>
                       <span
                         className="font-mono text-[.54rem] uppercase tracking-[.16em] block mt-1.5"
-                        style={{ color: 'rgba(204,255,0,.22)' }}
+                        style={{ color: 'rgba(200,168,106,.22)' }}
                       >
                         {s.short}
                       </span>
@@ -211,7 +211,7 @@ const ServicesSection = () => {
                   >
                     <span
                       className="font-mono text-[.52rem] uppercase tracking-[.28em]"
-                      style={{ color: 'rgba(204,255,0,.25)' }}
+                      style={{ color: 'rgba(200,168,106,.25)' }}
                     >
                       {s.num}
                     </span>
@@ -230,7 +230,7 @@ const ServicesSection = () => {
                     </span>
                     <div
                       className="h-px w-5"
-                      style={{ background: 'rgba(204,255,0,.14)' }}
+                      style={{ background: 'rgba(200,168,106,.14)' }}
                     />
                   </motion.div>
                 )}
@@ -242,13 +242,13 @@ const ServicesSection = () => {
 
       {/* ── Mobile: accordion ── */}
       <div className="lg:hidden">
-        <div style={{ height: 1, background: 'rgba(204,255,0,.08)' }} />
+        <div style={{ height: 1, background: 'rgba(200,168,106,.08)' }} />
         {SERVICES.map((s, i) => {
           const isOpen = activeIndex === i;
           return (
             <div
               key={s.num}
-              style={{ borderBottom: '1px solid rgba(204,255,0,.08)' }}
+              style={{ borderBottom: '1px solid rgba(200,168,106,.08)' }}
             >
               <button
                 type="button"
@@ -258,7 +258,7 @@ const ServicesSection = () => {
                 <div className="flex items-baseline gap-4">
                   <span
                     className="font-mono text-[.58rem] uppercase tracking-[.24em] shrink-0"
-                    style={{ color: 'rgba(204,255,0,.36)' }}
+                    style={{ color: 'rgba(200,168,106,.36)' }}
                   >
                     {s.num}
                   </span>
@@ -298,7 +298,7 @@ const ServicesSection = () => {
                     <div className="pb-7 pl-[calc(clamp(.58rem,1vw,.7rem)+1rem+1rem)]">
                       <p
                         className="font-mono text-[.55rem] uppercase tracking-[.18em] mb-3"
-                        style={{ color: 'rgba(204,255,0,.28)' }}
+                        style={{ color: 'rgba(200,168,106,.28)' }}
                       >
                         {s.short}
                       </p>

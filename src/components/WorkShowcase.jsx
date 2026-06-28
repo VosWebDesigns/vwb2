@@ -54,9 +54,9 @@ const MagazineHeroCard = ({ project }) => {
             ) : (
               <div
                 className="h-full w-full flex items-center justify-center"
-                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(204,255,0,.07), rgba(6,6,8,.95))' }}
+                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(200,168,106,.07), rgba(6,6,8,.95))' }}
               >
-                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(204,255,0,.20)' }}>
+                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(200,168,106,.20)' }}>
                   {project.title}
                 </span>
               </div>
@@ -75,7 +75,7 @@ const MagazineHeroCard = ({ project }) => {
           <div>
             <p
               className="font-mono text-[.58rem] uppercase tracking-[.26em] mb-2"
-              style={{ color: 'rgba(204,255,0,.50)' }}
+              style={{ color: 'rgba(200,168,106,.50)' }}
             >
               {project.categories?.name || 'Web Design'} — {new Date(project.created_at).getFullYear()}
             </p>
@@ -95,17 +95,17 @@ const MagazineHeroCard = ({ project }) => {
           <div
             className="ml-4 shrink-0 grid h-11 w-11 place-items-center rounded-full transition-all duration-400"
             style={{
-              border: '1px solid rgba(204,255,0,.40)',
+              border: '1px solid rgba(200,168,106,.40)',
               background: hovered ? 'var(--accent)' : 'transparent',
             }}
           >
-            <ArrowUpRight size={16} style={{ color: hovered ? '#060608' : 'var(--accent)' }} />
+            <ArrowUpRight size={16} style={{ color: hovered ? '#08050F' : 'var(--accent)' }} />
           </div>
         </div>
 
         {/* Index number */}
         <div className="absolute top-5 left-6">
-          <span className="font-mono text-[.56rem] uppercase tracking-[.28em]" style={{ color: 'rgba(204,255,0,.28)' }}>01</span>
+          <span className="font-mono text-[.56rem] uppercase tracking-[.28em]" style={{ color: 'rgba(200,168,106,.28)' }}>01</span>
         </div>
       </Link>
     </article>
@@ -146,9 +146,9 @@ const MagazineCard = ({ project, index }) => {
             ) : (
               <div
                 className="h-full w-full flex items-center justify-center"
-                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(204,255,0,.07), rgba(6,6,8,.95))' }}
+                style={{ background: 'radial-gradient(ellipse at 30% 30%, rgba(200,168,106,.07), rgba(6,6,8,.95))' }}
               >
-                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(204,255,0,.20)' }}>
+                <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'rgba(200,168,106,.20)' }}>
                   {project.title}
                 </span>
               </div>
@@ -159,10 +159,10 @@ const MagazineCard = ({ project, index }) => {
         {/* Info below image (always visible — editorial style) */}
         <div className="pt-4 pb-2">
           <div className="flex items-center justify-between mb-1.5">
-            <p className="font-mono text-[.54rem] uppercase tracking-[.24em]" style={{ color: 'rgba(204,255,0,.34)' }}>
+            <p className="font-mono text-[.54rem] uppercase tracking-[.24em]" style={{ color: 'rgba(200,168,106,.34)' }}>
               {project.categories?.name || 'Web Design'}
             </p>
-            <p className="font-mono text-[.52rem] uppercase tracking-[.2em]" style={{ color: 'rgba(204,255,0,.22)' }}>
+            <p className="font-mono text-[.52rem] uppercase tracking-[.2em]" style={{ color: 'rgba(200,168,106,.22)' }}>
               {new Date(project.created_at).getFullYear()}
             </p>
           </div>
@@ -182,7 +182,7 @@ const MagazineCard = ({ project, index }) => {
           </h3>
           <span
             className="font-mono text-[.5rem] uppercase tracking-[.22em]"
-            style={{ color: 'rgba(204,255,0,.20)' }}
+            style={{ color: 'rgba(200,168,106,.20)' }}
           >
             {String(index + 1).padStart(2, '0')}
           </span>
@@ -211,14 +211,14 @@ const CtaTile = () => (
         fontSize: 'clamp(10rem, 22vw, 18rem)',
         lineHeight: 1,
         color: 'transparent',
-        WebkitTextStroke: '1px rgba(204,255,0,.05)',
+        WebkitTextStroke: '1px rgba(200,168,106,.05)',
       }}
     >
       →
     </span>
     <p
       className="font-mono text-[.6rem] uppercase tracking-[.32em] mb-5 relative z-10"
-      style={{ color: 'rgba(204,255,0,.36)' }}
+      style={{ color: 'rgba(200,168,106,.36)' }}
     >
       — Portfolio
     </p>
@@ -278,7 +278,7 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
       {/* Faint glow */}
       <div
         className="pointer-events-none absolute right-0 top-0 h-[60vh] w-[50vw]"
-        style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(204,255,0,.04), transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(200,168,106,.04), transparent 60%)' }}
         aria-hidden="true"
       />
 
@@ -330,9 +330,9 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
         <Link
           to="/portfolio"
           className="hidden lg:inline-flex items-center gap-2 font-mono text-[.7rem] uppercase tracking-[.22em] pb-2 transition-colors"
-          style={{ color: 'rgba(204,255,0,.36)', borderBottom: '1px solid rgba(204,255,0,.16)' }}
+          style={{ color: 'rgba(200,168,106,.36)', borderBottom: '1px solid rgba(200,168,106,.16)' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(204,255,0,.36)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(200,168,106,.36)'; }}
         >
           Volledig portfolio <ArrowUpRight size={12} />
         </Link>
@@ -340,10 +340,10 @@ const WorkShowcase = ({ projects = [], loading = false }) => {
 
       {loading ? (
         <div className="grid gap-4">
-          <div className="animate-pulse rounded-2xl" style={{ aspectRatio: '21/9', background: 'rgba(204,255,0,.03)' }} />
+          <div className="animate-pulse rounded-2xl" style={{ aspectRatio: '21/9', background: 'rgba(200,168,106,.03)' }} />
           <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
             {[2, 3].map((i) => (
-              <div key={i} className="animate-pulse rounded-2xl" style={{ aspectRatio: '4/3', background: 'rgba(204,255,0,.03)' }} />
+              <div key={i} className="animate-pulse rounded-2xl" style={{ aspectRatio: '4/3', background: 'rgba(200,168,106,.03)' }} />
             ))}
           </div>
         </div>

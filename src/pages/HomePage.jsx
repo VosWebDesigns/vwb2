@@ -49,7 +49,7 @@ const StatRow = ({ value, suffix, prefix, label, index }) => {
     >
       <p
         className="font-mono text-[.58rem] uppercase tracking-[.22em]"
-        style={{ color: 'rgba(204,255,0,.30)' }}
+        style={{ color: 'rgba(200,168,106,.30)' }}
       >
         {label}
       </p>
@@ -62,7 +62,7 @@ const StatRow = ({ value, suffix, prefix, label, index }) => {
           color: 'var(--accent3)',
         }}
       >
-        <span style={{ color: 'rgba(204,255,0,.45)', fontSize: '.7em' }}>{prefix}</span>
+        <span style={{ color: 'rgba(200,168,106,.45)', fontSize: '.7em' }}>{prefix}</span>
         <span ref={numRef}>{value}</span>
         <span style={{ color: 'var(--accent)', fontSize: '.65em' }}>{suffix}</span>
       </p>
@@ -97,7 +97,7 @@ const StatementSection = () => {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(204,255,0,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.022) 1px, transparent 1px)',
+            'linear-gradient(rgba(200,168,106,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.022) 1px, transparent 1px)',
           backgroundSize: '100px 100px',
           maskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
           WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent)',
@@ -106,7 +106,7 @@ const StatementSection = () => {
       />
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[40vh] w-[60vw]"
-        style={{ background: 'radial-gradient(ellipse, rgba(204,255,0,.05), transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse, rgba(200,168,106,.05), transparent 70%)' }}
         aria-hidden="true"
       />
 
@@ -115,7 +115,7 @@ const StatementSection = () => {
         <div ref={leftRef} style={{ perspective: '900px' }}>
           <p
             className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10"
-            style={{ color: 'rgba(204,255,0,.35)' }}
+            style={{ color: 'rgba(200,168,106,.35)' }}
           >
             — Studio Statement
           </p>
@@ -158,7 +158,7 @@ const StatementSection = () => {
         <div ref={rightRef}>
           <p
             className="font-mono text-[.6rem] uppercase tracking-[.38em] mb-2"
-            style={{ color: 'rgba(204,255,0,.28)' }}
+            style={{ color: 'rgba(200,168,106,.28)' }}
           >
             — Cijfers
           </p>
@@ -194,21 +194,21 @@ const TestimonialFeature = ({ testimonial }) => {
     <section className="relative py-28 px-5 md:px-10 lg:px-16 overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(204,255,0,.04), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse 55% 60% at 50% 50%, rgba(200,168,106,.04), transparent)' }}
         aria-hidden="true"
       />
       <div
         className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.10), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.10), transparent)' }}
         aria-hidden="true"
       />
       <figure ref={ref} className="relative mx-auto max-w-4xl text-center">
-        <p className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10" style={{ color: 'rgba(204,255,0,.35)' }}>
+        <p className="font-mono text-[.62rem] uppercase tracking-[.42em] mb-10" style={{ color: 'rgba(200,168,106,.35)' }}>
           — Klantreacties
         </p>
         <div
           className="font-heading font-bold leading-none mb-4 select-none pointer-events-none"
-          style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '9rem', color: 'rgba(204,255,0,.06)', lineHeight: 0.55 }}
+          style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '9rem', color: 'rgba(200,168,106,.06)', lineHeight: 0.55 }}
           aria-hidden="true"
         >
           "
@@ -248,18 +248,18 @@ const CtaSection = () => {
     <section className="relative py-36 px-5 md:px-10 lg:px-16 overflow-hidden">
       <div
         className="absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.28), transparent)' }}
+        style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.28), transparent)' }}
         aria-hidden="true"
       />
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-[40vh] w-[50vw] -translate-x-1/2"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(204,255,0,.07), transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(200,168,106,.07), transparent 60%)' }}
         aria-hidden="true"
       />
       <div ref={ref} className="relative mx-auto max-w-5xl text-center">
         <div className="inline-flex items-center gap-2.5 mb-10">
           <span className="status-dot" />
-          <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(204,255,0,.40)' }}>
+          <span className="font-mono text-[.62rem] uppercase tracking-[.36em]" style={{ color: 'rgba(200,168,106,.40)' }}>
             Beschikbaar voor nieuwe projecten
           </span>
         </div>

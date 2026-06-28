@@ -50,8 +50,8 @@ const Header = () => {
       <header
         className="fixed inset-x-0 top-0 z-50 transition-all duration-500"
         style={isScrolled ? {
-          borderBottom: '1px solid rgba(204,255,0,.08)',
-          background: 'rgba(4,4,6,.94)',
+          borderBottom: '1px solid rgba(200,168,106,.08)',
+          background: 'rgba(8,5,15,.94)',
           backdropFilter: 'blur(28px)',
           WebkitBackdropFilter: 'blur(28px)',
           boxShadow: '0 8px 60px rgba(0,0,0,.6)',
@@ -61,7 +61,7 @@ const Header = () => {
         {isScrolled && (
           <div
             className="absolute inset-x-0 top-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(204,255,0,.40), rgba(255,63,0,.20), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(200,168,106,.35), rgba(124,92,191,.18), transparent)' }}
           />
         )}
 
@@ -75,21 +75,21 @@ const Header = () => {
             <span
               className="grid h-9 w-9 place-items-center rounded-xl font-heading text-sm font-bold transition-all duration-400"
               style={{
-                border: '1px solid rgba(204,255,0,.22)',
-                background: 'rgba(204,255,0,.05)',
+                border: '1px solid rgba(200,168,106,.24)',
+                background: 'rgba(200,168,106,.05)',
                 color: 'var(--accent)',
                 fontFamily: "'Space Grotesk', system-ui, sans-serif",
-                boxShadow: '0 0 18px rgba(204,255,0,.08)',
+                boxShadow: '0 0 18px rgba(200,168,106,.08)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(204,255,0,.55)';
-                e.currentTarget.style.boxShadow  = '0 0 28px rgba(204,255,0,.26)';
-                e.currentTarget.style.background  = 'rgba(204,255,0,.10)';
+                e.currentTarget.style.borderColor = 'rgba(200,168,106,.55)';
+                e.currentTarget.style.boxShadow  = '0 0 28px rgba(200,168,106,.22)';
+                e.currentTarget.style.background  = 'rgba(200,168,106,.10)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(204,255,0,.22)';
-                e.currentTarget.style.boxShadow  = '0 0 18px rgba(204,255,0,.08)';
-                e.currentTarget.style.background  = 'rgba(204,255,0,.05)';
+                e.currentTarget.style.borderColor = 'rgba(200,168,106,.24)';
+                e.currentTarget.style.boxShadow  = '0 0 18px rgba(200,168,106,.08)';
+                e.currentTarget.style.background  = 'rgba(200,168,106,.05)';
               }}
             >
               V
@@ -103,7 +103,7 @@ const Header = () => {
               </span>
               <span
                 className="hidden font-mono text-[8px] uppercase tracking-[.28em] sm:block"
-                style={{ color: 'rgba(204,255,0,.32)' }}
+                style={{ color: 'rgba(200,168,106,.32)' }}
               >
                 Design Studio
               </span>
@@ -118,21 +118,21 @@ const Header = () => {
                 to={link.path}
                 className="relative rounded-full px-4 py-2 text-[.82rem] font-semibold tracking-[.03em] transition-all duration-250"
                 style={location.pathname === link.path ? {
-                  background: 'rgba(204,255,0,.07)',
+                  background: 'rgba(200,168,106,.07)',
                   color: 'var(--accent)',
                 } : {
-                  color: 'rgba(240,237,230,.48)',
+                  color: 'rgba(237,232,224,.48)',
                 }}
                 onMouseEnter={(e) => {
                   if (location.pathname !== link.path) {
-                    e.currentTarget.style.background = 'rgba(204,255,0,.04)';
+                    e.currentTarget.style.background = 'rgba(200,168,106,.04)';
                     e.currentTarget.style.color = 'var(--accent3)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (location.pathname !== link.path) {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = 'rgba(240,237,230,.48)';
+                    e.currentTarget.style.color = 'rgba(237,232,224,.48)';
                   }
                 }}
               >
@@ -154,7 +154,7 @@ const Header = () => {
               <span className="status-dot" />
               <span
                 className="font-mono text-[9px] uppercase tracking-[.22em]"
-                style={{ color: 'rgba(204,255,0,.36)' }}
+                style={{ color: 'rgba(200,168,106,.36)' }}
               >
                 Beschikbaar
               </span>
@@ -175,18 +175,18 @@ const Header = () => {
               onClick={() => setOpen(true)}
               className="group inline-flex items-center gap-2.5 rounded-full backdrop-blur-md transition-all duration-300 px-4 py-2 text-[.8rem] font-bold uppercase tracking-[.10em]"
               style={{
-                border: '1px solid rgba(204,255,0,.15)',
-                background: 'rgba(8,8,12,.72)',
+                border: '1px solid rgba(200,168,106,.16)',
+                background: 'rgba(8,5,15,.72)',
                 color: 'var(--accent3)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(204,255,0,.40)';
-                e.currentTarget.style.background = 'rgba(204,255,0,.06)';
-                e.currentTarget.style.boxShadow  = '0 0 20px rgba(204,255,0,.12)';
+                e.currentTarget.style.borderColor = 'rgba(200,168,106,.40)';
+                e.currentTarget.style.background = 'rgba(200,168,106,.06)';
+                e.currentTarget.style.boxShadow  = '0 0 20px rgba(200,168,106,.10)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(204,255,0,.15)';
-                e.currentTarget.style.background = 'rgba(8,8,12,.72)';
+                e.currentTarget.style.borderColor = 'rgba(200,168,106,.16)';
+                e.currentTarget.style.background = 'rgba(8,5,15,.72)';
                 e.currentTarget.style.boxShadow  = 'none';
               }}
               aria-label="Open menu"
@@ -203,7 +203,7 @@ const Header = () => {
         {open && (
           <motion.div
             className="fixed inset-0 z-[90] overflow-y-auto"
-            style={{ background: 'rgba(4,4,6,.97)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}
+            style={{ background: 'rgba(8,5,15,.97)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -216,7 +216,7 @@ const Header = () => {
               animate={{ scale: 1 }}
               exit={{ scale: 1.03 }}
               style={{
-                background: 'radial-gradient(ellipse 60% 50% at 10% 8%, rgba(204,255,0,.10) 0%, transparent 50%), radial-gradient(ellipse 50% 60% at 88% 92%, rgba(255,63,0,.07) 0%, transparent 50%)',
+                background: 'radial-gradient(ellipse 60% 50% at 10% 8%, rgba(124,92,191,.12) 0%, transparent 50%), radial-gradient(ellipse 50% 60% at 88% 92%, rgba(200,168,106,.06) 0%, transparent 50%)',
               }}
             />
 
@@ -224,9 +224,9 @@ const Header = () => {
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                backgroundImage: 'linear-gradient(rgba(204,255,0,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,.04) 1px, transparent 1px)',
+                backgroundImage: 'linear-gradient(rgba(200,168,106,.028) 1px, transparent 1px), linear-gradient(90deg, rgba(200,168,106,.028) 1px, transparent 1px)',
                 backgroundSize: '80px 80px',
-                opacity: 0.5,
+                opacity: 0.8,
               }}
             />
 
@@ -234,7 +234,7 @@ const Header = () => {
               {/* Menu header */}
               <div
                 className="flex items-center justify-between pb-6"
-                style={{ borderBottom: '1px solid rgba(204,255,0,.08)' }}
+                style={{ borderBottom: '1px solid rgba(200,168,106,.08)' }}
               >
                 <div className="flex items-center gap-3">
                   <span className="status-dot" />
@@ -249,13 +249,13 @@ const Header = () => {
                   type="button"
                   onClick={() => setOpen(false)}
                   className="rounded-full p-3 transition-all"
-                  style={{ border: '1px solid rgba(204,255,0,.14)', color: 'var(--accent3)' }}
+                  style={{ border: '1px solid rgba(200,168,106,.14)', color: 'var(--accent3)' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(204,255,0,.38)';
-                    e.currentTarget.style.background  = 'rgba(204,255,0,.06)';
+                    e.currentTarget.style.borderColor = 'rgba(200,168,106,.38)';
+                    e.currentTarget.style.background  = 'rgba(200,168,106,.06)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(204,255,0,.14)';
+                    e.currentTarget.style.borderColor = 'rgba(200,168,106,.14)';
                     e.currentTarget.style.background  = 'transparent';
                   }}
                   aria-label="Sluit menu"
@@ -276,7 +276,7 @@ const Header = () => {
                         fontFamily: "'Space Grotesk', system-ui, sans-serif",
                         fontSize: 'clamp(2.4rem, 7.5vw, 6.5rem)',
                         letterSpacing: '-.07em',
-                        borderBottom: '1px solid rgba(255,255,255,.05)',
+                        borderBottom: '1px solid rgba(237,232,224,.05)',
                         color: location.pathname === link.path ? 'var(--accent)' : 'var(--accent3)',
                       }}
                       onMouseEnter={(e) => {
@@ -293,7 +293,7 @@ const Header = () => {
                             fontFamily: "'Space Mono', monospace",
                             fontStyle: 'normal',
                             fontSize: '0.27em',
-                            color: 'rgba(204,255,0,.40)',
+                            color: 'rgba(200,168,106,.38)',
                             letterSpacing: '.18em',
                             verticalAlign: 'super',
                           }}
@@ -324,7 +324,7 @@ const Header = () => {
                   >
                     Maatwerk websites zonder compromissen.
                   </h2>
-                  <p className="mt-5 text-sm leading-[1.8]" style={{ color: 'rgba(240,237,230,.48)' }}>
+                  <p className="mt-5 text-sm leading-[1.8]" style={{ color: 'rgba(237,232,224,.48)' }}>
                     Strategie, design en techniek — één team, geen tussenpersonen. Gebouwd voor indruk, vertrouwen en meetbare groei.
                   </p>
                   <div className="mt-8 grid gap-2 text-sm">
@@ -347,7 +347,7 @@ const Header = () => {
                       </a>
                     )}
                   </div>
-                  <div className="mt-8 flex gap-5 text-[.72rem] font-mono font-bold uppercase tracking-[.18em]" style={{ color: 'rgba(204,255,0,.36)' }}>
+                  <div className="mt-8 flex gap-5 text-[.72rem] font-mono font-bold uppercase tracking-[.18em]" style={{ color: 'rgba(200,168,106,.36)' }}>
                     {settings?.social_instagram && (
                       <a href={settings.social_instagram} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
                     )}
