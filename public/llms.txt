@@ -1,5 +1,5 @@
 ## Pages
-- [– Portfolio | Vos Web Designs](/projectdetail): No description available
+- [– Portfolio |](/projectdetail): No description available
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/404): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [404 - Pagina Niet Gevonden | Vos Web Designs](/notfound): Deze pagina bestaat niet. Ga terug naar de homepage of neem contact op als u hulp nodig heeft.
 - [Admin configuratie ontbreekt - Vos Web Designs](/login): No description available
