@@ -1,7 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight } from 'lucide-react';
+import { getLenis } from '@/hooks/useLenis';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const FuturisticHero = () => {
   const secRef   = useRef(null);
@@ -14,32 +18,42 @@ const FuturisticHero = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // ── Entrance animation ──
       gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], {
-        yPercent: 115,
-        rotateX: 8,
+        yPercent: 120,
+        rotateX: 10,
         opacity: 0,
       });
-      gsap.set([topRef.current, subRef.current, botRef.current], { opacity: 0, y: 14 });
+      gsap.set(topRef.current, { opacity: 0, x: -20 });
+      gsap.set([subRef.current, botRef.current], { opacity: 0, y: 18 });
 
-      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      const tl = gsap.timeline({ delay: 0.1, defaults: { ease: 'power4.out' } });
 
-      tl.to(topRef.current, { opacity: 1, y: 0, duration: 0.8 })
-        .to(line1Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.4')
-        .to(line2Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.85')
-        .to(line3Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.1 }, '-=0.85')
-        .to(subRef.current,   { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-        .to(botRef.current,   { opacity: 1, y: 0, duration: 0.7 }, '-=0.4');
+      tl.to(topRef.current, { opacity: 1, x: 0, duration: 0.75 })
+        .to(line1Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.15 }, '-=0.35')
+        .to(line2Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.15 }, '-=0.9')
+        .to(line3Ref.current, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.15 }, '-=0.9')
+        .to(subRef.current,   { opacity: 1, y: 0, duration: 0.85 }, '-=0.55')
+        .to(botRef.current,   { opacity: 1, y: 0, duration: 0.75 }, '-=0.45');
 
-      /* Subtle vertical parallax on scroll */
-      const onScroll = () => {
-        const y = window.scrollY;
+      // ── Scroll-driven parallax (Lenis-synced) ──
+      const handleScroll = ({ scroll }) => {
         if (!line1Ref.current) return;
-        gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], {
-          y: y * -0.14,
-        });
+        const y = scroll * -0.16;
+        gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], { y });
+        gsap.set(subRef.current, { y: scroll * -0.06, opacity: 1 - scroll / window.innerHeight });
       };
-      window.addEventListener('scroll', onScroll, { passive: true });
-      return () => window.removeEventListener('scroll', onScroll);
+
+      // Lenis fires its own scroll event — use it if available, fall back to window
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.on('scroll', handleScroll);
+        return () => lenis.off('scroll', handleScroll);
+      } else {
+        const onWindowScroll = () => handleScroll({ scroll: window.scrollY });
+        window.addEventListener('scroll', onWindowScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onWindowScroll);
+      }
     }, secRef);
 
     return () => ctx.revert();
