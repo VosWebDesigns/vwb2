@@ -124,6 +124,49 @@ const Footer = () => {
       />
 
       <div className="relative mx-auto max-w-7xl">
+
+        {/* ── Editorial CTA block ── */}
+        <div
+          className="mb-20 pb-16"
+          style={{ borderBottom: '1px solid rgba(204,255,0,.06)' }}
+        >
+          <div className="inline-flex items-center gap-2.5 mb-8">
+            <span className="status-dot" />
+            <span className="font-mono uppercase tracking-[.34em]" style={{ fontSize: '.54rem', color: 'rgba(204,255,0,.40)' }}>
+              Beschikbaar voor nieuwe projecten
+            </span>
+          </div>
+          <h2
+            className="font-heading font-bold uppercase leading-[.88] tracking-[-0.055em]"
+            style={{
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontSize: 'clamp(3rem, 9vw, 9rem)',
+              color: 'var(--accent3)',
+            }}
+          >
+            LATEN WE<br />
+            <em
+              style={{
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontStyle: 'italic',
+                fontWeight: 600,
+                color: 'var(--accent)',
+                fontSize: '1.04em',
+                letterSpacing: '-.02em',
+              }}
+            >
+              iets bijzonders
+            </em>
+            <br />
+            BOUWEN.
+          </h2>
+          <div className="mt-10">
+            <Link to="/contact" className="glow-button" data-magnetic>
+              Start een project <ArrowUpRight size={16} />
+            </Link>
+          </div>
+        </div>
+
         {/* Main grid */}
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8 xl:gap-12">
 

@@ -348,7 +348,7 @@ const HomePage = () => {
       </Helmet>
 
       <main className="overflow-hidden">
-        <FuturisticHero />
+        <FuturisticHero projects={projects.slice(0, 3)} />
         <TechMarquee />
         <StatementSection />
         <ServicesSection />
