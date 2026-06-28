@@ -231,10 +231,10 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
   };
 
   return (
-    <section className="space-y-4 rounded-xl border border-[rgba(140,214,255,0.12)] bg-[#0b1220] p-4">
+    <section className="space-y-4 rounded-xl border border-[rgba(201,169,110,.09)] bg-[#0b1220] p-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">Afbeeldingen</h3>
-        {busy && <Loader2 size={18} className="animate-spin text-[#8cd6ff]" />}
+        {busy && <Loader2 size={18} className="animate-spin text-[var(--accent)]" />}
       </div>
 
       <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={onInputChange} />
@@ -244,14 +244,14 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
         onClick={() => fileInputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={(event) => event.preventDefault()}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(140,214,255,0.16)] px-4 py-5 text-sm text-gray-300 hover:border-[#8cd6ff]"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(201,169,110,.16)] px-4 py-5 text-sm text-gray-300 hover:border-[var(--accent)]"
       >
         <Upload size={16} />
         Upload meerdere afbeeldingen (of sleep ze hierheen)
       </button>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader2 className="animate-spin text-[#8cd6ff]" /></div>
+        <div className="flex justify-center py-8"><Loader2 className="animate-spin text-[var(--accent)]" /></div>
       ) : images.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-8 text-gray-500">
           <ImagePlus size={20} />
@@ -260,11 +260,11 @@ const ProjectGalleryManager = ({ projectId, onCoverChange }) => {
       ) : (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
           {images.map((image, index) => (
-            <article key={image.id} className="rounded-lg border border-[rgba(140,214,255,0.12)] bg-[rgba(12,22,40,0.72)] p-2">
+            <article key={image.id} className="rounded-lg border border-[rgba(201,169,110,.09)] bg-[rgba(8,8,18,.82)] p-2">
               <div className="relative overflow-hidden rounded-md">
                 <SmartImage src={image.url} alt={image.alt || 'Portfolio afbeelding'} className="h-28 w-full object-cover" />
                 {image.is_cover && (
-                  <span className="absolute left-2 top-2 rounded bg-[#8cd6ff] px-2 py-1 text-[11px] font-semibold text-black">
+                  <span className="absolute left-2 top-2 rounded bg-[var(--accent)] px-2 py-1 text-[11px] font-semibold text-black">
                     Cover
                   </span>
                 )}

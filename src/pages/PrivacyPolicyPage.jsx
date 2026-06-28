@@ -30,7 +30,7 @@ const PrivacyPolicyPage = () => {
               <p data-reveal className="section-eyebrow">Juridisch</p>
             </div>
             <h1 data-reveal className="display-xl mt-0 text-[clamp(2.8rem,8vw,6rem)]">
-              <span className="gradient-text-cyan">Privacybeleid</span>
+              <span className="gradient-text-gold">Privacybeleid</span>
             </h1>
 
             <div className="mt-10 grid gap-4">

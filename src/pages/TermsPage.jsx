@@ -31,7 +31,7 @@ const TermsPage = () => {
               <p data-reveal className="section-eyebrow">Juridisch</p>
             </div>
             <h1 data-reveal className="display-xl mt-0 text-[clamp(2.4rem,7vw,5.5rem)]">
-              <span className="gradient-text-cyan">Algemene Voorwaarden</span>
+              <span className="gradient-text-gold">Algemene Voorwaarden</span>
             </h1>
 
             <div className="mt-10 grid gap-4">

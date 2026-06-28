@@ -156,7 +156,7 @@ const TestimonialsPage = () => {
           {!showForm && (
             <Button
               onClick={() => setShowForm(true)}
-              className="bg-[#8cd6ff] text-black"
+              className="bg-[var(--accent)] text-black"
             >
               <Plus size={18} className="mr-2" />
               Nieuwe review
@@ -174,7 +174,7 @@ const TestimonialsPage = () => {
                 exit={{ opacity: 0 }}
                 className="lg:col-span-4"
               >
-                <div className="bg-[rgba(12,22,40,0.72)] p-5 rounded-xl border border-[rgba(140,214,255,0.12)] sticky top-24">
+                <div className="bg-[rgba(8,8,18,.82)] p-5 rounded-xl border border-[rgba(201,169,110,.09)] sticky top-24">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-white">
                       {isEditing ? 'Bewerk review' : 'Nieuwe review'}
@@ -186,7 +186,7 @@ const TestimonialsPage = () => {
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <input
-                      className="w-full bg-black border border-[rgba(140,214,255,0.16)] rounded px-3 py-2 text-white"
+                      className="w-full bg-black border border-[rgba(201,169,110,.16)] rounded px-3 py-2 text-white"
                       placeholder="Naam"
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -194,14 +194,14 @@ const TestimonialsPage = () => {
                     />
 
                     <input
-                      className="w-full bg-black border border-[rgba(140,214,255,0.16)] rounded px-3 py-2 text-white"
+                      className="w-full bg-black border border-[rgba(201,169,110,.16)] rounded px-3 py-2 text-white"
                       placeholder="Bedrijf"
                       value={formData.company}
                       onChange={e => setFormData({ ...formData, company: e.target.value })}
                     />
 
                     <textarea
-                      className="w-full bg-black border border-[rgba(140,214,255,0.16)] rounded px-3 py-2 text-white h-32"
+                      className="w-full bg-black border border-[rgba(201,169,110,.16)] rounded px-3 py-2 text-white h-32"
                       placeholder="Review tekst"
                       value={formData.text}
                       onChange={e => setFormData({ ...formData, text: e.target.value })}
@@ -212,22 +212,22 @@ const TestimonialsPage = () => {
                       type="number"
                       min="1"
                       max="5"
-                      className="w-full bg-black border border-[rgba(140,214,255,0.16)] rounded px-3 py-2 text-white"
+                      className="w-full bg-black border border-[rgba(201,169,110,.16)] rounded px-3 py-2 text-white"
                       value={formData.rating}
                       onChange={e => setFormData({ ...formData, rating: Number(e.target.value) })}
                     />
 
-                    <label className="flex items-center gap-3 rounded border border-[rgba(140,214,255,0.16)] bg-black px-3 py-2 text-sm text-white">
+                    <label className="flex items-center gap-3 rounded border border-[rgba(201,169,110,.16)] bg-black px-3 py-2 text-sm text-white">
                       <input
                         type="checkbox"
                         checked={Boolean(formData.is_visible)}
                         onChange={e => setFormData({ ...formData, is_visible: e.target.checked })}
-                        className="h-4 w-4 accent-[#8cd6ff]"
+                        className="h-4 w-4 accent-[var(--accent)]"
                       />
                       Zichtbaar op website
                     </label>
 
-                    <Button type="submit" className="w-full bg-[#8cd6ff] text-black">
+                    <Button type="submit" className="w-full bg-[var(--accent)] text-black">
                       Opslaan
                     </Button>
                   </form>
@@ -240,19 +240,19 @@ const TestimonialsPage = () => {
           <div className={`${showForm ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
             {loading ? (
               <div className="flex justify-center py-20">
-                <Loader2 className="animate-spin text-[#8cd6ff]" size={32} />
+                <Loader2 className="animate-spin text-[var(--accent)]" size={32} />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {testimonials.map(t => (
-                  <div key={t.id} className="bg-[rgba(12,22,40,0.72)] p-5 rounded-xl border border-[rgba(140,214,255,0.12)] flex flex-col">
+                  <div key={t.id} className="bg-[rgba(8,8,18,.82)] p-5 rounded-xl border border-[rgba(201,169,110,.09)] flex flex-col">
                     <div className="flex justify-between mb-3">
                       <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
                             size={14}
-                            className={i < t.rating ? 'text-[#8cd6ff] fill-[#8cd6ff]' : 'text-gray-700'}
+                            className={i < t.rating ? 'text-[var(--accent)] fill-[var(--accent)]' : 'text-gray-700'}
                           />
                         ))}
                       </div>
@@ -268,11 +268,11 @@ const TestimonialsPage = () => {
                     </div>
 
                     <div className="relative pl-4 mb-4">
-                      <Quote className="absolute left-0 top-0 text-[#8cd6ff]/20" size={24} />
+                      <Quote className="absolute left-0 top-0 text-[var(--accent)]/20" size={24} />
                       <p className="text-gray-300 italic text-sm">"{t.text}"</p>
                     </div>
 
-                    <div className="mt-auto pt-3 border-t border-[rgba(140,214,255,0.12)]">
+                    <div className="mt-auto pt-3 border-t border-[rgba(201,169,110,.09)]">
                       <p className="font-bold text-white text-sm">{t.name}</p>
                       <p className="text-xs text-gray-500">{t.company}</p>
                     </div>
@@ -280,7 +280,7 @@ const TestimonialsPage = () => {
                 ))}
 
                 {testimonials.length === 0 && (
-                  <div className="col-span-full text-center text-gray-500 py-12 border border-dashed border-[rgba(140,214,255,0.12)] rounded-xl">
+                  <div className="col-span-full text-center text-gray-500 py-12 border border-dashed border-[rgba(201,169,110,.09)] rounded-xl">
                     Geen reviews gevonden
                   </div>
                 )}

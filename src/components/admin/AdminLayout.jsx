@@ -70,27 +70,27 @@ const AdminLayout = () => {
   ];
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-[rgba(8,16,30,0.82)] backdrop-blur-xl border-r border-[rgba(140,214,255,0.12)]">
-      <div className="h-16 flex items-center px-6 border-b border-[rgba(140,214,255,0.12)] shrink-0">
-        <span className="grid h-8 w-8 place-items-center rounded-lg border border-[rgba(140,214,255,.25)] bg-[rgba(140,214,255,.08)] font-heading text-sm font-black text-[var(--accent)] shadow-[0_0_18px_rgba(140,214,255,.18)]">V</span>
-        <span className="ml-3 font-heading text-lg font-black tracking-[-.03em] gradient-text-full">Vos Admin</span>
+    <div className="flex flex-col h-full bg-[rgba(6,6,14,0.92)] backdrop-blur-xl border-r border-[color:var(--stroke)]">
+      <div className="h-16 flex items-center px-6 border-b border-[color:var(--stroke)] shrink-0">
+        <span className="grid h-8 w-8 place-items-center rounded-lg border border-[rgba(201,169,110,.28)] bg-[rgba(201,169,110,.07)] font-heading text-sm font-black text-[var(--accent)] shadow-[0_0_18px_rgba(201,169,110,.14)]">V</span>
+        <span className="ml-3 font-heading text-lg font-black tracking-[-.03em] gradient-text-gold">Vos Admin</span>
       </div>
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
         {navItems.map((item) => (
-          <Link key={item.path} to={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${location.pathname === item.path ? 'bg-[rgba(140,214,255,0.1)] text-[var(--accent)] border border-[rgba(140,214,255,0.22)] shadow-[0_0_20px_rgba(140,214,255,.08)]' : 'text-slate-400 border border-transparent hover:text-white hover:bg-[rgba(140,214,255,0.05)]'}`}>
+          <Link key={item.path} to={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${location.pathname === item.path ? 'bg-[rgba(201,169,110,0.08)] text-[var(--accent)] border border-[rgba(201,169,110,0.22)] shadow-[0_0_20px_rgba(201,169,110,.07)]' : 'text-slate-400 border border-transparent hover:text-white hover:bg-[rgba(201,169,110,0.05)]'}`}>
             {item.icon}<span className="font-medium">{item.label}</span>
           </Link>
         ))}
       </nav>
-      <div className="p-4 border-t border-[rgba(140,214,255,0.12)] shrink-0"><Button onClick={() => signOut()} variant="ghost" className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-400/10"><LogOut size={20} />Uitloggen</Button></div>
+      <div className="p-4 border-t border-[color:var(--stroke)] shrink-0"><Button onClick={() => signOut()} variant="ghost" className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-400/10"><LogOut size={20} />Uitloggen</Button></div>
     </div>
   );
 
   return (
     <div className="admin-shell min-h-screen text-white flex flex-col lg:flex-row relative">
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[rgba(8,16,30,0.9)] backdrop-blur-xl border-b border-[rgba(140,214,255,0.12)] z-50 flex items-center justify-between px-4">
-        <span className="font-heading text-lg font-black tracking-[-.03em] gradient-text-full">Vos Admin</span>
-        <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-300 hover:text-white hover:bg-[rgba(140,214,255,0.08)] rounded-md" aria-label="Open menu"><Menu size={24} /></button>
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[rgba(6,6,14,0.94)] backdrop-blur-xl border-b border-[color:var(--stroke)] z-50 flex items-center justify-between px-4">
+        <span className="font-heading text-lg font-black tracking-[-.03em] gradient-text-gold">Vos Admin</span>
+        <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-300 hover:text-white hover:bg-[rgba(201,169,110,0.07)] rounded-md" aria-label="Open menu"><Menu size={24} /></button>
       </header>
       <aside className="hidden lg:block fixed inset-y-0 left-0 w-64 z-30"><SidebarContent /></aside>
       <AnimatePresence>

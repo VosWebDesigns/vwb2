@@ -131,18 +131,18 @@ const CategoriesPage = () => {
       </div>
 
       {/* ADD */}
-      <div className="bg-[rgba(12,22,40,0.72)] p-4 rounded-xl border border-[rgba(140,214,255,0.12)]">
+      <div className="bg-[rgba(8,8,18,.82)] p-4 rounded-xl border border-[rgba(201,169,110,.09)]">
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
           <input
             placeholder="Nieuwe categorie naam..."
-            className="flex-1 px-4 py-3 bg-black border border-[rgba(140,214,255,0.16)] rounded-lg text-white focus:border-[#8cd6ff] focus:outline-none"
+            className="flex-1 px-4 py-3 bg-black border border-[rgba(201,169,110,.16)] rounded-lg text-white focus:border-[var(--accent)] focus:outline-none"
             value={name}
             onChange={e => setName(e.target.value)}
             required
           />
           <Button
             type="submit"
-            className="bg-[#8cd6ff] text-black font-medium sm:w-auto w-full"
+            className="bg-[var(--accent)] text-black font-medium sm:w-auto w-full"
           >
             <Plus size={18} className="mr-2" />
             Toevoegen
@@ -151,10 +151,10 @@ const CategoriesPage = () => {
       </div>
 
       {/* LIST */}
-      <div className="bg-[rgba(12,22,40,0.72)] rounded-xl border border-[rgba(140,214,255,0.12)] overflow-hidden">
+      <div className="bg-[rgba(8,8,18,.82)] rounded-xl border border-[rgba(201,169,110,.09)] overflow-hidden">
         {loading ? (
           <div className="p-12 flex justify-center">
-            <Loader2 className="animate-spin text-[#8cd6ff]" size={32} />
+            <Loader2 className="animate-spin text-[var(--accent)]" size={32} />
           </div>
         ) : (
           <div className="divide-y divide-gray-800">

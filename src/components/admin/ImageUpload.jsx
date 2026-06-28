@@ -52,7 +52,7 @@ const ImageUpload = ({ value, onChange, className }) => {
   return (
     <div className={`space-y-4 ${className}`}>
       {value ? (
-        <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-[rgba(140,214,255,0.16)] bg-black">
+        <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-[rgba(201,169,110,.16)] bg-black">
           <SmartImage
             src={value}
             alt="Upload preview"
@@ -68,7 +68,7 @@ const ImageUpload = ({ value, onChange, className }) => {
         </div>
       ) : (
         <div className="flex items-center justify-center w-full">
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-[rgba(140,214,255,0.16)] border-dashed rounded-lg cursor-pointer bg-[rgba(12,22,40,0.72)] hover:bg-[#252525] transition-colors">
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-[rgba(201,169,110,.16)] border-dashed rounded-lg cursor-pointer bg-[rgba(8,8,18,.82)] hover:bg-[#252525] transition-colors">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               {uploading ? (
                 <Loader2 className="animate-spin text-gray-400 mb-2" size={24} />

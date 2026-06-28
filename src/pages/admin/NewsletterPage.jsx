@@ -179,8 +179,8 @@ const NewsletterPage = () => {
     if (block.type === 'heading') return <h2 key={index} className="mt-6 text-2xl font-black text-white">{block.text || 'Koptekst'}</h2>;
     if (block.type === 'image') return block.url ? <figure key={index} className="my-5"><img src={block.url} alt={block.alt || ''} className="w-full rounded-2xl border border-white/10" />{block.caption && <figcaption className="mt-2 text-sm text-slate-500">{block.caption}</figcaption>}</figure> : <div key={index} className="my-5 rounded-2xl border border-dashed border-white/20 p-6 text-slate-500">Afbeelding</div>;
     if (block.type === 'divider') return <hr key={index} className="my-6 border-white/10" />;
-    if (block.type === 'cta') return <a key={index} href={block.href} className="my-5 inline-flex rounded-full bg-[#8cd6ff] px-5 py-3 font-black text-black">{block.label || 'CTA'}</a>;
-    if (block.type === 'quote') return <blockquote key={index} className="my-5 rounded-2xl border-l-4 border-[#8cd6ff] bg-[#07111f] p-5 text-slate-200">{block.text || 'Quote'}</blockquote>;
+    if (block.type === 'cta') return <a key={index} href={block.href} className="my-5 inline-flex rounded-full bg-[var(--accent)] px-5 py-3 font-black text-black">{block.label || 'CTA'}</a>;
+    if (block.type === 'quote') return <blockquote key={index} className="my-5 rounded-2xl border-l-4 border-[var(--accent)] bg-[#07111f] p-5 text-slate-200">{block.text || 'Quote'}</blockquote>;
     return <p key={index} className="my-4 leading-8 text-slate-300 whitespace-pre-wrap">{block.text || 'Paragraaftekst...'}</p>;
   };
 
@@ -189,10 +189,10 @@ const NewsletterPage = () => {
       <Helmet><title>Nieuwsbrief beheer | Vos Admin</title></Helmet>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[.18em] text-[#8cd6ff]">Vos Admin</p>
+          <p className="text-sm font-bold uppercase tracking-[.18em] text-[var(--accent)]">Vos Admin</p>
           <h1 className="text-3xl font-black tracking-tight text-white">Nieuwsbrief</h1>
         </div>
-        <Button onClick={() => setSelected(emptyCampaign)} className="gap-2 bg-[#8cd6ff] text-black hover:bg-[#7dd3fc]"><Plus size={18} /> Nieuwe campagne</Button>
+        <Button onClick={() => setSelected(emptyCampaign)} className="gap-2 bg-[var(--accent)] text-black hover:bg-[#7dd3fc]"><Plus size={18} /> Nieuwe campagne</Button>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
@@ -201,7 +201,7 @@ const NewsletterPage = () => {
           {loading ? <div className="flex items-center gap-2 text-slate-400"><Loader2 className="animate-spin" size={18} /> Laden...</div> : (
             <div className="space-y-3">
               {campaigns.map((campaign) => (
-                <button key={campaign.id} onClick={() => setSelected(campaign)} className={`w-full rounded-2xl border p-4 text-left transition ${selected.id === campaign.id ? 'border-[#8cd6ff] bg-[#8cd6ff]/10' : 'border-white/10 bg-black/10 hover:border-white/30'}`}>
+                <button key={campaign.id} onClick={() => setSelected(campaign)} className={`w-full rounded-2xl border p-4 text-left transition ${selected.id === campaign.id ? 'border-[var(--accent)] bg-[var(--accent)]/10' : 'border-white/10 bg-black/10 hover:border-white/30'}`}>
                   <span className="block font-bold text-white">{campaign.title}</span>
                   <span className="mt-1 block text-xs uppercase tracking-wider text-slate-500">{campaign.status} · sent {campaign.stats?.sent || 0} · failed {campaign.stats?.failed || 0}</span>
                 </button>
@@ -223,7 +223,7 @@ const NewsletterPage = () => {
                   <Label>Hero afbeelding</Label>
                   <p className="mt-1 text-sm text-slate-500">Kies via upload, storage galerij of handmatige URL.</p>
                 </div>
-                <Button type="button" onClick={openHeroImagePicker} className="gap-2 bg-[#8cd6ff] text-black hover:bg-[#7dd3fc]"><ImagePlus size={16} /> Kies hero afbeelding</Button>
+                <Button type="button" onClick={openHeroImagePicker} className="gap-2 bg-[var(--accent)] text-black hover:bg-[#7dd3fc]"><ImagePlus size={16} /> Kies hero afbeelding</Button>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 <Input placeholder="Hero image URL" value={selected.hero_image_url || ''} onChange={(e) => updateField('hero_image_url', e.target.value)} className="bg-[#050b14]" />
@@ -240,7 +240,7 @@ const NewsletterPage = () => {
               {blocks.map((block, index) => (
                 <div key={`${block.type}-${index}`} className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <strong className="text-[#8cd6ff]">{blockLabels[block.type] || block.type}</strong>
+                    <strong className="text-[var(--accent)]">{blockLabels[block.type] || block.type}</strong>
                     <div className="flex gap-2">
                       <Button type="button" size="sm" variant="ghost" onClick={() => moveBlock(index, -1)}><ArrowUp size={16} /></Button>
                       <Button type="button" size="sm" variant="ghost" onClick={() => moveBlock(index, 1)}><ArrowDown size={16} /></Button>
@@ -250,7 +250,7 @@ const NewsletterPage = () => {
                   {block.type === 'image' ? (
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
-                        <Button type="button" onClick={() => openBlockImagePicker(index)} className="gap-2 bg-[#8cd6ff] text-black hover:bg-[#7dd3fc]"><ImagePlus size={16} /> Kies afbeelding</Button>
+                        <Button type="button" onClick={() => openBlockImagePicker(index)} className="gap-2 bg-[var(--accent)] text-black hover:bg-[#7dd3fc]"><ImagePlus size={16} /> Kies afbeelding</Button>
                         {block.url && <span className="truncate text-sm text-slate-500">{block.url}</span>}
                       </div>
                       <div className="grid gap-3 md:grid-cols-3"><Input placeholder="Afbeelding URL" value={block.url || ''} onChange={(e) => updateBlock(index, 'url', e.target.value)} /><Input placeholder="Alt tekst" value={block.alt || ''} onChange={(e) => updateBlock(index, 'alt', e.target.value)} /><Input placeholder="Caption" value={block.caption || ''} onChange={(e) => updateBlock(index, 'caption', e.target.value)} /></div>
@@ -268,15 +268,15 @@ const NewsletterPage = () => {
             <div className="flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center">
               <Button onClick={saveCampaign} disabled={saving} className="gap-2 bg-white text-black hover:bg-slate-200"><Save size={16} /> {saving ? 'Opslaan...' : 'Opslaan'}</Button>
               <Input placeholder="test@email.nl" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="bg-[#050b14] sm:max-w-xs" />
-              <Button onClick={() => sendCampaign('test')} disabled={sending || !selected.id} variant="outline" className="gap-2 border-[#8cd6ff]/40 bg-transparent text-[#8cd6ff]"><Mail size={16} /> Testmail sturen</Button>
-              <Button onClick={() => sendCampaign('send')} disabled={sending || !selected.id} className="gap-2 bg-[#8cd6ff] text-black hover:bg-[#7dd3fc]"><Send size={16} /> Verstuur nieuwsbrief</Button>
+              <Button onClick={() => sendCampaign('test')} disabled={sending || !selected.id} variant="outline" className="gap-2 border-[var(--accent)]/40 bg-transparent text-[var(--accent)]"><Mail size={16} /> Testmail sturen</Button>
+              <Button onClick={() => sendCampaign('send')} disabled={sending || !selected.id} className="gap-2 bg-[var(--accent)] text-black hover:bg-[#7dd3fc]"><Send size={16} /> Verstuur nieuwsbrief</Button>
             </div>
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-[#050b14] p-5">
             <div className="mb-4 flex items-center justify-between text-sm text-slate-500"><span>Live preview</span><span>{selected.status}</span></div>
             <article className="mx-auto max-w-2xl rounded-[1.5rem] border border-white/10 bg-[#0b1524] p-6">
-              <p className="mb-4 text-xs font-black uppercase tracking-[.2em] text-[#8cd6ff]">Vos Web Designs</p>
+              <p className="mb-4 text-xs font-black uppercase tracking-[.2em] text-[var(--accent)]">Vos Web Designs</p>
               <h1 className="text-3xl font-black text-white">{selected.subject || selected.title}</h1>
               {selected.preheader && <p className="mt-3 text-slate-400">{selected.preheader}</p>}
               {selected.hero_image_url && <img src={selected.hero_image_url} alt={selected.content_json?.hero_alt || ''} className="my-6 w-full rounded-2xl border border-white/10" />}

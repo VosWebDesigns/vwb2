@@ -15,8 +15,8 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 
 /* ===== INPUT STYLE ===== */
 const INPUT =
-  'w-full bg-black border border-[rgba(140,214,255,0.16)] rounded-lg px-4 py-3 text-white ' +
-  'placeholder:text-gray-500 focus:border-[#8cd6ff] focus:outline-none';
+  'w-full bg-black border border-[rgba(201,169,110,.16)] rounded-lg px-4 py-3 text-white ' +
+  'placeholder:text-gray-500 focus:border-[var(--accent)] focus:outline-none';
 
 const INITIAL_FORM_STATE = {
   title: '',
@@ -233,7 +233,7 @@ const ProjectsPage = () => {
           <p className="text-gray-400 text-sm">Beheer je projecten en cases</p>
         </div>
         {!showForm && (
-          <Button onClick={() => { setShowForm(true); setIsEditing(null); setActiveProjectId(null); setFormData(INITIAL_FORM_STATE); }} className="bg-[#8cd6ff] text-black">
+          <Button onClick={() => { setShowForm(true); setIsEditing(null); setActiveProjectId(null); setFormData(INITIAL_FORM_STATE); }} className="bg-[var(--accent)] text-black">
             <Plus size={18} className="mr-2" /> Nieuw project
           </Button>
         )}
@@ -249,7 +249,7 @@ const ProjectsPage = () => {
               exit={{ opacity: 0 }}
               className="lg:col-span-5"
             >
-              <form onSubmit={handleSubmit} className="bg-[rgba(12,22,40,0.72)] rounded-xl border border-[rgba(140,214,255,0.12)] p-5 space-y-4">
+              <form onSubmit={handleSubmit} className="bg-[rgba(8,8,18,.82)] rounded-xl border border-[rgba(201,169,110,.09)] p-5 space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">Hero afbeelding</label>
                   <ImageUpload
@@ -310,7 +310,7 @@ const ProjectsPage = () => {
                     onCoverChange={(heroImage) => setFormData((prev) => ({ ...prev, hero_image: heroImage }))}
                   />
                 ) : (
-                  <div className="rounded-lg border border-dashed border-[rgba(140,214,255,0.16)] p-4 text-sm text-gray-400">
+                  <div className="rounded-lg border border-dashed border-[rgba(201,169,110,.16)] p-4 text-sm text-gray-400">
                     Sla eerst het project op om meerdere afbeeldingen toe te voegen.
                   </div>
                 )}
@@ -350,7 +350,7 @@ const ProjectsPage = () => {
                 </label>
 
                 <div className="flex gap-3">
-                  <Button type="submit" className="flex-1 bg-[#8cd6ff] text-black">Opslaan</Button>
+                  <Button type="submit" className="flex-1 bg-[var(--accent)] text-black">Opslaan</Button>
                   <Button type="button" variant="outline" className="flex-1" onClick={closeForm}>Annuleren</Button>
                 </div>
               </form>
@@ -361,17 +361,17 @@ const ProjectsPage = () => {
         {/* LIST */}
         <div className={`${showForm ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4`}>
           {loading ? (
-            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#8cd6ff]" /></div>
+            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[var(--accent)]" /></div>
           ) : projects.length === 0 ? (
-            <div className="text-center py-20 text-gray-500 border border-dashed border-[rgba(140,214,255,0.12)] rounded-xl">
+            <div className="text-center py-20 text-gray-500 border border-dashed border-[rgba(201,169,110,.09)] rounded-xl">
               <FolderKanban size={48} className="mx-auto mb-4 opacity-20" />
               Nog geen projecten
             </div>
           ) : (
             projects.map(p => (
-              <div key={p.id} className="bg-[rgba(12,22,40,0.72)] border border-[rgba(140,214,255,0.12)] rounded-xl p-4 flex flex-col sm:flex-row gap-4">
+              <div key={p.id} className="bg-[rgba(8,8,18,.82)] border border-[rgba(201,169,110,.09)] rounded-xl p-4 flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-24 h-40 sm:h-24 bg-black rounded overflow-hidden">
-                  {p.hero_image ? <SmartImage src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#082f49]"><ImageIcon className="text-[#8cd6ff]/60" /></div>}
+                  {p.hero_image ? <SmartImage src={p.hero_image} alt={p.title} className="w-full h-full object-cover" /> : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#082f49]"><ImageIcon className="text-[var(--accent)]/60" /></div>}
                 </div>
 
                 <div className="flex-1">
@@ -384,12 +384,12 @@ const ProjectsPage = () => {
                       <span className="rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-amber-200">Uitgelicht</span>
                     )}
                     {p.home_featured && (
-                      <span className="rounded-full border border-[#8cd6ff]/40 bg-[#8cd6ff]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#8cd6ff]">Home preview</span>
+                      <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.16em] text-[var(--accent)]">Home preview</span>
                     )}
                   </div>
                   <p className="text-sm text-gray-400 line-clamp-3">{p.short_description || '—'}</p>
                   {p.category?.name && (
-                    <span className="text-xs text-[#8cd6ff]">{p.category.name}</span>
+                    <span className="text-xs text-[var(--accent)]">{p.category.name}</span>
                   )}
                   {(p.client || p.industry || p.resultaat) && (
                     <p className="mt-2 text-xs text-gray-500">{[p.client, p.industry, p.resultaat].filter(Boolean).join(' • ')}</p>

@@ -43,7 +43,7 @@ const LoginPage = () => {
       </Helmet>
       <div className="glass-card relative z-10 w-full max-w-md rounded-3xl p-8">
         <div className="mb-6 flex flex-col items-center text-center">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[rgba(140,214,255,.25)] bg-[rgba(140,214,255,.08)] font-heading text-lg font-black text-[var(--accent)] shadow-[0_0_24px_rgba(140,214,255,.2)]">V</span>
+          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[rgba(201,169,110,.28)] bg-[rgba(201,169,110,.08)] font-heading text-lg font-black text-[var(--accent)] shadow-[0_0_24px_rgba(201,169,110,.18)]">V</span>
           <h1 className="mt-4 font-heading text-3xl font-black tracking-[-.05em] gradient-text-full">Admin Portal</h1>
           <p className="mt-2 font-mono text-[11px] uppercase tracking-[.24em] text-slate-500">Vos Web Designs</p>
         </div>
@@ -54,7 +54,7 @@ const LoginPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-[rgba(8,16,30,0.6)] border border-[rgba(140,214,255,0.16)] rounded-xl focus:border-[#8cd6ff] focus:ring-2 focus:ring-[rgba(140,214,255,.18)] focus:outline-none text-white transition"
+              className="w-full px-4 py-3 bg-[rgba(8,8,18,0.7)] border border-[rgba(201,169,110,0.18)] rounded-xl focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(201,169,110,.15)] focus:outline-none text-white transition"
               required
             />
           </div>
@@ -64,7 +64,7 @@ const LoginPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-[rgba(8,16,30,0.6)] border border-[rgba(140,214,255,0.16)] rounded-xl focus:border-[#8cd6ff] focus:ring-2 focus:ring-[rgba(140,214,255,.18)] focus:outline-none text-white transition"
+              className="w-full px-4 py-3 bg-[rgba(8,8,18,0.7)] border border-[rgba(201,169,110,0.18)] rounded-xl focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(201,169,110,.15)] focus:outline-none text-white transition"
               required
             />
           </div>

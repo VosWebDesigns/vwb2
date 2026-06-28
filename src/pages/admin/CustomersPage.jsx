@@ -31,7 +31,7 @@ const emptyCustomer = () => ({
   updated_at: new Date().toISOString(),
 });
 
-const inputClass = 'w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-[#8cd6ff] focus:ring-2 focus:ring-[#8cd6ff]/20';
+const inputClass = 'w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-[var(--accent)] focus:ring-2 focus:ring-[rgba(201,169,110,.15)]';
 const labelClass = 'text-xs font-black uppercase tracking-[.16em] text-slate-400';
 
 const readLocalCustomers = () => {
@@ -196,18 +196,18 @@ const CustomersPage = () => {
 
       <header className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[.22em] text-[#8cd6ff]">Vos Admin CRM</p>
+          <p className="text-xs font-black uppercase tracking-[.22em] text-[var(--accent)]">Vos Admin CRM</p>
           <h1 className="mt-3 text-3xl font-black tracking-[-.04em] text-white md:text-5xl">Klantenbeheer</h1>
           <p className="mt-3 max-w-2xl text-slate-400">Leg leads en klanten centraal vast, zodat offertes en facturen direct klantgegevens kunnen hergebruiken.</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Button onClick={loadCustomers} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/10"><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /> Vernieuwen</Button>
-          <Button onClick={startNewCustomer} className="gap-2 bg-[#8cd6ff] text-black hover:bg-[#6bc5f5]"><Plus size={16} /> Nieuwe klant</Button>
+          <Button onClick={startNewCustomer} className="gap-2 bg-[var(--accent)] text-black hover:bg-[#6bc5f5]"><Plus size={16} /> Nieuwe klant</Button>
         </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-        <Card className="border-white/10 bg-[rgba(12,22,40,0.72)]">
+        <Card className="border-white/10 bg-[rgba(8,8,18,.82)]">
           <CardHeader>
             <CardTitle className="text-white">{customers.some((customer) => customer.id === currentCustomer.id) ? 'Klant bewerken' : 'Klant aanmaken'}</CardTitle>
             <p className="text-sm text-slate-500">Opslag: {storageMode === 'supabase' ? 'Supabase' : 'Browser lokaal'}</p>
@@ -230,13 +230,13 @@ const CustomersPage = () => {
                 <div className="grid gap-2"><label className={labelClass}>Status</label><select className={inputClass} value={currentCustomer.status} onChange={(e) => updateField('status', e.target.value)}>{STATUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
               </div>
               <div className="grid gap-2"><label className={labelClass}>Notities</label><textarea className={`${inputClass} min-h-[120px]`} value={currentCustomer.notes} onChange={(e) => updateField('notes', e.target.value)} placeholder="Follow-up, voorkeuren, afspraken..." /></div>
-              <Button type="submit" className="w-full gap-2 bg-[#8cd6ff] text-black hover:bg-[#6bc5f5]"><Save size={16} /> Opslaan</Button>
+              <Button type="submit" className="w-full gap-2 bg-[var(--accent)] text-black hover:bg-[#6bc5f5]"><Save size={16} /> Opslaan</Button>
             </form>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <Card className="border-white/10 bg-[rgba(12,22,40,0.72)]">
+          <Card className="border-white/10 bg-[rgba(8,8,18,.82)]">
             <CardContent className="p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <label className="relative flex-1">
@@ -252,21 +252,21 @@ const CustomersPage = () => {
           </Card>
 
           {loading ? (
-            <div className="rounded-2xl border border-white/10 bg-[rgba(12,22,40,0.72)] p-8 text-center text-slate-400">Klanten laden…</div>
+            <div className="rounded-2xl border border-white/10 bg-[rgba(8,8,18,.82)] p-8 text-center text-slate-400">Klanten laden…</div>
           ) : filteredCustomers.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/10 bg-[rgba(12,22,40,0.72)] p-12 text-center text-slate-500">
+            <div className="rounded-2xl border border-dashed border-white/10 bg-[rgba(8,8,18,.82)] p-12 text-center text-slate-500">
               <Users size={44} className="mx-auto mb-4 opacity-40" />
               Nog geen klanten gevonden. Maak je eerste klant aan of zet een lead om naar klant.
             </div>
           ) : (
             <div className="grid gap-3">
               {filteredCustomers.map((customer) => (
-                <article key={customer.id} className="rounded-2xl border border-white/10 bg-[rgba(12,22,40,0.72)] p-5">
+                <article key={customer.id} className="rounded-2xl border border-white/10 bg-[rgba(8,8,18,.82)] p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <button type="button" onClick={() => editCustomer(customer)} className="text-left">
                       <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-lg font-black text-white">{customer.company_name || customer.name}</h2>
-                        <span className="rounded-full border border-[#8cd6ff]/30 bg-[#8cd6ff]/10 px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-[#8cd6ff]">{STATUS_OPTIONS.find((option) => option.value === customer.status)?.label || customer.status}</span>
+                        <span className="rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-[var(--accent)]">{STATUS_OPTIONS.find((option) => option.value === customer.status)?.label || customer.status}</span>
                       </div>
                       {customer.company_name && customer.name && <p className="mt-1 text-sm text-slate-400">T.a.v. {customer.name}</p>}
                       <p className="mt-2 text-sm text-slate-500">{[customer.email, customer.phone, customer.city].filter(Boolean).join(' • ') || 'Geen contactgegevens'}</p>

@@ -49,7 +49,7 @@ const NotFoundPage = () => {
         <div
           className="pointer-events-none absolute inset-0 opacity-20"
           style={{
-            backgroundImage: 'linear-gradient(rgba(140,214,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(140,214,255,.06) 1px, transparent 1px)',
+            backgroundImage: 'linear-gradient(rgba(201,169,110,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,110,.04) 1px, transparent 1px)',
             backgroundSize: '80px 80px',
             maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)',
             WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)',
@@ -61,18 +61,18 @@ const NotFoundPage = () => {
           <div
             ref={scanRef}
             className="absolute left-0 right-0 h-px"
-            style={{ background: 'linear-gradient(to right, transparent, rgba(140,214,255,.6), transparent)' }}
+            style={{ background: 'linear-gradient(to right, transparent, rgba(201,169,110,.5), transparent)' }}
           />
         </div>
         {/* Radial glows */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(14,165,233,.1),transparent)]" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(201,169,110,.07),transparent)]" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto max-w-2xl text-center">
           {/* Corner brackets */}
-          <div className="pointer-events-none absolute -top-8 -left-8 h-8 w-8 border-l border-t border-[rgba(140,214,255,.3)]" aria-hidden="true" />
-          <div className="pointer-events-none absolute -top-8 -right-8 h-8 w-8 border-r border-t border-[rgba(214,245,122,.3)]" aria-hidden="true" />
-          <div className="pointer-events-none absolute -bottom-8 -left-8 h-8 w-8 border-b border-l border-[rgba(140,214,255,.3)]" aria-hidden="true" />
-          <div className="pointer-events-none absolute -bottom-8 -right-8 h-8 w-8 border-b border-r border-[rgba(214,245,122,.3)]" aria-hidden="true" />
+          <div className="pointer-events-none absolute -top-8 -left-8 h-8 w-8 border-l border-t border-[rgba(201,169,110,.3)]" aria-hidden="true" />
+          <div className="pointer-events-none absolute -top-8 -right-8 h-8 w-8 border-r border-t border-[rgba(138,92,246,.3)]" aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-8 -left-8 h-8 w-8 border-b border-l border-[rgba(201,169,110,.3)]" aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-8 -right-8 h-8 w-8 border-b border-r border-[rgba(138,92,246,.3)]" aria-hidden="true" />
 
           {/* HUD label */}
           <div data-404 className="flex items-center justify-center gap-2.5 mb-4">
@@ -108,7 +108,7 @@ const NotFoundPage = () => {
             </button>
           </div>
 
-          <div data-404 className="mt-14 border-t border-[rgba(140,214,255,.12)] pt-10">
+          <div data-404 className="mt-14 border-t border-[color:var(--stroke)] pt-10">
             <p className="hud-label mb-5 block">Populaire paginas</p>
             <div className="flex flex-wrap justify-center gap-3">
               {QUICK_LINKS.map(([href, label]) => (
