@@ -228,23 +228,34 @@ function FloatingPanel({ position, rotation, scale = 1, variant = 0 }) {
 
 /* ── Camera parallax ── */
 function Rig() {
-  const scrollRef = useRef(0);
+  const scrollRef  = useRef(0);
+  const smoothRef  = useRef(0);
 
   useFrame((state, dt) => {
     if (typeof window !== 'undefined') {
       const max = document.body.scrollHeight - window.innerHeight;
+      // window.scrollY reflects Lenis-eased position when Lenis drives native scroll
       scrollRef.current = max > 0 ? window.scrollY / max : 0;
     }
+
+    // Extra smoothing layer on top of Lenis for ultra-cinematic feel
+    smoothRef.current += (scrollRef.current - smoothRef.current) * Math.min(dt * 1.8, 1);
+    const s = smoothRef.current;
+
     const px = prefersReducedMotion ? 0 : state.pointer.x;
     const py = prefersReducedMotion ? 0 : state.pointer.y;
-    const targetX = px * 1.25;
-    const targetY = py * 0.75 + scrollRef.current * 1.8;
-    const targetZ = 9.5 - scrollRef.current * 2.5;
-    const damp    = 1 - Math.pow(0.001, dt);
+
+    // Curved camera path: slight arc on X, arc+zoom on Z
+    const targetX = px * 1.1  + Math.sin(s * Math.PI) * 0.6;
+    const targetY = py * 0.65 + s * 1.6;
+    const targetZ = 9.5 - s * 3.2 + Math.cos(s * Math.PI * 0.8) * 0.5;
+
+    // Cinematic lag — heavier than before for more inertia
+    const damp = 1 - Math.pow(0.018, dt);
     state.camera.position.x += (targetX - state.camera.position.x) * damp;
     state.camera.position.y += (targetY - state.camera.position.y) * damp;
     state.camera.position.z += (targetZ - state.camera.position.z) * damp;
-    state.camera.lookAt(0, scrollRef.current * 1.2, 0);
+    state.camera.lookAt(Math.sin(s * Math.PI) * 0.3, s * 1.0, 0);
   });
   return null;
 }

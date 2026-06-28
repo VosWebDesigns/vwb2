@@ -43,12 +43,138 @@ const afterLaunch = [
   ['Groei & Uitbreidingen',  'Nieuwe features en functionaliteiten wanneer u deze nodig heeft'],
 ];
 
+/* ── Horizontal pinned timeline (desktop only) ── */
+const HorizontalTimeline = ({ steps }) => {
+  const outerRef = useRef(null);
+  const trackRef = useRef(null);
+
+  useEffect(() => {
+    const outer = outerRef.current;
+    const track = trackRef.current;
+    if (!outer || !track) return;
+
+    const ctx = gsap.context(() => {
+      const getScrollDistance = () => track.scrollWidth - outer.offsetWidth;
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: outer,
+          start:   'top top',
+          end:     () => `+=${getScrollDistance() + window.innerHeight}`,
+          pin:     true,
+          scrub:   1.2,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.to(track, {
+        x:    () => -(getScrollDistance()),
+        ease: 'none',
+      });
+
+      // Stagger-in each card as it enters view (driven by the timeline progress)
+      const cards = track.querySelectorAll('.h-step-card');
+      cards.forEach((card, i) => {
+        tl.fromTo(card,
+          { opacity: 0.1, scale: 0.93 },
+          { opacity: 1,   scale: 1, ease: 'power2.out', duration: 0.18 },
+          i * 0.18
+        );
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div ref={outerRef} className="relative h-screen overflow-hidden">
+      {/* Static label row */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-10 pt-8 pb-5"
+        style={{ borderBottom: '1px solid rgba(201,169,110,.08)' }}>
+        <div className="flex items-center gap-3">
+          <span className="status-dot" />
+          <p className="section-eyebrow">Werkwijze — stap voor stap</p>
+        </div>
+        <p className="font-mono text-[.62rem] uppercase tracking-[.3em]" style={{ color: 'rgba(201,169,110,.3)' }}>
+          Scroll →
+        </p>
+      </div>
+
+      {/* Horizontal rail */}
+      <div
+        ref={trackRef}
+        className="absolute top-0 left-0 flex h-full items-center gap-6 pl-10 pr-24"
+        style={{ paddingTop: '7rem' }}
+      >
+        {steps.map((step, i) => (
+          <article
+            key={step.number}
+            className="h-step-card glass-card flex-shrink-0 rounded-3xl p-8 relative overflow-hidden"
+            style={{ width: 'min(480px, 85vw)', minHeight: '420px' }}
+          >
+            {/* Top accent line */}
+            <div
+              className="absolute inset-x-0 top-0 h-px"
+              style={{ background: 'linear-gradient(to right, transparent, var(--accent), transparent)', opacity: 0.5 }}
+            />
+
+            {/* Step number — large bg watermark */}
+            <span
+              className="absolute -bottom-2 -right-1 font-mono font-black leading-none select-none pointer-events-none"
+              style={{
+                fontSize: 'clamp(6rem,12vw,10rem)',
+                letterSpacing: '-.05em',
+                background: 'linear-gradient(135deg, rgba(201,169,110,.08), rgba(201,169,110,.02))',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+              aria-hidden="true"
+            >
+              {step.number}
+            </span>
+
+            <div className="relative z-10 flex h-full flex-col">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)] flex-shrink-0">
+                  {step.icon}
+                </div>
+                <span className="font-mono text-[.6rem] uppercase tracking-[.22em]" style={{ color: 'var(--accent2)' }}>
+                  {step.duration}
+                </span>
+              </div>
+
+              <h2 className="font-heading text-[clamp(1.5rem,2.2vw,2.2rem)] font-black leading-tight tracking-[-.05em] text-white">
+                {step.title}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-slate-300 flex-1">{step.description}</p>
+
+              <div className="mt-5 pt-5 border-t border-[rgba(201,169,110,.08)] grid gap-2">
+                {step.activities.slice(0, 4).map((a) => (
+                  <div key={a} className="flex items-start gap-2.5 text-xs text-slate-400">
+                    <CheckCircle size={12} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
+                    {a}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ProcessPage = () => {
   const rootRef      = useRef(null);
   const timelineRef  = useRef(null);
   useReveal(rootRef);
 
   useEffect(() => {
+    // Only animate vertical timeline on mobile — desktop uses HorizontalTimeline's own animation
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
+
     const el = timelineRef.current;
     if (!el) return;
     const ctx = gsap.context(() => {
@@ -134,59 +260,44 @@ const ProcessPage = () => {
           </div>
         </section>
 
-        {/* ── Timeline ── */}
-        <section className="cinematic-section pt-0">
-          <div className="cinematic-container relative z-10">
-            <div className="relative" ref={timelineRef}>
+        {/* ── Timeline — horizontal pinned rail (desktop) / vertical (mobile) ── */}
+        <section className="cinematic-section pt-0 overflow-hidden" ref={timelineRef}>
+          {/* ── Desktop: horizontal pinned scroll ── */}
+          <div className="hidden lg:block">
+            <HorizontalTimeline steps={processSteps} />
+          </div>
+
+          {/* ── Mobile: classic vertical timeline ── */}
+          <div className="lg:hidden cinematic-container relative z-10">
+            <div className="relative">
               <div
-                className="timeline-draw-line absolute left-[14px] top-4 bottom-0 w-px md:left-[18px] lg:left-[22px]"
+                className="timeline-draw-line absolute left-[14px] top-4 bottom-0 w-px md:left-[18px]"
                 style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent2), transparent)' }}
                 aria-hidden="true"
               />
-
-              <div className="flex flex-col gap-6 pl-10 md:pl-12 lg:pl-16">
-                {processSteps.map((step, i) => (
+              <div className="flex flex-col gap-6 pl-10 md:pl-12">
+                {processSteps.map((step) => (
                   <article key={step.number} className="timeline-card relative">
                     <div
-                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#06060c] text-[var(--accent)] shadow-[0_0_20px_rgba(201,169,110,.4)] md:-left-12 md:h-9 md:w-9 lg:-left-16 lg:h-11 lg:w-11"
-                      aria-hidden="true"
+                      className="step-bubble absolute -left-10 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[#06060c] text-[var(--accent)] shadow-[0_0_20px_rgba(201,169,110,.4)] md:-left-12 md:h-9 md:w-9"
                     >
-                      <span className="font-mono text-[9px] font-black md:text-[10px] lg:text-[11px]">{step.number}</span>
+                      <span className="font-mono text-[9px] font-black md:text-[10px]">{step.number}</span>
                     </div>
-
-                    <div
-                      className="absolute -left-[1rem] top-[1.5rem] h-2 w-2 rounded-full bg-[var(--accent2)] shadow-[0_0_8px_rgba(138,92,246,.8)] md:-left-[1.15rem] md:top-[1.65rem] lg:-left-[1.45rem]"
-                      aria-hidden="true"
-                    />
-
                     <div className="glass-card rounded-2xl p-5 md:p-7">
-                      <div className="grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
-                        <div>
-                          <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
-                            {step.icon}
-                          </div>
-                          <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[var(--accent2)]">
-                            {step.duration}
-                          </span>
-                          <h2 className="mt-2 font-heading text-[clamp(1.5rem,2.5vw,2.4rem)] font-black tracking-[-.05em] text-white">
-                            {step.title}
-                          </h2>
-                          <p className="mt-3 text-sm leading-7 text-slate-300">{step.description}</p>
-                        </div>
-
-                        <div className="grid content-start gap-2.5">
-                          <span className="hud-label mb-1">Activiteiten</span>
-                          {step.activities.map((activity) => (
-                            <div
-                              key={activity}
-                              className="flex gap-2.5 items-start rounded-xl border border-[var(--stroke)] bg-white/[.02] p-3 text-sm text-slate-300 transition hover:border-[rgba(201,169,110,.2)]"
-                            >
-                              <CheckCircle size={14} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
-                              {activity}
-                            </div>
-                          ))}
-                        </div>
+                      <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-[var(--stroke)] bg-[rgba(201,169,110,.06)] text-[var(--accent)]">
+                        {step.icon}
                       </div>
+                      <span className="font-mono text-[10px] uppercase tracking-[.2em] text-[var(--accent2)]">{step.duration}</span>
+                      <h2 className="mt-2 font-heading text-[clamp(1.4rem,3vw,2rem)] font-black tracking-[-.05em] text-white">{step.title}</h2>
+                      <p className="mt-3 text-sm leading-7 text-slate-300">{step.description}</p>
+                      <ul className="mt-4 grid gap-2">
+                        {step.activities.map((a) => (
+                          <li key={a} className="flex gap-2.5 items-start text-sm text-slate-300">
+                            <CheckCircle size={13} className="mt-0.5 shrink-0 text-[var(--accent2)]" />
+                            {a}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </article>
                 ))}

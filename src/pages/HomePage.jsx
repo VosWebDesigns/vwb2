@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
@@ -9,6 +9,9 @@ import FuturisticHero from '@/components/FuturisticHero';
 import TechMarquee from '@/components/TechMarquee';
 import ServicesSection from '@/components/ServicesSection';
 import WorkShowcase from '@/components/WorkShowcase';
+import { isWebGLAvailable } from '@/components/three/AmbientBackdrop';
+
+const ScrollCamera3D = lazy(() => import('@/components/three/ScrollCamera3D'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,12 +34,13 @@ const StatementSection = () => {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => {
+      // Clip-path + Y reveal per word — more premium than plain opacity
       gsap.fromTo(el.querySelectorAll('.stmt-word'),
-        { opacity: 0, y: 60, rotateX: 22 },
+        { clipPath: 'inset(0 0 100% 0)', y: 40, opacity: 0 },
         {
-          opacity: 1, y: 0, rotateX: 0,
-          duration: 1.1, stagger: 0.09, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 72%' },
+          clipPath: 'inset(0 0 0% 0)', y: 0, opacity: 1,
+          duration: 1.1, stagger: 0.10, ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 74%' },
         }
       );
     });
@@ -341,6 +345,20 @@ const HomePage = () => {
         <StatementSection />
         <ServicesSection />
         <WorkShowcase projects={projects} loading={loading} />
+
+        {/* Scroll-driven 3D flythrough section */}
+        {isWebGLAvailable() && (
+          <Suspense fallback={
+            <div
+              className="relative h-screen w-full flex items-center justify-center"
+              style={{ background: 'var(--bg)' }}
+            >
+              <span className="status-dot" />
+            </div>
+          }>
+            <ScrollCamera3D />
+          </Suspense>
+        )}
 
         {/* Stats strip */}
         <section className="relative">

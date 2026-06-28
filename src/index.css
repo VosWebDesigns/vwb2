@@ -854,6 +854,68 @@ body {
   animation: shimmer 4s linear infinite;
 }
 
+/* ═══════════════════════════════════════
+   PREMIUM REVEAL & CLIP-PATH UTILITIES
+   ═══════════════════════════════════════ */
+
+/* Clip-path text reveal — GSAP sets inline clipPath, this is just the base state */
+.clip-reveal {
+  will-change: clip-path, opacity, transform;
+}
+
+/* Glass panel base (used by GlassPanel.jsx component) */
+.glass-panel-base {
+  border-radius: var(--radius);
+}
+
+/* Horizontal scroll rail (ProcessPage horizontal timeline) */
+.h-scroll-track {
+  display: flex;
+  align-items: center;
+  will-change: transform;
+}
+
+/* Perspective container for 3D text reveals */
+.perspective-container {
+  perspective: 1000px;
+  perspective-origin: 50% 40%;
+}
+
+/* ── Gradient border ring for active states ── */
+.ring-gold {
+  box-shadow: 0 0 0 1px rgba(201,169,110,.35), 0 0 24px rgba(201,169,110,.12);
+}
+.ring-violet {
+  box-shadow: 0 0 0 1px rgba(138,92,246,.35), 0 0 24px rgba(138,92,246,.12);
+}
+
+/* ── Line draw animation (SVG or pseudo) ── */
+@keyframes line-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0);   }
+}
+.line-draw {
+  animation: line-draw 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Number ticker ── */
+.num-ticker {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* ── Horizontal scroll section ── */
+.h-pin-outer {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Step card in horizontal timeline ── */
+.h-step-card {
+  flex-shrink: 0;
+  will-change: transform, opacity;
+}
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
